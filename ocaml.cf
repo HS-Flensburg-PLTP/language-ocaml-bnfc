@@ -2938,9 +2938,6 @@ ExprComma. ExprComma ::= Expr ;
 
 separator nonempty ExprComma "," ;
 
-NoWith. OptionalWith ::= ;
-AWith.  OptionalWith ::= SimpleExpr "with" ;
-
 {-
 record_expr_content:
   ioption(terminated(simple_expr, WITH)) separated_or_terminated_nonempty_list(SEMI, record_expr_field)
@@ -2949,9 +2946,10 @@ record_expr_content:
 
 FinalRecordExprField1. RecordExprFields ::= RecordExprField ;
 FinalRecordExprField2. RecordExprFields ::= RecordExprField ";" ;
-MoreRecordExprFields.  RecordExprFields ::= RecordExprFields ";" RecordExprField ;
+MoreRecordExprFields.  RecordExprFields ::= RecordExprField ";" RecordExprFields ;
 
-RecordExprContent. RecordExprContent ::= OptionalWith RecordExprFields ;
+RecordExprContent1. RecordExprContent ::= SimpleExpr "with" RecordExprFields ;
+RecordExprContent2. RecordExprContent ::= RecordExprFields ;
 
 {-
 %inline record_expr_field:
@@ -3209,14 +3207,17 @@ MoreRecordPatterns.      RecordPatContent ::= RecordPatField ";" RecordPatConten
 
 {-
 %inline record_pat_field:
-  label_longident preceded(COLON, core_type)? preceded(EQUAL, pattern)
+  label_longident preceded(COLON, core_type)? preceded(EQUAL, pattern)?
 ;
 -}
 
 NoCoreType. OptionalCoreType ::= ;
 ACoreType.  OptionalCoreType ::= ":" CoreType ;
 
-RecordPatField. RecordPatField ::= LabelLongident OptionalCoreType "=" Pattern ;
+NoAssignPattern. OptionalAssignPattern ::= ;
+AnAssignPattern. OptionalAssignPattern ::= "=" Pattern ;
+
+RecordPatField. RecordPatField ::= LabelLongident OptionalCoreType OptionalAssignPattern ;
 
 {-
 /* Value descriptions */
