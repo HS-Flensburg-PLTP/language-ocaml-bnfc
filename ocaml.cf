@@ -1067,9 +1067,7 @@ let ident = (lowercase | uppercase) identchar*
 let extattrident = ident ('.' ident)*
 -}
 
-token ExtAttrIdent letter (letter | digit | '_')* ('.' letter (letter | digit | '_')*)* ;
-
-Quoted_String_Expr1. QUOTED_STRING_EXPR ::= "{%" ExtAttrIdent "|" ;
+token QUOTED_STRING_EXPR {"{%"} letter (letter | digit | '_')* ('.' letter (letter | digit | '_')*)* '|' ;
 
 {-
 %token <string * Location.t * string * Location.t * string option>
@@ -1089,7 +1087,7 @@ Quoted_String_Expr1. QUOTED_STRING_EXPR ::= "{%" ExtAttrIdent "|" ;
 
 -- TODO: Improve definition
 
-Quoted_String_Item1. QUOTED_STRING_ITEM ::= "{%%" ExtAttrIdent "|" ;
+token QUOTED_STRING_ITEM {"{%%"} letter (letter | digit | '_')* ('.' letter (letter | digit | '_')*)* '|' ;
 
 {-
 %token STRUCT                 "struct"
