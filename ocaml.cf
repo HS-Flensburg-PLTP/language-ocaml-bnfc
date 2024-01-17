@@ -1556,7 +1556,7 @@ toplevel_phrase:
 
 separator StructureItem "" ;
 
-StrExpr.           ToplevelPhrase ::= StrExpr ";;" ;
+StrExpr.           ToplevelPhrase ::= SeqExpr [PostItemAttribute] ";;" ;
 StructureItems.    ToplevelPhrase ::= [StructureItem] ";;" ;
 ToplevelDirective. ToplevelPhrase ::= ToplevelDirective ";;" ;
 
@@ -1731,43 +1731,40 @@ AStructureStandaloneExpression.  OptionalStructureStandaloneExpression ::= StrEx
 ;
 -}
 
-SeqExpr. StrExpr ::= SeqExpr ; -- [PostItemAttribute] ;
+-- This definition is inlined manually
 
 {-
 (* A structure element is one of the following:
    - a double semicolon followed with an optional standalone expression;
    - a structure item. *)
 %inline structure_element:
-    text_str_SEMISEMI optional_structure_standalone_expression)
+    SEMISEMI optional_structure_standalone_expression)
   | structure_item
 ;
 -}
 
-StructureElement. StructureElement ::= ";;" OptionalStructureStandaloneExpression ;
-StructureItem.    StructureElement ::= StructureItem ;
+StructureSemiSemi. StructureElement ::= ";;" ;
+StructureStrExpr.  StructureElement ::= ";;" SeqExpr [PostItemAttribute] ;
+StructureItem.     StructureElement ::= StructureItem ;
 
 {-
 (* A structure item. *)
 structure_item:
     let_bindings(ext)
-  | mkstr(
-      item_extension post_item_attributes
-    | floating_attribute
-    )
-  | wrap_mkstr_ext(
-      primitive_declaration
-    | value_description
-    | type_declarations
-    | str_type_extension
-    | str_exception_declaration
-    | module_binding
-    | rec_module_bindings
-    | module_type_declaration
-    | open_declaration
-    | class_declarations
-    | class_type_declarations
-    | include_statement(module_expr)
-    )
+  | item_extension post_item_attributes
+  | floating_attribute
+  | primitive_declaration
+  | value_description
+  | type_declarations
+  | str_type_extension
+  | str_exception_declaration
+  | module_binding
+  | rec_module_bindings
+  | module_type_declaration
+  | open_declaration
+  | class_declarations
+  | class_type_declarations
+  | include_statement(module_expr)
 ;
 -}
 
@@ -1780,12 +1777,12 @@ StructureTypeDeclarations.      StructureItem ::= TypeDeclarations ;
 StructureStrTypeExtension.      StructureItem ::= StrTypeExtension ;
 StrExceptionDeclaration.        StructureItem ::= StrExceptionDeclaration ;
 StructureModuleBinding.         StructureItem ::= "module" Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute] ;
-StructureRecModuleBindings.     StructureItem ::= RecModuleBinding [AndModuleBinding] ;
+StructureRecModuleBindings.     StructureItem ::= "module" Ext [Attribute] "rec" ModuleName ModuleBindingBody [PostItemAttribute] [AndModuleBinding] ;
 StructureModuleTypeDeclaration. StructureItem ::= ModuleTypeDeclaration ;
 StructureOpenDeclaration.       StructureItem ::= OpenDeclaration ;
 StructureClassDeclarations.     StructureItem ::= ClassDeclarations ;
 StructureClassTypeDeclarations. StructureItem ::= ClassTypeDeclarations ;
-StructureIncludeStatement.      StructureItem ::= ModuleExprIncludeStatement ;
+StructureIncludeStatement.      StructureItem ::= "include" Ext [Attribute] ModuleExpr [PostItemAttribute] ;
 
 {-
 %inline include_statement(thing):
@@ -1793,7 +1790,7 @@ StructureIncludeStatement.      StructureItem ::= ModuleExprIncludeStatement ;
 ;
 -}
 
-ModuleExprIncludeStatement. ModuleExprIncludeStatement ::= "include" Ext [Attribute] ModuleExpr [PostItemAttribute] ;
+-- This definition is inlined manually
 
 {-
 (* A floating attribute is an attribute that appears at the top level of
@@ -1839,7 +1836,7 @@ FunctorBinding.     ModuleBindingBody ::= FunctorArg ModuleBindingBody ;
 ;
 -}
 
-RecModuleBinding. RecModuleBinding ::= "module" Ext [Attribute] "rec" ModuleName ModuleBindingBody [PostItemAttribute] ;
+-- This definition is inlined manually
 
 {-
 (* The following bindings in a group of recursive module bindings. *)
@@ -1942,13 +1939,13 @@ separator SignatureElement "" ;
    - a double semicolon;
    - a signature item. *)
 %inline signature_element:
-    text_sig_SEMISEMI
+    SEMISEMI
   | signature_item
 ;
 -}
 
-SemiSemi.      SignatureElement ::= ";;" ;
-SignatureItem. SignatureElement ::= SignatureItem ;
+SigSemiSemi. SignatureElement ::= ";;" ;
+SigItem.     SignatureElement ::= SignatureItem ;
 
 {-
 (* A signature item. *)
@@ -2465,11 +2462,11 @@ labeled_simple_pattern:
 -}
 
 OptPattern.           LabeledSimplePattern ::= "?" "(" LabelLetPattern OptDefault ")" ;
-OptLabelVar.          LabeledSimplePattern ::= "?" LabelVar ;
+OptLabelVar.          LabeledSimplePattern ::= "?" LIDENT ;
 OptLabeledPattern.    LabeledSimplePattern ::= OPTLABEL "(" LetPattern OptDefault ")" ;
 OptLabeledVar.        LabeledSimplePattern ::= OPTLABEL PatternVar ;
 LabeledPattern.       LabeledSimplePattern ::= "~" "(" LabelLetPattern ")" ;
-LabeledVar.           LabeledSimplePattern ::= "~" LabelVar ;
+LabeledVar.           LabeledSimplePattern ::= "~" LIDENT ;
 LabeledSimplePattern. LabeledSimplePattern ::= LABEL SimplePattern ;
 SimplePattern.        LabeledSimplePattern ::= SimplePattern ;
 
@@ -2499,8 +2496,8 @@ label_let_pattern:
 ;
 -}
 
-LabelLetPattern.      LabelLetPattern ::= LabelVar ;
-TypedLabelLetPattern. LabelLetPattern ::= LabelVar ":" CoreType ;
+LabelLetPattern.      LabelLetPattern ::= LIDENT ;
+TypedLabelLetPattern. LabelLetPattern ::= LIDENT ":" CoreType ;
 
 {-
 %inline label_var:
@@ -2508,7 +2505,7 @@ TypedLabelLetPattern. LabelLetPattern ::= LabelVar ":" CoreType ;
 ;
 -}
 
-LabelVar. LabelVar ::= LIDENT ;
+-- This definition is inlined manually
 
 {-
 let_pattern:
@@ -2533,20 +2530,16 @@ fun_expr:
   | fun_expr_attrs
   | expr_
   | let_bindings(ext) IN seq_expr
-  | LETOP bindings letop_bindings IN seq_expr
+  | LETOP letop_bindings IN seq_expr
   | fun_expr COLONCOLON expr
   | label LESSMINUS expr
   | simple_expr DOT label_longident LESSMINUS expr
   | indexop_expr(DOT, seq_expr, LESSMINUS expr)
   | indexop_expr(qualified_dotop, expr_semi_list, LESSMINUS expr)
   | fun_expr attribute
-
-%inline indexop_expr(dot, index, right):
-  | simple_expr dot LPAREN index RPAREN right
-  | simple_expr dot LBRACE index RBRACE right
-  | simple_expr dot LBRACKET index RBRACKET right
-;
 -}
+
+separator nonempty LabeledSimpleExpr "" ;
 
 SimpleExpr.            FunExpr ::= SimpleExpr ;
 FunExprAttrs.          FunExpr ::= FunExprAttrs ;
@@ -2563,6 +2556,16 @@ ArrayUpdateDotopExpr.  FunExpr ::= SimpleExpr QualifiedDotop "(" [Expr] ")" "<-"
 RecordUpdateDotopExpr. FunExpr ::= SimpleExpr QualifiedDotop "{" [Expr] "}" "<-" Expr ;
 StringUpdateDotopExpr. FunExpr ::= SimpleExpr QualifiedDotop "[" [Expr] "]" "<-" Expr ;
 FunExprWithAttribute.  FunExpr ::= FunExpr Attribute ;
+
+{-
+%inline indexop_expr(dot, index, right):
+  | simple_expr dot LPAREN index RPAREN right
+  | simple_expr dot LBRACE index RBRACE right
+  | simple_expr dot LBRACKET index RBRACKET right
+;
+-}
+
+-- This definition is inlined manually
 
 {-
 %inline expr:
@@ -2608,8 +2611,8 @@ Match.        FunExprAttrs ::= "match" Ext [Attribute] SeqExpr "with" MatchCases
 Try.          FunExprAttrs ::= "try" Ext [Attribute] SeqExpr "with" MatchCases ;
 IfElse.       FunExprAttrs ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
 If.           FunExprAttrs ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
-While.        FunExprAttrs ::= "while" Ext [Attribute] SeqExpr DoDoneExpr ;
-For.          FunExprAttrs ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr DoDoneExpr ;
+While.        FunExprAttrs ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
+For.          FunExprAttrs ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
 Assert.       FunExprAttrs ::= "assert" Ext [Attribute] SimpleExpr ;
 Lazy.         FunExprAttrs ::= "lazy" Ext [Attribute] SimpleExpr ;
 
@@ -2619,7 +2622,7 @@ Lazy.         FunExprAttrs ::= "lazy" Ext [Attribute] SimpleExpr ;
 ;
 -}
 
-DoDone. DoDoneExpr ::= "do" SeqExpr "done" ;
+-- This definition is inlined manually
 
 {-
 %inline expr_:
@@ -2633,15 +2636,7 @@ DoDone. DoDoneExpr ::= "do" SeqExpr "done" ;
 ;
 -}
 
-separator nonempty LabeledSimpleExpr "" ;
-
-SimpleExprApp.  Expr_ ::= SimpleExpr [LabeledSimpleExpr] ;
-Comma.          Expr_ ::= Expr "," [ExprComma] ;
-ConstrName_.    Expr_ ::= ConstrLongident ;
-NameTagApp.     Expr_ ::= NameTag SimpleExpr ;
-Infix.          Expr_ ::= FunExpr InfixOperator Expr ;
-Subtractive.    Expr_ ::= Subtractive Expr ;
-Additive.       Expr_ ::= Additive Expr ;
+-- This definition is inlined manually
 
 {-
 simple_expr:
@@ -2811,15 +2806,15 @@ LetBindingBodyNoPunning. LetBindingBody ::= LetBindingBodyNoPunning ;
 (* The formal parameter EXT can be instantiated with ext or no_ext
    so as to indicate whether an extension is allowed or disallowed. *)
 let_bindings(EXT):
-    let_binding(EXT)                            { $1 }
-  | let_bindings(EXT) and_let_binding           { addlb $1 $2 }
+    let_binding(EXT)
+  | let_bindings(EXT) and_let_binding
 ;
 -}
 
-SingleLetBindingNoExt.   LetBindingsNoExt ::= LetBindingNoExt ;
+SingleLetBindingNoExt.   LetBindingsNoExt ::= "let" Ext [Attribute] RecFlag LetBindingBody [PostItemAttribute] ;
 MultipleLetBindingNoExt. LetBindingsNoExt ::= LetBindingsNoExt AndLetBinding ;
 
-SingleLetBindingExt.   LetBindingsExt ::= LetBindingExt ;
+SingleLetBindingExt.   LetBindingsExt ::= "let" [Attribute] RecFlag LetBindingBody [PostItemAttribute] ;
 MultipleLetBindingExt. LetBindingsExt ::= LetBindingsExt AndLetBinding ;
 
 {-
@@ -2828,9 +2823,7 @@ MultipleLetBindingExt. LetBindingsExt ::= LetBindingsExt AndLetBinding ;
 ;
 -}
 
-LetBindingExt. LetBindingExt ::= "let" Ext [Attribute] RecFlag LetBindingBody [PostItemAttribute] ;
-
-LetBindingNoExt. LetBindingNoExt ::= "let" [Attribute] RecFlag LetBindingBody [PostItemAttribute] ;
+-- This definition is inlined manually
 
 {-
 and_let_binding: AND attributes let_binding_body post_item_attributes
@@ -4368,7 +4361,7 @@ RawString. RawString ::= String ;
 
 {-
 name_tag:
-    BACKQUOTE ident                             { $2 }
+    BACKQUOTE ident
 ;
 -}
 
