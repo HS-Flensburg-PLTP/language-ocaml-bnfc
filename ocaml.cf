@@ -2542,7 +2542,13 @@ separator nonempty LabeledSimpleExpr "" ;
 
 SimpleExpr.            FunExpr ::= SimpleExpr ;
 FunExprAttrs.          FunExpr ::= FunExprAttrs ;
-Expr_.                 FunExpr ::= Expr_ ;
+SimpleExprApp.         FunExpr ::= SimpleExpr [LabeledSimpleExpr] ;
+Comma.                 FunExpr ::= Expr "," [ExprComma] ;
+ConstrName_.           FunExpr ::= ConstrLongident ;
+NameTagApp.            FunExpr ::= NameTag SimpleExpr ;
+Infix.                 FunExpr ::= FunExpr InfixOperator Expr ;
+Subtractive.           FunExpr ::= Subtractive Expr ;
+Additive.              FunExpr ::= Additive Expr ;
 Let.                   FunExpr ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding.          FunExpr ::= LETOP LetopBindings "in" SeqExpr ;
 Cons.                  FunExpr ::= FunExpr "::" Expr ;
