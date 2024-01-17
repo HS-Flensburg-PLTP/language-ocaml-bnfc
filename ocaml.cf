@@ -697,6 +697,7 @@ let package_type_of_module_type pmty =
    string that will not trigger a syntax error; see how [not_expecting]
    is used in the definition of [type_variance]. */
 
+let lowercase = ['a'-'z' '_']
 let symbolchar =
   ['!' '$' '%' '&' '*' '+' '-' '.' '/' ':' '<' '=' '>' '?' '@' '^' '|' '~']
 let dotsymbolchar =
@@ -936,7 +937,7 @@ token LABEL '~' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
       { warn_latin1 lexbuf; LIDENT name }
 -}
 
-token LIDENT lower (letter | digit | '_' | '\'')* ;
+token LIDENT (lower | '_') (letter | digit | '_' | '\'')* ;
 
 {-
 %token LPAREN                 "("
@@ -967,7 +968,6 @@ token LIDENT lower (letter | digit | '_' | '\'')* ;
         OPTLABEL name }
 
 let raw_ident_escape = "\\#"
-let lowercase = ['a'-'z' '_']
 let uppercase = ['A'-'Z']
 let identchar = ['A'-'Z' 'a'-'z' '_' '\'' '0'-'9']
 let identchar_latin1 =
