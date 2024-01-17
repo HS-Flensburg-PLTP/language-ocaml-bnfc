@@ -2551,7 +2551,7 @@ fun_expr:
 SimpleExpr.            FunExpr ::= SimpleExpr ;
 FunExprAttrs.          FunExpr ::= FunExprAttrs ;
 Expr_.                 FunExpr ::= Expr_ ;
-Let.                   FunExpr ::= LetBindingsExt ;
+Let.                   FunExpr ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding.          FunExpr ::= LETOP LetopBindings "in" SeqExpr ;
 Cons.                  FunExpr ::= FunExpr "::" Expr ;
 UpdateExpr.            FunExpr ::= Label "<-" Expr ;
