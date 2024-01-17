@@ -1700,17 +1700,17 @@ CoercionExpr.      ExprColonPackageType ::= Expr ":>" ModuleType ;
    begins with an optional standalone expression, and continues with a list
    of structure elements. *)
 structure:
-  extra_str(append(
-    optional_structure_standalone_expression,
-    flatten(structure_element*)
-  ))
-  { $1 }
+  optional_structure_standalone_expression
+  structure_element*
 ;
 -}
 
-separator StructureElement "" ;
+separator nonempty StructureElement "" ;
 
-Structure. Structure ::= OptionalStructureStandaloneExpression [StructureElement] ;
+NoStructure.                              Structure ::= ;
+StandaloneExpression.                     Structure ::= SeqExpr [PostItemAttribute] ;
+StandaloneExpressionAndStructureElements. Structure ::= SeqExpr [PostItemAttribute] [StructureElement] ;
+StructureElements.                        Structure ::= [StructureElement] ;
 
 {-
 (* An optional standalone expression is just an expression with attributes
@@ -1721,8 +1721,7 @@ Structure. Structure ::= OptionalStructureStandaloneExpression [StructureElement
 ;
 -}
 
-NoStructureStandaloneExpression. OptionalStructureStandaloneExpression ::= ;
-AStructureStandaloneExpression.  OptionalStructureStandaloneExpression ::= StrExpr ;
+-- This definition is inlined manually
 
 {-
 (* An expression with attributes, wrapped as a structure item. *)
