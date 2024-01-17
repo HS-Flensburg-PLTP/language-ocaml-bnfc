@@ -3194,7 +3194,7 @@ NoSemi. OptionalSemi ::= ;
 ASemi.  OptionalSemi ::= ";" ;
 
 FinalRecordPattern.      RecordPatContent ::= RecordPatField OptionalSemi ;
-UnderscoreRecordPattern. RecordPatContent ::= RecordPatField ";" "_" ;
+UnderscoreRecordPattern. RecordPatContent ::= RecordPatField ";" "_" OptionalSemi ;
 MoreRecordPatterns.      RecordPatContent ::= RecordPatField ";" RecordPatContent ;
 
 {-
