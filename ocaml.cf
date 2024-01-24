@@ -1194,7 +1194,7 @@ OpenDescription. OpenDescription ::= "open" OverrideFlag Ext [Attribute] ModExtL
 ;
 -}
 
-OpenDotDeclaration. OpenDotDeclaration ::= ModLongident ;
+-- This definition is inlined manually
 
 {-
 (* -------------------------------------------------------------------------- *)
@@ -1965,14 +1965,6 @@ simple_expr:
 ;
 -}
 
-{-
-%inline indexop_expr(dot, index, right):
-  | simple_expr dot LPAREN index RPAREN right
-  | simple_expr dot LBRACE index RBRACE right
-  | simple_expr dot LBRACKET index RBRACKET right
-;
--}
-
 ParenSeqExpr.        SimpleExpr ::= "(" SeqExpr ")" ;
 TypedSeqExpr.        SimpleExpr ::= "(" SeqExpr TypeConstraint ")" ;
 ArrayExpr.           SimpleExpr ::= SimpleExpr "." "(" SeqExpr ")" ;
@@ -1983,6 +1975,16 @@ QualifiedRecordExpr. SimpleExpr ::= SimpleExpr QualifiedDotop "{" [Expr] "}" ;
 QualifiedStringExpr. SimpleExpr ::= SimpleExpr QualifiedDotop "[" [Expr] "]" ;
 SimpleExprAttrs.     SimpleExpr ::= SimpleExprAttrs ;
 SimpleExpr_.         SimpleExpr ::= SimpleExpr_ ;
+
+{-
+%inline indexop_expr(dot, index, right):
+  | simple_expr dot LPAREN index RPAREN right
+  | simple_expr dot LBRACE index RBRACE right
+  | simple_expr dot LBRACKET index RBRACKET right
+;
+-}
+
+-- This definition is inlined manually
 
 {-
 %inline simple_expr_attrs:
@@ -2025,7 +2027,6 @@ Object.        SimpleExprAttrs ::= "object" Ext [Attribute] ClassStructure "end"
   | LBRACKETBAR BARRBRACKET
   | open_dot_declaration DOT LBRACKETBAR expr_semi_list BARRBRACKET
   | open_dot_declaration DOT LBRACKETBAR BARRBRACKET
-  | mod_longident DOT
   | LBRACKET expr_semi_list RBRACKET
   | open_dot_declaration DOT LBRACKET expr_semi_list RBRACKET
   | open_dot_declaration DOT LBRACKET RBRACKET
@@ -2044,23 +2045,22 @@ BangApp.                     SimpleExpr_ ::= "!" SimpleExpr ;
 ObjectExpr.                  SimpleExpr_ ::= "{<" [ObjectExprField] ">}" ;
 EmptyObjectExpr.             SimpleExpr_ ::= "{<" ">}" ;
 RecordAccessTodo.            SimpleExpr_ ::= SimpleExpr "." LabelLongident ;
-QualifiedArrayExpr_.         SimpleExpr_ ::= OpenDotDeclaration "." "(" SeqExpr ")" ;
-QualifiedObjectExpr.         SimpleExpr_ ::= OpenDotDeclaration "." "{" [ObjectExprField] "}" ;
+QualifiedArrayExpr_.         SimpleExpr_ ::= ModLongident "." "(" SeqExpr ")" ;
+QualifiedObjectExpr.         SimpleExpr_ ::= ModLongident "." "{" [ObjectExprField] "}" ;
 MethodInvocation.            SimpleExpr_ ::= SimpleExpr "#" Label ;
 HashOp.                      SimpleExpr_ ::= SimpleExpr HASHOP SimpleExpr ;
 Extension.                   SimpleExpr_ ::= Extension ;
-EmptyQualifiedArrayAccess.   SimpleExpr_ ::= OpenDotDeclaration "." "(" ")" ;
+EmptyQualifiedArrayAccess.   SimpleExpr_ ::= ModLongident "." "(" ")" ;
 RecordExpr_.                 SimpleExpr_ ::= "{" RecordExprContent "}" ;
-RecordAccess.                SimpleExpr_ ::= OpenDotDeclaration "." "{" RecordExprContent "}" ;
+RecordAccess.                SimpleExpr_ ::= ModLongident "." "{" RecordExprContent "}" ;
 ArrayExpr_.                  SimpleExpr_ ::= "[|" [Expr] "|]" ;
 EmptyArrayExpr.              SimpleExpr_ ::= "[|" "|]" ;
-ArrayAccesss.                SimpleExpr_ ::= OpenDotDeclaration "." "[|" [Expr] "|]" ;
-ArrayAccesssTodo.            SimpleExpr_ ::= OpenDotDeclaration "." "[|" "|]" ;
-QualifiedDot_.               SimpleExpr_ ::= ModLongident "." ;
+ArrayAccesss.                SimpleExpr_ ::= ModLongident "." "[|" [Expr] "|]" ;
+ArrayAccesssTodo.            SimpleExpr_ ::= ModLongident "." "[|" "|]" ;
 StringExpr_.                 SimpleExpr_ ::= "[" [Expr] "]" ;
-StringAccess.                SimpleExpr_ ::= OpenDotDeclaration "." "[" [Expr] "]" ;
-StringAccessTodo.            SimpleExpr_ ::= OpenDotDeclaration "." "[" "]" ;
-QualifiedModule.             SimpleExpr_ ::= OpenDotDeclaration "." "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
+StringAccess.                SimpleExpr_ ::= ModLongident "." "[" [Expr] "]" ;
+StringAccessTodo.            SimpleExpr_ ::= ModLongident "." "[" "]" ;
+QualifiedModule.             SimpleExpr_ ::= ModLongident "." "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
 
 {-
 labeled_simple_expr:
@@ -2160,7 +2160,7 @@ letop_binding_body:
 
 LetIdent.             LetopBindingBody ::= ValIdent StrictBinding ;
 LetopValIdent.        LetopBindingBody ::= ValIdent ;
-SimplePatternBinding. LetopBindingBody ::= SimplePattern TypeConstraint "=" SeqExpr ;
+SimplePatternBinding. LetopBindingBody ::= SimplePattern ":" CoreType "=" SeqExpr ;
 PatternNoExnBinding.  LetopBindingBody ::= PatternNoExn "=" SeqExpr ;
 
 {-
