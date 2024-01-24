@@ -32,8 +32,7 @@ let kwdopchar =
 %token <char> CHAR            "'a'" (* just an example *)
 -}
 
--- TODO: Improve definition
-token CHAR '\'' char '\'' ;
+-- We use the predefined type Char
 
 {-
 %token CLASS                  "class"
@@ -340,8 +339,7 @@ token HASHOP '#' ["~!?%<:.$&*+-/=>@^|"]+ ;
        STRING                 "\"hello\"" (* just an example *)
 -}
 
--- TODO: Improve definition
-token STRING '"' char* '"' ;
+-- We use the predefined type String
 
 {-
 %token <string * Location.t * string * Location.t * string option>
@@ -3358,8 +3356,8 @@ constant:
 -}
 
 Int.    Constant ::= INT ;
-Char.   Constant ::= CHAR ;
-String. Constant ::= STRING ;
+Char.   Constant ::= Char ;
+String. Constant ::= String ;
 Float.  Constant ::= FLOAT ;
 
 {-
@@ -3655,7 +3653,7 @@ ToplevelDirectiveApp. ToplevelDirective ::= "#" Ident ToplevelDirectiveArgument 
 -}
 
 ToplevelString.      ToplevelDirectiveArgument ::= String ;
-ToplevelInt.         ToplevelDirectiveArgument ::= Integer ;
+ToplevelInt.         ToplevelDirectiveArgument ::= INT ;
 ValueIdent.          ToplevelDirectiveArgument ::= ValLongident ;
 ToplevelModuleIdent. ToplevelDirectiveArgument ::= ModLongident ;
 ToplevelFalse.       ToplevelDirectiveArgument ::= "false" ;
