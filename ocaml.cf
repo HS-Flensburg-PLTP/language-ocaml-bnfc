@@ -2298,7 +2298,9 @@ ObjectExprField. ObjectExprField ::= Label OptionalAssignExpr ;
 ;
 -}
 
-separator nonempty Expr ";" ;
+(:[]). [Expr] ::= Expr ;
+(:[]). [Expr] ::= Expr ";" ;
+(:).   [Expr] ::= Expr ";" [Expr] ;
 
 {-
 type_constraint:
