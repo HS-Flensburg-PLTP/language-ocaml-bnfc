@@ -2134,10 +2134,10 @@ let_bindings(EXT):
 ;
 -}
 
-SingleLetBindingNoExt.   LetBindingsNoExt ::= "let" Ext [Attribute] RecFlag LetBindingBody [PostItemAttribute] ;
+SingleLetBindingNoExt.   LetBindingsNoExt ::= "let" [Attribute] RecFlag LetBindingBody [PostItemAttribute] ;
 MultipleLetBindingNoExt. LetBindingsNoExt ::= LetBindingsNoExt AndLetBinding ;
 
-SingleLetBindingExt.   LetBindingsExt ::= "let" [Attribute] RecFlag LetBindingBody [PostItemAttribute] ;
+SingleLetBindingExt.   LetBindingsExt ::= "let" Ext [Attribute] RecFlag LetBindingBody [PostItemAttribute] ;
 MultipleLetBindingExt. LetBindingsExt ::= LetBindingsExt AndLetBinding ;
 
 {-
