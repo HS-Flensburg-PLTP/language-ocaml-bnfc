@@ -339,7 +339,7 @@ token HASHOP '#' ["~!?%<:.$&*+-/=>@^|"]+ ;
        STRING                 "\"hello\"" (* just an example *)
 -}
 
--- We use the predefined type String
+token STRING '"' ((char - ["\"\\"]) | ('\\' ["\"\\tnrf"]) | '\n')* '"' ;
 
 {-
 %token <string * Location.t * string * Location.t * string option>
@@ -3359,7 +3359,7 @@ constant:
 
 Int.    Constant ::= INT ;
 Char.   Constant ::= Char ;
-String. Constant ::= String ;
+String. Constant ::= STRING ;
 Float.  Constant ::= FLOAT ;
 
 {-
@@ -3654,7 +3654,7 @@ ToplevelDirectiveApp. ToplevelDirective ::= "#" Ident ToplevelDirectiveArgument 
 ;
 -}
 
-ToplevelString.      ToplevelDirectiveArgument ::= String ;
+ToplevelString.      ToplevelDirectiveArgument ::= STRING ;
 ToplevelInt.         ToplevelDirectiveArgument ::= INT ;
 ValueIdent.          ToplevelDirectiveArgument ::= ValLongident ;
 ToplevelModuleIdent. ToplevelDirectiveArgument ::= ModLongident ;
@@ -3674,7 +3674,7 @@ ToplevelTrue.        ToplevelDirectiveArgument ::= "true" ;
 ;
 -}
 
-RawString. RawString ::= String ;
+RawString. RawString ::= STRING ;
 
 {-
 name_tag:
