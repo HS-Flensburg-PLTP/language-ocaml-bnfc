@@ -503,7 +503,11 @@ The precedences must be listed from low to high.
 
 
 /* Entry points */
+-}
 
+entrypoints Implementation;
+
+{-
 /* Several start symbols are marked with AVOID so that they are not used by
    [make generate-parse-errors]. The three start symbols that we keep are
    [implementation], [use_file], and [toplevel_phrase]. The latter two are
@@ -1554,9 +1558,9 @@ value:
 ;
 -}
 
-Value1. Value ::= NoOverrideFlag [Attribute] VirtualWithMutableFlag Label ":" CoreType ;
-Value2. Value ::= OverrideFlag [Attribute] MutableFlag Label "=" SeqExpr ;
-Value3. Value ::= OverrideFlag [Attribute] MutableFlag Label TypeConstraint "=" SeqExpr ;
+Value1. Value ::= NoOverrideFlag [Attribute] VirtualWithMutableFlag LIDENT ":" CoreType ;
+Value2. Value ::= OverrideFlag [Attribute] MutableFlag LIDENT "=" SeqExpr ;
+Value3. Value ::= OverrideFlag [Attribute] MutableFlag LIDENT TypeConstraint "=" SeqExpr ;
 
 {-
 method_:
@@ -1568,10 +1572,10 @@ method_:
 ;
 -}
 
-Method1. Method_ ::= NoOverrideFlag [Attribute] VirtualWithPrivateFlag Label ":" PolyType ;
-Method2. Method_ ::= OverrideFlag [Attribute] PrivateFlag Label StrictBinding ;
-Method3. Method_ ::= OverrideFlag [Attribute] PrivateFlag Label ":" PolyType "=" SeqExpr ;
-Method4. Method_ ::= OverrideFlag [Attribute] PrivateFlag Label ":" "type" [LIDENT] "." CoreType "=" SeqExpr ;
+Method1. Method_ ::= NoOverrideFlag [Attribute] VirtualWithPrivateFlag LIDENT ":" PolyType ;
+Method2. Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT StrictBinding ;
+Method3. Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" PolyType "=" SeqExpr ;
+Method4. Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" "type" [LIDENT] "." CoreType "=" SeqExpr ;
 
 {-
 /* Class types */
@@ -1582,8 +1586,11 @@ class_type:
  ;
 -}
 
-ClassSignature. ClassType ::= ClassSignature ;
-ClassType.      ClassType ::= ArgLabel TupleType "->" ClassType ;
+ClassSignature.             ClassType ::= ClassSignature ;
+ClassTypeWithOptLabel.      ClassType ::= OPTLABEL TupleType "->" ClassType ;
+ClassTypeWithOptionalLabel. ClassType ::= "?" LIDENT ":" TupleType "->" ClassType ;
+ClassTypeWithtLabel.        ClassType ::= LIDENT ":" TupleType "->" ClassType ;
+ClassTypeWithoutLabel.      ClassType ::= TupleType "->" ClassType ;
 
 {-
 class_signature:
@@ -1655,8 +1662,8 @@ constrain_field:
 -}
 
 ClassSigFieldInherit.           ClassSigField ::= "inherit" [Attribute] ClassSignature [PostItemAttribute] ;
-ClassSigFieldVal.               ClassSigField ::= "val" [Attribute] MutableVirtualFlags Label ":" CoreType [PostItemAttribute] ;
-ClassSigFieldMethod.            ClassSigField ::= "method" [Attribute] PrivateVirtualFlags Label ":" PolyType [PostItemAttribute] ;
+ClassSigFieldVal.               ClassSigField ::= "val" [Attribute] MutableVirtualFlags LIDENT ":" CoreType [PostItemAttribute] ;
+ClassSigFieldMethod.            ClassSigField ::= "method" [Attribute] PrivateVirtualFlags LIDENT ":" PolyType [PostItemAttribute] ;
 ClassSigFieldConstraint.        ClassSigField ::= "constraint" [Attribute] CoreType "=" CoreType [PostItemAttribute] ;
 ClassSigFieldItemExtension.     ClassSigField ::= ItemExtension [PostItemAttribute] ;
 ClassSigFieldFloatingAttribute. ClassSigField ::= FloatingAttribute ;
@@ -1863,7 +1870,7 @@ Additive.              FunExpr ::= Additive Expr ;
 Let.                   FunExpr ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding.          FunExpr ::= LETOP LetopBindings "in" SeqExpr ;
 Cons.                  FunExpr ::= FunExpr "::" Expr ;
-UpdateExpr.            FunExpr ::= Label "<-" Expr ;
+UpdateExpr.            FunExpr ::= LIDENT "<-" Expr ;
 QualifiedDot.          FunExpr ::= SimpleExpr "." LabelLongident "<-" Expr ;
 ArrayUpdateExpr.       FunExpr ::= SimpleExpr "." "(" SeqExpr ")" "<-" Expr ;
 RecordUpdateExpr.      FunExpr ::= SimpleExpr "." "{" SeqExpr "}" "<-" Expr ;
@@ -2047,7 +2054,7 @@ EmptyObjectExpr.             SimpleExpr_ ::= "{<" ">}" ;
 RecordAccessTodo.            SimpleExpr_ ::= SimpleExpr "." LabelLongident ;
 QualifiedArrayExpr_.         SimpleExpr_ ::= ModLongident "." "(" SeqExpr ")" ;
 QualifiedObjectExpr.         SimpleExpr_ ::= ModLongident "." "{" [ObjectExprField] "}" ;
-MethodInvocation.            SimpleExpr_ ::= SimpleExpr "#" Label ;
+MethodInvocation.            SimpleExpr_ ::= SimpleExpr "#" LIDENT ;
 HashOp.                      SimpleExpr_ ::= SimpleExpr HASHOP SimpleExpr ;
 Extension.                   SimpleExpr_ ::= Extension ;
 EmptyQualifiedArrayAccess.   SimpleExpr_ ::= ModLongident "." "(" ")" ;
@@ -2290,7 +2297,7 @@ RecordExprField. RecordExprField ::= LabelLongident OptionalTypeConstraint Optio
 NoAssign. OptionalAssignExpr ::= ;
 AnAssign. OptionalAssignExpr ::= "=" Expr ;
 
-ObjectExprField. ObjectExprField ::= Label OptionalAssignExpr ;
+ObjectExprField. ObjectExprField ::= LIDENT OptionalAssignExpr ;
 
 {-
 %inline expr_semi_list:
@@ -2853,7 +2860,8 @@ label_declaration:
 ;
 -}
 
-LabelDeclaration. LabelDeclaration ::= MutableFlag Label ":" PolyTypeNoAttr [Attribute] ;
+LabelDeclarationMonoType. LabelDeclaration ::= MutableFlag LIDENT ":" AliasType [Attribute] ;
+LabelDeclarationPolyType. LabelDeclaration ::= MutableFlag LIDENT ":" [TypeVar] "." AliasType [Attribute] ;
 
 {-
 label_declaration_semi:
@@ -2861,7 +2869,8 @@ label_declaration_semi:
 ;
 -}
 
-LabelDeclarationSemi. LabelDeclarationSemi ::= MutableFlag Label ":" PolyTypeNoAttr [Attribute] ";" [Attribute] ;
+LabelDeclarationSemiMonoType. LabelDeclarationSemi ::= MutableFlag LIDENT ":" AliasType [Attribute] ";" [Attribute] ;
+LabelDeclarationSemiPolyType. LabelDeclarationSemi ::= MutableFlag LIDENT ":" [TypeVar] "." AliasType [Attribute] ";" [Attribute] ;
 
 {-
 /* Type Extensions */
@@ -2946,8 +2955,8 @@ with_constraint:
 
 -- TODO: Improve names
 
-WithConstraint1. WithConstraint ::= "type" TypeParameters LabelLongident WithTypeBinder CoreTypeNoAttr [Constraint] ;
-WithConstraint2. WithConstraint ::= "type" TypeParameters LabelLongident ":=" CoreTypeNoAttr ;
+WithConstraint1. WithConstraint ::= "type" TypeParameters LabelLongident WithTypeBinder AliasType [Constraint] ;
+WithConstraint2. WithConstraint ::= "type" TypeParameters LabelLongident ":=" AliasType ;
 WithConstraint3. WithConstraint ::= "module" ModLongident "=" ModExtLongident ;
 WithConstraint4. WithConstraint ::= "module" ModLongident ":=" ModExtLongident ;
 WithConstraint5. WithConstraint ::= "module" "type" MtyLongident "=" ModuleType ;
@@ -3007,8 +3016,7 @@ PolyCoreType. PolyType ::= [TypeVar] "." CoreType ;
 ;
 -}
 
-MonoCoreTypeNoAttr. PolyTypeNoAttr ::= CoreTypeNoAttr ;
-PolyCoreTypeNoAttr. PolyTypeNoAttr ::= [TypeVar] "." CoreTypeNoAttr ;
+-- This definition is inlined manually
 
 {-
 
@@ -3036,7 +3044,7 @@ CoreTypeWithAttribute.    CoreType ::= CoreType Attribute ;
 ;
 -}
 
-CoreTypeNoAttr. CoreTypeNoAttr ::= AliasType ;
+-- This definition is inlined manually
 
 {-
 
@@ -3066,8 +3074,11 @@ function_type:
 ;
 -}
 
-TupleType. FunctionType ::= TupleType ;
-FunType.   FunctionType ::= ArgLabel TupleType "->" FunctionType ;
+TupleType.                FunctionType ::= TupleType ;
+FunTypeWithOptLabel.      FunctionType ::= OPTLABEL TupleType "->" FunctionType ;
+FunTypeWithOptionalLabel. FunctionType ::= "?" LIDENT ":" TupleType "->" FunctionType ;
+FunTypeWithtLabel.        FunctionType ::= LIDENT ":" TupleType "->" FunctionType ;
+FunTypeWithoutLabel.      FunctionType ::= TupleType "->" FunctionType ;
 
 {-
 (* Tuple types include:
@@ -3085,12 +3096,7 @@ FunType.   FunctionType ::= ArgLabel TupleType "->" FunctionType ;
 ;
 -}
 
--- TODO: Improve names
-
-OptArgLabelTodo. ArgLabel ::= OPTLABEL ;
-OptArgLabel.     ArgLabel ::= "?" LIDENT ":" ;
-ArgLabel.        ArgLabel ::= LIDENT ":" ;
-NoArgLabel.      ArgLabel ::= ;
+-- This definition is inlined manually
 
 {-
 (* Tuple types include:
@@ -3266,7 +3272,7 @@ tag_field:
 ;
 -}
 
-Of.  TagField ::= NameTag "of" OptAmpersand [CoreTypeNoAttr] [Attribute] ;
+Of.  TagField ::= NameTag "of" OptAmpersand [AliasType] [Attribute] ;
 Tag. TagField ::= NameTag [Attribute] ;
 
 {-
@@ -3285,7 +3291,7 @@ NoAmpersand. OptAmpersand ::= ;
 ;
 -}
 
-separator nonempty CoreTypeNoAttr "&" ;
+separator nonempty AliasType "&" ;
 
 {-
 %inline name_tag_list:
@@ -3308,13 +3314,16 @@ meth_list:
 ;
 -}
 
-FieldSemiMethList.   MethList ::= Label ":" PolyTypeNoAttr [Attribute] ";" [Attribute] MethList ;
-InheritSemiMethList. MethList ::= AtomicType ";" MethList ;
-FieldSemi.           MethList ::= Label ":" PolyTypeNoAttr [Attribute] ";" ;
-InheritSemi.         MethList ::= AtomicType ";" ;
-Field.               MethList ::= Label ":" PolyTypeNoAttr [Attribute] ;
-Inherit.             MethList ::= AtomicType ;
-DotDot.              MethList ::= ".." ;
+FieldSemiMethListMonoType. MethList ::= LIDENT ":" AliasType [Attribute] ";" [Attribute] MethList ;
+FieldSemiMethListPolyType. MethList ::= LIDENT ":" [TypeVar] "." AliasType [Attribute] ";" [Attribute] MethList ;
+InheritSemiMethList.       MethList ::= AtomicType ";" MethList ;
+FieldSemiMonoType.         MethList ::= LIDENT ":" AliasType [Attribute] ";" ;
+FieldSemiPolyType.         MethList ::= LIDENT ":" [TypeVar] "." AliasType [Attribute] ";" ;
+InheritSemi.               MethList ::= AtomicType ";" ;
+FieldMonoType.             MethList ::= LIDENT ":" AliasType [Attribute] ;
+FieldPolyType.             MethList ::= LIDENT ":" [TypeVar] "." AliasType [Attribute] ;
+Inherit.                   MethList ::= AtomicType ;
+DotDot.                    MethList ::= ".." ;
 
 {-
 %inline field:
@@ -3346,7 +3355,7 @@ DotDot.              MethList ::= ".." ;
 ;
 -}
 
-LabelIdent. Label ::= LIDENT ;
+-- This definition is inlined manually
 
 {-
 /* Constants */
