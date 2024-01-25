@@ -3203,11 +3203,17 @@ atomic_type:
 -}
 
 DelimitedType.           AtomicType ::= DelimitedType ;
-TypeApp.                 AtomicType ::= ActualTypeParameters TypeLongident ;
-SubTypeApp.              AtomicType ::= ActualTypeParameters "#" CltyLongident ;
+TypeConstr.              AtomicType ::= TypeLongident ;
+SimpleTypeApp.           AtomicType ::= AtomicType TypeLongident ;
+ComplexTypeApp.          AtomicType ::= "(" CoreType "," [CoreType] ")" TypeLongident ;
+ClassTypeConstr.         AtomicType ::= "#" CltyLongident ;
+SimpleSubTypeApp.        AtomicType ::= AtomicType "#" CltyLongident ;
+ComplexSubTypeApp.       AtomicType ::= "(" CoreType "," [CoreType] ")" "#" CltyLongident ;
 QualifiedDelimitedType.  AtomicType ::= ModExtLongident "." DelimitedTypeSupportingLocalOpen ;
 TypeVar.                 AtomicType ::= "'" Ident ;
 UnderscoreType.          AtomicType ::= "_" ;
+
+separator nonempty CoreType "," ;
 
 {-
 (* This is the syntax of the actual type parameters in an application of
@@ -3227,11 +3233,7 @@ UnderscoreType.          AtomicType ::= "_" ;
 ;
 -}
 
-NoActualTypeParamters.     ActualTypeParameters ::= ;
-SingleActualTypeParameter. ActualTypeParameters ::= AtomicType ;
-ActualTypeParameters.      ActualTypeParameters ::= "(" CoreType "," [CoreType] ")" ;
-
-separator nonempty CoreType "," ;
+-- This definition is inlined manually
 
 {-
 %inline package_type: module_type;
