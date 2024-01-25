@@ -2712,7 +2712,7 @@ type_variable:
 ;
 -}
 
-TypeVariable. TypeVariable ::= "'" Ident ;
+TypeVariable. TypeVariable ::= "'" OCamlIdent ;
 Underscore.   TypeVariable ::= "_" ;
 
 {-
@@ -2979,7 +2979,7 @@ WithTypeBinderEqualPrivate. WithTypeBinder ::= "= private" ;
   QUOTE ident
 ;-}
 
-TypeVarIdent. TypeVar ::= "'" Ident ;
+TypeVarIdent. TypeVar ::= "'" OCamlIdent ;
 
 {-
 %inline typevar_list:
@@ -3216,7 +3216,7 @@ ClassTypeConstr.         AtomicType ::= "#" CltyLongident ;
 SimpleSubTypeApp.        AtomicType ::= AtomicType "#" CltyLongident ;
 ComplexSubTypeApp.       AtomicType ::= "(" CoreType "," [CoreType] ")" "#" CltyLongident ;
 QualifiedDelimitedType.  AtomicType ::= ModExtLongident "." DelimitedTypeSupportingLocalOpen ;
-TypeVar.                 AtomicType ::= "'" Ident ;
+TypeVar.                 AtomicType ::= "'" OCamlIdent ;
 UnderscoreType.          AtomicType ::= "_" ;
 
 separator nonempty CoreType "," ;
@@ -3652,7 +3652,7 @@ toplevel_directive:
 NoToplevelDirectiveArgument. OptionalToplevelDirectiveArgument ::= ;
 AToplevelDirectiveArgument.  OptionalToplevelDirectiveArgument ::= ToplevelDirectiveArgument ;
 
-ToplevelDirectiveApp. ToplevelDirective ::= "#" Ident ToplevelDirectiveArgument ;
+ToplevelDirectiveApp. ToplevelDirective ::= "#" OCamlIdent ToplevelDirectiveArgument ;
 
 {-
 %inline toplevel_directive_argument:
@@ -3693,7 +3693,7 @@ name_tag:
 ;
 -}
 
-NameTag. NameTag ::= "`" Ident ;
+NameTag. NameTag ::= "`" OCamlIdent ;
 
 {-
 rec_flag:
