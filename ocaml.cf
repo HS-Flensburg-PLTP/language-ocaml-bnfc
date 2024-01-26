@@ -1087,7 +1087,7 @@ StructureItemExtension.         StructureItem ::= ItemExtension [PostItemAttribu
 StructureFloatingAttribute.     StructureItem ::= FloatingAttribute ;
 StructurePrimitiveDeclaration.  StructureItem ::= PrimitiveDeclaration ;
 StructureValueDescription.      StructureItem ::= ValueDescription ;
-StructureTypeDeclarations.      StructureItem ::= TypeDeclarations ;
+StructureTypeDeclarations.      StructureItem ::= TypeDeclaration [AndTypeDeclaration] ;
 StructureStrTypeExtension.      StructureItem ::= StrTypeExtension ;
 StrExceptionDeclaration.        StructureItem ::= StrExceptionDeclaration ;
 StructureModuleBinding.         StructureItem ::= "module" Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute] ;
@@ -1288,7 +1288,7 @@ SigItemExtension.           SignatureItem ::= ItemExtension [PostItemAttribute] 
 SigFloatingAttribute.       SignatureItem ::= FloatingAttribute ;
 SigValueDescription.        SignatureItem ::= ValueDescription ;
 SigPrimitiveDeclaration.    SignatureItem ::= PrimitiveDeclaration ;
-SigTypeDeclarations.        SignatureItem ::= TypeDeclarations ;
+SigTypeDeclarations.        SignatureItem ::= TypeDeclaration [AndTypeDeclaration] ;
 SigTypeSubstDeclarations.   SignatureItem ::= TypeSubstDeclarations ;
 SigSigTypeExtension.        SignatureItem ::= SigTypeExtension ;
 SigSigExceptionDeclaration. SignatureItem ::= SigExceptionDeclaration ;
@@ -2574,11 +2574,17 @@ PrmitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIden
 ;
 -}
 
-TypeDeclarations. TypeDeclarations ::= TypeDeclaration [AndTypeDeclaration] ;
+-- This definition is inlined manually
 
-AndTypeDeclaration. AndTypeDeclaration ::= [Attribute] [TypeParameter] LIDENT TypeKind [Constraint] [PostItemAttribute] ;
+{-
+%inline generic_and_type_declaration(kind):
+  AND attributes type_parameters LIDENT kind constraints post_item_attributes
+;
+-}
 
-separator AndTypeDeclaration "and" ;
+AndTypeDeclaration. AndTypeDeclaration ::= "and" [Attribute] TypeParameters LIDENT TypeKind [Constraint] [PostItemAttribute] ;
+
+separator AndTypeDeclaration "" ;
 
 {-
 %inline type_subst_declarations:
@@ -2588,7 +2594,13 @@ separator AndTypeDeclaration "and" ;
 
 TypeSubstDeclarations. TypeSubstDeclarations ::= TypeSubstDeclaration [AndTypeSubstDeclaration] ;
 
-AndTypeSubstDeclaration. AndTypeSubstDeclaration ::= "and" [Attribute] [TypeParameter] LIDENT TypeSubstKind [Constraint] [PostItemAttribute] ;
+{-
+%inline generic_and_type_declaration(kind):
+  AND attributes type_parameters LIDENT kind constraints post_item_attributes
+;
+-}
+
+AndTypeSubstDeclaration. AndTypeSubstDeclaration ::= "and" [Attribute] TypeParameters LIDENT TypeSubstKind [Constraint] [PostItemAttribute] ;
 
 separator AndTypeSubstDeclaration "and" ;
 
@@ -2603,11 +2615,7 @@ separator AndTypeSubstDeclaration "and" ;
     generic_and_type_declaration(kind)
   )
 ;
--}
 
-TypeSubstDeclaration. TypeSubstDeclaration ::= "type" Ext [Attribute] TypeParameters LIDENT TypeSubstKind [Constraint] [PostItemAttribute] ;
-
-{-
 (* [generic_type_declaration] and [generic_and_type_declaration] look similar,
    but are in reality different enough that it is difficult to share anything
    between them. *)
@@ -2617,13 +2625,11 @@ generic_type_declaration(flag, kind):
 ;
 -}
 
-TypeDeclaration. TypeDeclaration ::= "type" Ext [Attribute] TypeParameters LIDENT TypeKind [Constraint] [PostItemAttribute] ;
+TypeDeclaration.       TypeDeclaration ::= "type" Ext [Attribute] "nonrec" TypeParameters LIDENT TypeKind [Constraint] [PostItemAttribute] ;
+NonrecTypeDeclaration. TypeDeclaration ::= "type" Ext [Attribute] TypeParameters LIDENT TypeKind [Constraint] [PostItemAttribute] ;
 
-{-
-%inline generic_and_type_declaration(kind):
-  AND attributes type_parameters LIDENT kind constraints post_item_attributes
-;
--}
+TypeSubstDeclaration. TypeSubstDeclaration ::= "type" Ext [Attribute] TypeParameters LIDENT TypeSubstKind [Constraint] [PostItemAttribute] ;
+
 
 {-
 %inline constraints:
@@ -3711,8 +3717,7 @@ Recursive.    RecFlag ::= "rec" ;
 ;
 -}
 
-NoNonrecFlag. NonrecFlag ::= ;
-ANonrecFlag.  NonrecFlag ::= "nonrec" ;
+-- This definition is inlined manually
 
 {-
 %inline no_nonrec_flag:
