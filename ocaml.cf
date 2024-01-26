@@ -1094,7 +1094,7 @@ StructureModuleBinding.         StructureItem ::= "module" Ext [Attribute] Modul
 StructureRecModuleBindings.     StructureItem ::= "module" Ext [Attribute] "rec" ModuleName ModuleBindingBody [PostItemAttribute] [AndModuleBinding] ;
 StructureModuleTypeDeclaration. StructureItem ::= ModuleTypeDeclaration ;
 StructureOpenDeclaration.       StructureItem ::= OpenDeclaration ;
-StructureClassDeclarations.     StructureItem ::= ClassDeclarations ;
+StructureClassDeclarations.     StructureItem ::= "class" Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ClassFunBinding [PostItemAttribute] [AndClassDeclaration] ;
 StructureClassTypeDeclarations. StructureItem ::= ClassTypeDeclarations ;
 StructureIncludeStatement.      StructureItem ::= "include" Ext [Attribute] ModuleExpr [PostItemAttribute] ;
 
@@ -1300,7 +1300,7 @@ SigModuleTypeDeclaration.   SignatureItem ::= ModuleTypeDeclaration ;
 SigModuleTypeSubst.         SignatureItem ::= ModuleTypeSubst ;
 SigOpenDescription.         SignatureItem ::= OpenDescription ;
 SigIncludeStatement.        SignatureItem ::= ModuleTypeIncludeStatement ;
-SigClassDeclarations.       SignatureItem ::= ClassDeclarations ;
+SigClassDescription.        SignatureItem ::= "class" Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ":" ClassType [PostItemAttribute] [AndClassDescription] ;
 SigClassTypeDeclarations.   SignatureItem ::= ClassTypeDeclarations ;
 
 {-
@@ -1402,9 +1402,7 @@ ModuleTypeSubst. ModuleTypeSubst ::= "module" "type" Ext [Attribute] OCamlIdent 
 ;
 -}
 
-ClassDeclarations. ClassDeclarations ::= "class" Ext [ClassDeclaration] ;
-
-separator nonempty ClassDeclaration "and" ;
+-- This definition is inlined manually
 
 {-
 %inline class_declaration:
@@ -1412,13 +1410,17 @@ separator nonempty ClassDeclaration "and" ;
 ;
 -}
 
-ClassDeclaration. ClassDeclaration ::= [Attribute] VirtualFlag FormalClassParameters LIDENT ClassFunBinding [PostItemAttribute] ;
+-- This definition is inlined manually
 
 {-
 %inline and_class_declaration:
   AND attributes virtual_flag formal_class_parameters LIDENT class_fun_binding post_item_attributes
 ;
 -}
+
+AndClassDeclaration. AndClassDeclaration ::= "and" [Attribute] VirtualFlag FormalClassParameters LIDENT ClassFunBinding [PostItemAttribute] ;
+
+separator AndClassDeclaration "" ;
 
 {-
 class_fun_binding:
@@ -1686,9 +1688,21 @@ Constrain. Constrain ::= CoreType "=" CoreType ;
 %inline class_description:
   CLASS ext attributes virtual_flag formal_class_parameters LIDENT COLON class_type post_item_attributes
 ;
+-}
+
+-- This definition is inlined manually
+
+{-
 %inline and_class_description:
   AND attributes virtual_flag formal_class_parameters LIDENT COLON class_type post_item_attributes
 ;
+-}
+
+AndClassDescription. AndClassDescription ::= "and" [Attribute] VirtualFlag FormalClassParameters LIDENT ":" ClassType [PostItemAttribute] ;
+
+separator AndClassDescription "" ;
+
+{-
 class_type_declarations:
   xlist(class_type_declaration, and_class_type_declaration)
 ;
