@@ -3847,8 +3847,8 @@ virtual_with_private_flag:
 -}
 
 VirtualWithPublic.  VirtualWithPrivateFlag ::= "virtual" ;
-PrivateWithVirtual. VirtualWithMutableFlag ::= "private" "virtual" ;
-VirtualWithPrivate. VirtualWithMutableFlag ::= "virtual" "private" ;
+PrivateWithVirtual. VirtualWithPrivateFlag ::= "private" "virtual" ;
+VirtualWithPrivate. VirtualWithPrivateFlag ::= "virtual" "private" ;
 
 {-
 %inline no_override_flag:
