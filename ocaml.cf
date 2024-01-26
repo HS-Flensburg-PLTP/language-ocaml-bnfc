@@ -1645,8 +1645,7 @@ separator nonempty CoreType "," ;
 class_sig_field:
     INHERIT attributes class_signature post_item_attributes
   | VAL attributes value_type post_item_attributes
-  | METHOD attributes private_virtual_flags label COLON poly_type
-    post_item_attributes
+  | METHOD attributes private_virtual_flags label COLON poly_type post_item_attributes
   | CONSTRAINT attributes constrain_field post_item_attributes
   | item_extension post_item_attributes
   | floating_attribute
@@ -2545,7 +2544,7 @@ value_description:
 ;
 -}
 
-ValueDescription. ValueDescription ::= "val" Ext [Attribute] ValIdent ":" PolyType CoreType [PostItemAttribute] ;
+ValueDescription. ValueDescription ::= "val" Ext [Attribute] ValIdent ":" PolyType [PostItemAttribute] ;
 
 {-
 /* Primitive declarations */
@@ -2557,7 +2556,7 @@ primitive_declaration:
 
 separator nonempty RawString "" ;
 
-PrmitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIdent ":" PolyType CoreType "=" [RawString] [PostItemAttribute] ;
+PrmitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIdent ":" PolyType "=" [RawString] [PostItemAttribute] ;
 
 {-
 (* Type declarations and type substitutions. *)
