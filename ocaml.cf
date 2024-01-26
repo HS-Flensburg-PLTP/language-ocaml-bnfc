@@ -2100,8 +2100,6 @@ TypedLabel.       LabeledSimpleExpr ::= "~" "(" LIDENT TypeConstraint ")" ;
 OptLabel.         LabeledSimpleExpr ::= "?" LIDENT ;
 OptLabeledExpr.   LabeledSimpleExpr ::= OPTLABEL SimpleExpr ;
 
-separator nonempty LabeledSimpleExpr "" ;
-
 {-
 %inline let_ident:
     val_ident
@@ -3237,8 +3235,6 @@ ComplexSubTypeApp.       AtomicType ::= "(" CoreType "," [CoreType] ")" "#" Clty
 QualifiedDelimitedType.  AtomicType ::= ModExtLongident "." DelimitedTypeSupportingLocalOpen ;
 TypeVar.                 AtomicType ::= "'" OCamlIdent ;
 UnderscoreType.          AtomicType ::= "_" ;
-
-separator nonempty CoreType "," ;
 
 {-
 (* This is the syntax of the actual type parameters in an application of
