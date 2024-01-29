@@ -32,7 +32,13 @@ let kwdopchar =
 %token <char> CHAR            "'a'" (* just an example *)
 -}
 
--- We use the predefined type Char
+token CHAR '\'' ( (char - ["'\\"])
+                | ('\\' ( ["\\\"'nrtb"]
+                        | {"space"}
+                        | digit digit digit
+                        | 'x' (letter | digit) (letter | digit)
+                        | 'o' ["01234567"] ["01234567"] ["01234567"]
+                ))) '\'' ;
 
 {-
 %token CLASS                  "class"
@@ -3383,7 +3389,7 @@ constant:
 -}
 
 Int.    Constant ::= INT ;
-Char.   Constant ::= Char ;
+Char.   Constant ::= CHAR ;
 String. Constant ::= STRING ;
 Float.  Constant ::= FLOAT ;
 
