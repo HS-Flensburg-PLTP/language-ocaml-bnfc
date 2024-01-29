@@ -72,9 +72,8 @@ let hex_float_literal =
   (['p' 'P'] ['+' '-']? ['0'-'9'] ['0'-'9' '_']* )?
 -}
 
-token FLOAT
-  (digit (digit | '_')* ('.' (digit | '_')*)? (["eE"] ["+-"]? digit (digit | '_')*))
-  | ('0' ["xX"] (digit | letter) (digit | letter | '_')* ('.' (digit | letter | '_')*)? (["pP"] ["+-"] digit)?) ;
+token FLOAT (digit (digit | '_')* ('.' (digit | '_')*)? (["eE"] ["+-"]? digit (digit | '_')* )? )
+          | ('0' ["xX"] (digit | letter) (digit | letter | '_')* ('.' (digit | letter | '_')* )? (["pP"] ["+-"] digit (digit | '_')* )?) ;
 
 {-
 %token FOR                    "for"
