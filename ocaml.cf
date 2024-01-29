@@ -344,7 +344,14 @@ token HASHOP '#' ["~!?%<:.$&*+-/=>@^|"]+ ;
        STRING                 "\"hello\"" (* just an example *)
 -}
 
-token STRING '"' ((char - ["\"\\"]) | ('\\' ["\"\\tnrf"]) | '\n')* '"' ;
+token STRING '"' ((char - ["\"\\"])
+                 | ('\\' ( ["\\\"'nrtb"]
+                         | {"space"}
+                         | digit digit digit
+                         | 'x' (letter | digit) (letter | digit)
+                         | 'o' ["01234567"] ["01234567"] ["01234567"]
+                   ))
+                 | '\n')* '"' ;
 
 {-
 %token <string * Location.t * string * Location.t * string option>
