@@ -2642,8 +2642,8 @@ generic_type_declaration(flag, kind):
 ;
 -}
 
-TypeDeclaration.       TypeDeclaration ::= "type" Ext [Attribute] "nonrec" TypeParameters LIDENT TypeKind [Constraint] [PostItemAttribute] ;
-NonrecTypeDeclaration. TypeDeclaration ::= "type" Ext [Attribute] TypeParameters LIDENT TypeKind [Constraint] [PostItemAttribute] ;
+NonrecTypeDeclaration. TypeDeclaration ::= "type" Ext [Attribute] "nonrec" TypeParameters LIDENT TypeKind [Constraint] [PostItemAttribute] ;
+TypeDeclaration.       TypeDeclaration ::= "type" Ext [Attribute] TypeParameters LIDENT TypeKind [Constraint] [PostItemAttribute] ;
 
 TypeSubstDeclaration. TypeSubstDeclaration ::= "type" Ext [Attribute] TypeParameters LIDENT TypeSubstKind [Constraint] [PostItemAttribute] ;
 
@@ -2671,12 +2671,20 @@ nonempty_type_kind:
 ;
 -}
 
--- TODO: Improve names
-
-NonemptyTypeKind1. NonemptyTypeKind ::= InlinePrivateFlag CoreType ;
-NonemptyTypeKind2. NonemptyTypeKind ::= TypeSynonym InlinePrivateFlag ConstructorDeclarations ;
-NonemptyTypeKind3. NonemptyTypeKind ::= TypeSynonym InlinePrivateFlag ".." ;
-NonemptyTypeKind4. NonemptyTypeKind ::= TypeSynonym InlinePrivateFlag "{" LabelDeclarations "}" ;
+AbstractType.                  NonemptyTypeKind ::= CoreType ;
+VariantType.                   NonemptyTypeKind ::= ConstructorDeclarations ;
+OpenType.                      NonemptyTypeKind ::= ".." ;
+RecordType.                    NonemptyTypeKind ::= "{" LabelDeclarations "}" ;
+PrivateAbstractType.           NonemptyTypeKind ::= "private" CoreType ;
+PrivateVariantType.            NonemptyTypeKind ::= "private" ConstructorDeclarations ;
+PrivateOpenType.               NonemptyTypeKind ::= "private" ".." ;
+PrivateRecordType.             NonemptyTypeKind ::= "private" "{" LabelDeclarations "}" ;
+TypeSynonymVariantType.        NonemptyTypeKind ::= CoreType "=" ConstructorDeclarations ;
+TypeSynonymPrivateVariantType. NonemptyTypeKind ::= CoreType "=" "private" ConstructorDeclarations ;
+TypeSynonymOpenType.           NonemptyTypeKind ::= CoreType "=" ".." ;
+TypeSynonymPrivateOpenType.    NonemptyTypeKind ::= CoreType "=" "private" ".." ;
+TypeSynonymRecordType.         NonemptyTypeKind ::= CoreType "=" "{" LabelDeclarations "}" ;
+TypeSynonymPrivateRecordType.  NonemptyTypeKind ::= CoreType "=" "private" "{" LabelDeclarations "}" ;
 
 {-
 %inline type_synonym:
@@ -2684,8 +2692,7 @@ NonemptyTypeKind4. NonemptyTypeKind ::= TypeSynonym InlinePrivateFlag "{" LabelD
 ;
 -}
 
-NoTypeSynonym. TypeSynonym ::= ;
-TypeSynonym.   TypeSynonym ::= "=" CoreType ;
+-- This definition is inlined manually
 
 {-
 type_kind:
@@ -3768,8 +3775,7 @@ Private. PrivateFlag ::= "private" ;
 ;
 -}
 
-InlinePublic.  InlinePrivateFlag ::= ;
-InlinePrivate. InlinePrivateFlag ::= "private" ;
+-- This definition is inlined manually
 
 {-
 mutable_flag:
