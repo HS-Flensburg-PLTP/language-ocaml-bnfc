@@ -1881,8 +1881,22 @@ fun_expr:
 
 separator nonempty LabeledSimpleExpr "" ;
 
+NoAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ;
+AnAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ":" AtomicType ;
+
 SimpleExpr.            FunExpr ::= SimpleExpr ;
-FunExprAttrs.          FunExpr ::= FunExprAttrs ;
+LetModule.             FunExpr ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException.          FunExpr ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen.               FunExpr ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun.                   FunExpr ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match.                 FunExpr ::= "match" Ext [Attribute] SeqExpr "with" MatchCases ;
+Try.                   FunExpr ::= "try" Ext [Attribute] SeqExpr "with" MatchCases ;
+IfElse.                FunExpr ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If.                    FunExpr ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+While.                 FunExpr ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
+For.                   FunExpr ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+Assert.                FunExpr ::= "assert" Ext [Attribute] SimpleExpr ;
+Lazy.                  FunExpr ::= "lazy" Ext [Attribute] SimpleExpr ;
 SimpleExprApp.         FunExpr ::= SimpleExpr [LabeledSimpleExpr] ;
 Comma.                 FunExpr ::= Expr "," [ExprComma] ;
 ConstrName_.           FunExpr ::= ConstrLongident ;
@@ -1946,21 +1960,7 @@ Function. Expr ::= "function" Ext [Attribute] MatchCases ;
 ;
 -}
 
-NoAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ;
-AnAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ":" AtomicType ;
-
-LetModule.    FunExprAttrs ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException. FunExprAttrs ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
-LetOpen.      FunExprAttrs ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun.          FunExprAttrs ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
-Match.        FunExprAttrs ::= "match" Ext [Attribute] SeqExpr "with" MatchCases ;
-Try.          FunExprAttrs ::= "try" Ext [Attribute] SeqExpr "with" MatchCases ;
-IfElse.       FunExprAttrs ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
-If.           FunExprAttrs ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
-While.        FunExprAttrs ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
-For.          FunExprAttrs ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
-Assert.       FunExprAttrs ::= "assert" Ext [Attribute] SimpleExpr ;
-Lazy.         FunExprAttrs ::= "lazy" Ext [Attribute] SimpleExpr ;
+-- This definition is inlined manually
 
 {-
 %inline do_done_expr:s
@@ -1995,16 +1995,47 @@ simple_expr:
 ;
 -}
 
-ParenSeqExpr.        SimpleExpr ::= "(" SeqExpr ")" ;
-TypedSeqExpr.        SimpleExpr ::= "(" SeqExpr TypeConstraint ")" ;
-ArrayExpr.           SimpleExpr ::= SimpleExpr "." "(" SeqExpr ")" ;
-RecordExpr.          SimpleExpr ::= SimpleExpr "." "{" SeqExpr "}" ;
-StringExpr.          SimpleExpr ::= SimpleExpr "." "[" SeqExpr "]" ;
-QualifiedArrayExpr.  SimpleExpr ::= SimpleExpr QualifiedDotop "(" [Expr] ")" ;
-QualifiedRecordExpr. SimpleExpr ::= SimpleExpr QualifiedDotop "{" [Expr] "}" ;
-QualifiedStringExpr. SimpleExpr ::= SimpleExpr QualifiedDotop "[" [Expr] "]" ;
-SimpleExprAttrs.     SimpleExpr ::= SimpleExprAttrs ;
-SimpleExpr_.         SimpleExpr ::= SimpleExpr_ ;
+-- TODO: Improve names
+
+ParenSeqExpr.              SimpleExpr ::= "(" SeqExpr ")" ;
+TypedSeqExpr.              SimpleExpr ::= "(" SeqExpr TypeConstraint ")" ;
+ArrayExpr.                 SimpleExpr ::= SimpleExpr "." "(" SeqExpr ")" ;
+RecordExpr.                SimpleExpr ::= SimpleExpr "." "{" SeqExpr "}" ;
+StringExpr.                SimpleExpr ::= SimpleExpr "." "[" SeqExpr "]" ;
+QualifiedArrayExpr.        SimpleExpr ::= SimpleExpr QualifiedDotop "(" [Expr] ")" ;
+QualifiedRecordExpr.       SimpleExpr ::= SimpleExpr QualifiedDotop "{" [Expr] "}" ;
+QualifiedStringExpr.       SimpleExpr ::= SimpleExpr QualifiedDotop "[" [Expr] "]" ;
+BeginEnd.                  SimpleExpr ::= "begin" Ext [Attribute] SeqExpr "end" ;
+EmptyBeginEnd.             SimpleExpr ::= "begin" Ext [Attribute] "end" ;
+New.                       SimpleExpr ::= "new" Ext [Attribute] ClassLongident ;
+Module.                    SimpleExpr ::= "(" "module" Ext [Attribute] ModuleExpr ")" ;
+TypedModule.               SimpleExpr ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
+Object.                    SimpleExpr ::= "object" Ext [Attribute] ClassStructure "end" ;
+ValLongident_.             SimpleExpr ::= ValLongident ;
+Constant_.                 SimpleExpr ::= Constant ;
+ConstrName.                SimpleExpr ::= ConstrLongident ;
+NameTag_.                  SimpleExpr ::= NameTag ;
+PrefixApp.                 SimpleExpr ::= PREFIXOP SimpleExpr ;
+BangApp.                   SimpleExpr ::= "!" SimpleExpr ;
+ObjectExpr.                SimpleExpr ::= "{<" [ObjectExprField] ">}" ;
+EmptyObjectExpr.           SimpleExpr ::= "{<" ">}" ;
+RecordAccessTodo.          SimpleExpr ::= SimpleExpr "." LabelLongident ;
+QualifiedArrayExpr_.       SimpleExpr ::= ModLongident "." "(" SeqExpr ")" ;
+QualifiedObjectExpr.       SimpleExpr ::= ModLongident "." "{" [ObjectExprField] "}" ;
+MethodInvocation.          SimpleExpr ::= SimpleExpr "#" LIDENT ;
+HashOp.                    SimpleExpr ::= SimpleExpr HASHOP SimpleExpr ;
+Extension.                 SimpleExpr ::= Extension ;
+EmptyQualifiedArrayAccess. SimpleExpr ::= ModLongident "." "(" ")" ;
+RecordExpr_.               SimpleExpr ::= "{" RecordExprContent "}" ;
+RecordAccess.              SimpleExpr ::= ModLongident "." "{" RecordExprContent "}" ;
+ArrayExpr_.                SimpleExpr ::= "[|" [Expr] "|]" ;
+EmptyArrayExpr.            SimpleExpr ::= "[|" "|]" ;
+ArrayAccesss.              SimpleExpr ::= ModLongident "." "[|" [Expr] "|]" ;
+ArrayAccesssTodo.          SimpleExpr ::= ModLongident "." "[|" "|]" ;
+StringExpr_.               SimpleExpr ::= "[" [Expr] "]" ;
+StringAccess.              SimpleExpr ::= ModLongident "." "[" [Expr] "]" ;
+StringAccessTodo.          SimpleExpr ::= ModLongident "." "[" "]" ;
+QualifiedModule.           SimpleExpr ::= ModLongident "." "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
 
 {-
 %inline indexop_expr(dot, index, right):
@@ -2027,12 +2058,7 @@ SimpleExpr_.         SimpleExpr ::= SimpleExpr_ ;
 ;
 -}
 
-BeginEnd.      SimpleExprAttrs ::= "begin" Ext [Attribute] SeqExpr "end" ;
-EmptyBeginEnd. SimpleExprAttrs ::= "begin" Ext [Attribute] "end" ;
-New.           SimpleExprAttrs ::= "new" Ext [Attribute] ClassLongident ;
-Module.        SimpleExprAttrs ::= "(" "module" Ext [Attribute] ModuleExpr ")" ;
-TypedModule.   SimpleExprAttrs ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
-Object.        SimpleExprAttrs ::= "object" Ext [Attribute] ClassStructure "end" ;
+-- This definition is inlined manually
 
 {-
 %inline simple_expr_:
@@ -2064,33 +2090,7 @@ Object.        SimpleExprAttrs ::= "object" Ext [Attribute] ClassStructure "end"
 ;
 -}
 
--- TODO: Improve names
-
-ValLongident_.               SimpleExpr_ ::= ValLongident ;
-Constant_.                   SimpleExpr_ ::= Constant ;
-ConstrName.                  SimpleExpr_ ::= ConstrLongident ;
-NameTag_.                    SimpleExpr_ ::= NameTag ;
-PrefixApp.                   SimpleExpr_ ::= PREFIXOP SimpleExpr ;
-BangApp.                     SimpleExpr_ ::= "!" SimpleExpr ;
-ObjectExpr.                  SimpleExpr_ ::= "{<" [ObjectExprField] ">}" ;
-EmptyObjectExpr.             SimpleExpr_ ::= "{<" ">}" ;
-RecordAccessTodo.            SimpleExpr_ ::= SimpleExpr "." LabelLongident ;
-QualifiedArrayExpr_.         SimpleExpr_ ::= ModLongident "." "(" SeqExpr ")" ;
-QualifiedObjectExpr.         SimpleExpr_ ::= ModLongident "." "{" [ObjectExprField] "}" ;
-MethodInvocation.            SimpleExpr_ ::= SimpleExpr "#" LIDENT ;
-HashOp.                      SimpleExpr_ ::= SimpleExpr HASHOP SimpleExpr ;
-Extension.                   SimpleExpr_ ::= Extension ;
-EmptyQualifiedArrayAccess.   SimpleExpr_ ::= ModLongident "." "(" ")" ;
-RecordExpr_.                 SimpleExpr_ ::= "{" RecordExprContent "}" ;
-RecordAccess.                SimpleExpr_ ::= ModLongident "." "{" RecordExprContent "}" ;
-ArrayExpr_.                  SimpleExpr_ ::= "[|" [Expr] "|]" ;
-EmptyArrayExpr.              SimpleExpr_ ::= "[|" "|]" ;
-ArrayAccesss.                SimpleExpr_ ::= ModLongident "." "[|" [Expr] "|]" ;
-ArrayAccesssTodo.            SimpleExpr_ ::= ModLongident "." "[|" "|]" ;
-StringExpr_.                 SimpleExpr_ ::= "[" [Expr] "]" ;
-StringAccess.                SimpleExpr_ ::= ModLongident "." "[" [Expr] "]" ;
-StringAccessTodo.            SimpleExpr_ ::= ModLongident "." "[" "]" ;
-QualifiedModule.             SimpleExpr_ ::= ModLongident "." "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
+-- This definition is inlined manually
 
 {-
 labeled_simple_expr:
