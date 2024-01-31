@@ -1767,10 +1767,7 @@ fun_seq_expr:
 ;
 -}
 
-FunExpr1. FunSeqExpr ::= FunExpr ;
-FunExpr2. FunSeqExpr ::= FunExpr ";" ;
-FunExpr3. FunSeqExpr ::= FunExpr ";" SeqExpr ;
-FunExpr4. FunSeqExpr ::= FunExpr ";" "%" [AttrId] SeqExpr ;
+-- This definition is inlined manually
 
 {-
 seq_expr:
@@ -1778,8 +1775,11 @@ seq_expr:
 ;
 -}
 
-SeqExprFunSeqExpr. SeqExpr ::= FunSeqExpr ;
-SeqExprFunction.   SeqExpr ::= "function" Ext [Attribute] MatchCases ;
+FinalFunExpr.     SeqExpr ::= FunExpr ;
+FinalFunExprSemi. SeqExpr ::= FunExpr ";" ;
+MoreFunExprs.     SeqExpr ::= FunExpr ";" SeqExpr ;
+MoreFunExprsAttr. SeqExpr ::= FunExpr ";" "%" [AttrId] SeqExpr ;
+SeqExprFunction.  SeqExpr ::= "function" Ext [Attribute] MatchCases ;
 
 {-
 %inline or_function(EXPR):
@@ -2218,8 +2218,11 @@ fun_body:
 ;
 -}
 
-FunBodyFunction.   FunBody ::= "function" Ext [Attribute] MatchCases ;
-FunBodyFunSeqExpr. FunBody ::= FunSeqExpr ;
+FunBodyFunction.         FunBody ::= "function" Ext [Attribute] MatchCases ;
+FunBodyFinalFunExpr.     FunBody ::= FunExpr ;
+FunBodyFinalFunExprSemi. FunBody ::= FunExpr ";" ;
+FunBodyMoreFunExprs.     FunBody ::= FunExpr ";" SeqExpr ;
+FunBodyMoreFunExprsAttr. FunBody ::= FunExpr ";" "%" [AttrId] SeqExpr ;
 
 {-
 %inline match_cases:
