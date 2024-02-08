@@ -1772,20 +1772,19 @@ fun_seq_expr:
 seq_expr:
   | or_function(fun_seq_expr)
 ;
--}
 
-FinalFunExpr.     SeqExpr ::= FunExpr ;
-FinalFunExprSemi. SeqExpr ::= FunExpr ";" ;
-MoreFunExprs.     SeqExpr ::= FunExpr ";" SeqExpr ;
-MoreFunExprsAttr. SeqExpr ::= FunExpr ";" "%" [AttrId] SeqExpr ;
-SeqExprFunction.  SeqExpr ::= "function" Ext [Attribute] MatchCases ;
-
-{-
 %inline or_function(EXPR):
   | EXPR
   | FUNCTION ext_attributes match_cases
 ;
 -}
+
+-- ; precedence 2, associativity right
+FinalFunExpr.     SeqExpr ::= FunExpr1 ;
+FinalFunExprSemi. SeqExpr ::= FunExpr1 ";" ;
+MoreFunExprs.     SeqExpr ::= FunExpr1 ";" SeqExpr ;
+MoreFunExprsAttr. SeqExpr ::= FunExpr1 ";" "%" [AttrId] SeqExpr ;
+SeqExprFunction.  SeqExpr ::= "function" Ext [Attribute] [MatchCase] ;
 
 {-
 labeled_simple_pattern:
@@ -1878,43 +1877,110 @@ fun_expr:
   | fun_expr attribute
 -}
 
-separator nonempty LabeledSimpleExpr "" ;
-
 NoAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ;
 AnAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ":" AtomicType ;
 
-SimpleExpr.            FunExpr ::= SimpleExpr ;
-LetModule.             FunExpr ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException.          FunExpr ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
-LetOpen.               FunExpr ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun.                   FunExpr ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
-Match.                 FunExpr ::= "match" Ext [Attribute] SeqExpr "with" MatchCases ;
-Try.                   FunExpr ::= "try" Ext [Attribute] SeqExpr "with" MatchCases ;
-IfElse.                FunExpr ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
-If.                    FunExpr ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
-While.                 FunExpr ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
-For.                   FunExpr ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
-Assert.                FunExpr ::= "assert" Ext [Attribute] SimpleExpr ;
-Lazy.                  FunExpr ::= "lazy" Ext [Attribute] SimpleExpr ;
-SimpleExprApp.         FunExpr ::= SimpleExpr [LabeledSimpleExpr] ;
-Comma.                 FunExpr ::= Expr "," [ExprComma] ;
-ConstrName_.           FunExpr ::= ConstrLongident ;
-NameTagApp.            FunExpr ::= NameTag SimpleExpr ;
-Infix.                 FunExpr ::= FunExpr InfixOperator Expr ;
-Subtractive.           FunExpr ::= Subtractive Expr ;
-Additive.              FunExpr ::= Additive Expr ;
-Let.                   FunExpr ::= LetBindingsExt "in" SeqExpr ;
-LetOpBinding.          FunExpr ::= LETOP LetopBindings "in" SeqExpr ;
-Cons.                  FunExpr ::= FunExpr "::" Expr ;
-UpdateExpr.            FunExpr ::= LIDENT "<-" Expr ;
-QualifiedDot.          FunExpr ::= SimpleExpr "." LabelLongident "<-" Expr ;
-ArrayUpdateExpr.       FunExpr ::= SimpleExpr "." "(" SeqExpr ")" "<-" Expr ;
-RecordUpdateExpr.      FunExpr ::= SimpleExpr "." "{" SeqExpr "}" "<-" Expr ;
-StringUpdateExpr.      FunExpr ::= SimpleExpr "." "[" SeqExpr "]" "<-" Expr ;
-ArrayUpdateDotopExpr.  FunExpr ::= SimpleExpr QualifiedDotop "(" [Expr] ")" "<-" Expr ;
-RecordUpdateDotopExpr. FunExpr ::= SimpleExpr QualifiedDotop "{" [Expr] "}" "<-" Expr ;
-StringUpdateDotopExpr. FunExpr ::= SimpleExpr QualifiedDotop "[" [Expr] "]" "<-" Expr ;
-FunExprWithAttribute.  FunExpr ::= FunExpr Attribute ;
+ConstrName_.           FunExpr16 ::= ConstrLongident ;
+-- TODO
+
+-- function application, constructor application, tag application, assert, lazy precedence 15, associativity left
+NameTagApp.            FunExpr15 ::= NameTag SimpleExpr16 ;
+SimpleExprApp.         FunExpr15 ::= SimpleExpr16 [LabeledSimpleExpr] ;
+Assert.                FunExpr15 ::= "assert" Ext [Attribute] SimpleExpr16 ;
+Lazy.                  FunExpr15 ::= "lazy" Ext [Attribute] SimpleExpr16 ;
+SimpleExpr.            FunExpr15 ::= SimpleExpr16 ;
+
+-- - -. (prefix) precedence 14
+Subtractive.           FunExpr14 ::= Subtractive Expr15 ;
+Additive.              FunExpr14 ::= Additive Expr15 ;
+
+-- **… lsl lsr asr precedence 13, associativity right
+PowInfix.              FunExpr13 ::= FunExpr14 POWOP Expr13 ;
+
+-- *... /... %... mod land lor lxor precedence 12, associativity left
+MultDivInfix.          FunExpr12 ::= FunExpr12 MULTDIVOP Expr13 ;
+MultInfix.             FunExpr12 ::= FunExpr12 "*" Expr13 ;
+DivInfix.              FunExpr12 ::= FunExpr12 "/" Expr13 ;
+ModInfix.              FunExpr12 ::= FunExpr12 "%" Expr13 ;
+
+-- +... -... precedence 11, associativity left
+PlusMinusInfix.        FunExpr11 ::= FunExpr11 PLUSMINUSOP Expr12 ;
+PlusInfix.             FunExpr11 ::= FunExpr11 "+" Expr12 ;
+PlusDotInfix.          FunExpr11 ::= FunExpr11 "+." Expr12 ;
+MinusInfix.            FunExpr11 ::= FunExpr11 "-" Expr12 ;
+MinusDotInfix.         FunExpr11 ::= FunExpr11 "-." Expr12 ;
+
+-- :: precedence 10, associativity right
+Cons.                  FunExpr10 ::= FunExpr11 "::" Expr10 ;
+
+-- @... ^... precedence 9, associativity right
+ConcatInfix.           FunExpr9  ::= FunExpr10 CONCATOP Expr9 ;
+
+-- =... <... >... |... &... $... != precedence 8, associativity left
+RelInfix.              FunExpr8  ::= FunExpr8 RELOP Expr9 ;
+EqualInfix.            FunExpr8  ::= FunExpr8 "=" Expr9 ;
+LessInfix.             FunExpr8  ::= FunExpr8 "<" Expr9 ;
+GreaterInfix.          FunExpr8  ::= FunExpr8 ">" Expr9 ;
+
+-- & && precedence 7, associativity right
+Infix.                 FunExpr7  ::= FunExpr8 "&" Expr7 ;
+Infix.                 FunExpr7  ::= FunExpr8 "&&" Expr7 ;
+
+-- or || precedence 6, associativity right
+OrInfix.               FunExpr6  ::= FunExpr7 "or" Expr6 ;
+BarBarInfix.           FunExpr6  ::= FunExpr7 "||" Expr6 ;
+
+-- , precedence 5
+Comma.                 FunExpr5  ::= Expr6 "," [ExprComma] ;
+
+-- <- := precedence 4, associativity right
+UpdateExpr.            FunExpr4  ::= LIDENT "<-" Expr ;
+AssignInfix.           FunExpr4  ::= FunExpr5 ":=" Expr ;
+QualifiedDot.          FunExpr4  ::= SimpleExpr17 "." LabelLongident "<-" Expr ;
+ArrayUpdateExpr.       FunExpr4  ::= SimpleExpr17 "." "(" SeqExpr ")" "<-" Expr ;
+RecordUpdateExpr.      FunExpr4  ::= SimpleExpr17 "." "{" SeqExpr "}" "<-" Expr ;
+StringUpdateExpr.      FunExpr4  ::= SimpleExpr17 "." "[" SeqExpr "]" "<-" Expr ;
+ArrayUpdateDotopExpr.  FunExpr4  ::= SimpleExpr17 QualifiedDotop "(" [Expr] ")" "<-" Expr ;
+RecordUpdateDotopExpr. FunExpr4  ::= SimpleExpr17 QualifiedDotop "{" [Expr] "}" "<-" Expr ;
+StringUpdateDotopExpr. FunExpr4  ::= SimpleExpr17 QualifiedDotop "[" [Expr] "]" "<-" Expr ;
+
+-- if precedence 3
+IfElse.                FunExpr3  ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If.                    FunExpr3  ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+
+-- ; precedence 2, associativity right
+-- see SeqExpr
+
+-- let match fun function try precedence 1
+Let.                   FunExpr1 ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding.          FunExpr1 ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule.             FunExpr1 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException.          FunExpr1 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen.               FunExpr1 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun.                   FunExpr1 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match.                 FunExpr1 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try.                   FunExpr1 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+While.                 FunExpr1 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
+For.                   FunExpr1 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+
+-- TODO: What is the precedence of this rule?
+FunExprWithAttribute.  FunExpr1   ::= FunExpr2 Attribute ;
+
+_.                     FunExpr15 ::= FunExpr16 ;
+_.                     FunExpr14 ::= FunExpr15 ;
+_.                     FunExpr13 ::= FunExpr14 ;
+_.                     FunExpr12 ::= FunExpr13 ;
+_.                     FunExpr11 ::= FunExpr12 ;
+_.                     FunExpr10 ::= FunExpr11 ;
+_.                     FunExpr9  ::= FunExpr10 ;
+_.                     FunExpr8  ::= FunExpr9 ;
+_.                     FunExpr7  ::= FunExpr8 ;
+_.                     FunExpr6  ::= FunExpr7 ;
+_.                     FunExpr5  ::= FunExpr6 ;
+_.                     FunExpr4  ::= FunExpr5 ;
+_.                     FunExpr3  ::= FunExpr4 ;
+_.                     FunExpr2  ::= FunExpr3 ;
+_.                     FunExpr1  ::= FunExpr2 ;
 
 {-
 %inline indexop_expr(dot, index, right):
@@ -1937,8 +2003,120 @@ FunExprWithAttribute.  FunExpr ::= FunExpr Attribute ;
 ;
 -}
 
-FunExpr.  Expr ::= FunExpr ;
-Function. Expr ::= "function" Ext [Attribute] MatchCases ;
+Function15.     Expr15 ::= "function" Ext [Attribute] [MatchCase] ;
+Let15.          Expr15 ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding15. Expr15 ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule15.    Expr15 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException15. Expr15 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen15.      Expr15 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun15.          Expr15 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match15.        Expr15 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try15.          Expr15 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+-- While15.        Expr15 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
+-- For15.          Expr15 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+IfElse15.       Expr15 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If15.           Expr15 ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+FunExpr15.      Expr15 ::= FunExpr15 ;
+
+Function13.     Expr13 ::= "function" Ext [Attribute] [MatchCase] ;
+Let13.          Expr13 ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding13. Expr13 ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule13.    Expr13 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException13. Expr13 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen13.      Expr13 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun13.          Expr13 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match13.        Expr13 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try13.          Expr13 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+-- While13.        Expr13 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
+-- For13.          Expr13 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+IfElse13.       Expr13 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If13.           Expr13 ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+FunExpr13.      Expr13 ::= FunExpr13 ;
+
+Function12.     Expr12 ::= "function" Ext [Attribute] [MatchCase] ;
+Let12.          Expr12 ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding12. Expr12 ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule12.    Expr12 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException12. Expr12 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen12.      Expr12 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun12.          Expr12 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match12.        Expr12 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try12.          Expr12 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+-- While12.        Expr12 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
+-- For12.          Expr12 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+IfElse12.       Expr12 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If12.           Expr12 ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+FunExpr12.      Expr12 ::= FunExpr12 ;
+
+Function11.     Expr11 ::= "function" Ext [Attribute] [MatchCase] ;
+Let11.          Expr11 ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding11. Expr11 ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule11.    Expr11 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException11. Expr11 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen11.      Expr11 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun11.          Expr11 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match11.        Expr11 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try11.          Expr11 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+-- While11.        Expr11 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
+-- For11.          Expr11 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+IfElse11.       Expr11 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If11.           Expr11 ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+FunExpr11.      Expr11 ::= FunExpr11 ;
+
+Function10.     Expr10 ::= "function" Ext [Attribute] [MatchCase] ;
+Let10.          Expr10 ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding10. Expr10 ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule10.    Expr10 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException10. Expr10 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen10.      Expr10 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun10.          Expr10 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match10.        Expr10 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try10.          Expr10 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+IfElse10.       Expr10 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If10.           Expr10 ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+FunExpr10.      Expr10 ::= FunExpr10 ;
+
+Function9.      Expr9  ::= "function" Ext [Attribute] [MatchCase] ;
+Let9.           Expr9  ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding9.  Expr9  ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule9.     Expr9  ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException9.  Expr9  ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen9.       Expr9  ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun9.           Expr9  ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match9.         Expr9  ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try9.           Expr9  ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+IfElse9.        Expr9  ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If9.            Expr9  ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+FunExpr9.       Expr9  ::= FunExpr9 ;
+
+Function7.      Expr7  ::= "function" Ext [Attribute] [MatchCase] ;
+Let7.           Expr7  ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding7.  Expr7  ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule7.     Expr7  ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException7.  Expr7  ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen7.       Expr7  ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun7.           Expr7  ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match7.         Expr7  ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try7.           Expr7  ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+IfElse7.        Expr7  ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If7.            Expr7  ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+FunExpr7.       Expr7  ::= FunExpr7 ;
+
+Function6.      Expr6  ::= "function" Ext [Attribute] [MatchCase] ;
+Let6.           Expr6  ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding6.  Expr6  ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule6.     Expr6  ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException6.  Expr6  ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetOpen6.       Expr6  ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun6.           Expr6  ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match6.         Expr6  ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try6.           Expr6  ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+IfElse6.        Expr6  ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If6.            Expr6  ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+FunExpr6.       Expr6  ::= FunExpr6 ;
+
+Function.       Expr   ::= "function" Ext [Attribute] [MatchCase] ;
+FunExpr1.       Expr   ::= FunExpr1 ;
 
 {-
 %inline fun_expr_attrs:
@@ -1996,45 +2174,56 @@ simple_expr:
 
 -- TODO: Improve names
 
-ParenSeqExpr.              SimpleExpr ::= "(" SeqExpr ")" ;
-TypedSeqExpr.              SimpleExpr ::= "(" SeqExpr TypeConstraint ")" ;
-ArrayExpr.                 SimpleExpr ::= SimpleExpr "." "(" SeqExpr ")" ;
-RecordExpr.                SimpleExpr ::= SimpleExpr "." "{" SeqExpr "}" ;
-StringExpr.                SimpleExpr ::= SimpleExpr "." "[" SeqExpr "]" ;
-QualifiedArrayExpr.        SimpleExpr ::= SimpleExpr QualifiedDotop "(" [Expr] ")" ;
-QualifiedRecordExpr.       SimpleExpr ::= SimpleExpr QualifiedDotop "{" [Expr] "}" ;
-QualifiedStringExpr.       SimpleExpr ::= SimpleExpr QualifiedDotop "[" [Expr] "]" ;
-BeginEnd.                  SimpleExpr ::= "begin" Ext [Attribute] SeqExpr "end" ;
-EmptyBeginEnd.             SimpleExpr ::= "begin" Ext [Attribute] "end" ;
-New.                       SimpleExpr ::= "new" Ext [Attribute] ClassLongident ;
-Module.                    SimpleExpr ::= "(" "module" Ext [Attribute] ModuleExpr ")" ;
-TypedModule.               SimpleExpr ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
-Object.                    SimpleExpr ::= "object" Ext [Attribute] ClassStructure "end" ;
-ValLongident_.             SimpleExpr ::= ValLongident ;
-Constant_.                 SimpleExpr ::= Constant ;
-ConstrName.                SimpleExpr ::= ConstrLongident ;
-NameTag_.                  SimpleExpr ::= NameTag ;
-PrefixApp.                 SimpleExpr ::= PREFIXOP SimpleExpr ;
-BangApp.                   SimpleExpr ::= "!" SimpleExpr ;
-ObjectExpr.                SimpleExpr ::= "{<" [ObjectExprField] ">}" ;
-EmptyObjectExpr.           SimpleExpr ::= "{<" ">}" ;
-RecordAccessTodo.          SimpleExpr ::= SimpleExpr "." LabelLongident ;
-QualifiedArrayExpr_.       SimpleExpr ::= ModLongident "." "(" SeqExpr ")" ;
-QualifiedObjectExpr.       SimpleExpr ::= ModLongident "." "{" [ObjectExprField] "}" ;
-MethodInvocation.          SimpleExpr ::= SimpleExpr "#" LIDENT ;
-HashOp.                    SimpleExpr ::= SimpleExpr HASHOP SimpleExpr ;
-Extension.                 SimpleExpr ::= Extension ;
-EmptyQualifiedArrayAccess. SimpleExpr ::= ModLongident "." "(" ")" ;
-RecordExpr_.               SimpleExpr ::= "{" RecordExprContent "}" ;
-RecordAccess.              SimpleExpr ::= ModLongident "." "{" RecordExprContent "}" ;
-ArrayExpr_.                SimpleExpr ::= "[|" [Expr] "|]" ;
-EmptyArrayExpr.            SimpleExpr ::= "[|" "|]" ;
-ArrayAccesss.              SimpleExpr ::= ModLongident "." "[|" [Expr] "|]" ;
-ArrayAccesssTodo.          SimpleExpr ::= ModLongident "." "[|" "|]" ;
-StringExpr_.               SimpleExpr ::= "[" [Expr] "]" ;
-StringAccess.              SimpleExpr ::= ModLongident "." "[" [Expr] "]" ;
-StringAccessTodo.          SimpleExpr ::= ModLongident "." "[" "]" ;
-QualifiedModule.           SimpleExpr ::= ModLongident "." "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
+ParenSeqExpr.              SimpleExpr19 ::= "(" SeqExpr ")" ;
+TypedSeqExpr.              SimpleExpr19 ::= "(" SeqExpr TypeConstraint ")" ;
+ValLongident_.             SimpleExpr19 ::= ValLongident ;
+Constant_.                 SimpleExpr19 ::= Constant ;
+ConstrName.                SimpleExpr19 ::= ConstrLongident ;
+NameTag_.                  SimpleExpr19 ::= NameTag ;
+ObjectExpr.                SimpleExpr19 ::= "{<" [ObjectExprField] ">}" ;
+EmptyObjectExpr.           SimpleExpr19 ::= "{<" ">}" ;
+QualifiedArrayExpr_.       SimpleExpr19 ::= ModLongident "." "(" SeqExpr ")" ;
+QualifiedObjectExpr.       SimpleExpr19 ::= ModLongident "." "{" [ObjectExprField] "}" ;
+Extension.                 SimpleExpr19 ::= Extension ;
+EmptyQualifiedArrayAccess. SimpleExpr19 ::= ModLongident "." "(" ")" ;
+RecordExpr_.               SimpleExpr19 ::= "{" RecordExprContent "}" ;
+RecordAccess.              SimpleExpr19 ::= ModLongident "." "{" RecordExprContent "}" ;
+ArrayExpr_.                SimpleExpr19 ::= "[|" [Expr] "|]" ;
+EmptyArrayExpr.            SimpleExpr19 ::= "[|" "|]" ;
+ArrayAccesss.              SimpleExpr19 ::= ModLongident "." "[|" [Expr] "|]" ;
+ArrayAccesssTodo.          SimpleExpr19 ::= ModLongident "." "[|" "|]" ;
+StringExpr_.               SimpleExpr19 ::= "[" [Expr] "]" ;
+StringAccess.              SimpleExpr19 ::= ModLongident "." "[" [Expr] "]" ;
+StringAccessTodo.          SimpleExpr19 ::= ModLongident "." "[" "]" ;
+QualifiedModule.           SimpleExpr19 ::= ModLongident "." "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
+BeginEnd.                  SimpleExpr19  ::= "begin" Ext [Attribute] SeqExpr "end" ;
+EmptyBeginEnd.             SimpleExpr19  ::= "begin" Ext [Attribute] "end" ;
+New.                       SimpleExpr19  ::= "new" Ext [Attribute] ClassLongident ;
+Module.                    SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ")" ;
+TypedModule.               SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
+Object.                    SimpleExpr19  ::= "object" Ext [Attribute] ClassStructure "end" ;
+
+-- prefix-symbol precedence 18
+PrefixApp.                 SimpleExpr18 ::= PREFIXOP SimpleExpr19 ;
+BangApp.                   SimpleExpr18 ::= "!" SimpleExpr19 ;
+
+-- . .( .[ .{ precedence 17
+ArrayExpr.                 SimpleExpr17 ::= SimpleExpr17 "." "(" SeqExpr ")" ;
+RecordExpr.                SimpleExpr17 ::= SimpleExpr17 "." "{" SeqExpr "}" ;
+StringExpr.                SimpleExpr17 ::= SimpleExpr17 "." "[" SeqExpr "]" ;
+QualifiedArrayExpr.        SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "(" [Expr] ")" ;
+QualifiedRecordExpr.       SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "{" [Expr] "}" ;
+QualifiedStringExpr.       SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "[" [Expr] "]" ;
+RecordAccessTodo.          SimpleExpr17 ::= SimpleExpr17 "." LabelLongident ;
+
+-- #... precedence 16, associativity left
+MethodInvocation.          SimpleExpr16 ::= SimpleExpr17 "#" LIDENT ;
+HashOp.                    SimpleExpr16 ::= SimpleExpr17 HASHOP SimpleExpr16 ;
+
+_.                         SimpleExpr18 ::= SimpleExpr19 ;
+_.                         SimpleExpr17 ::= SimpleExpr18 ;
+_.                         SimpleExpr16 ::= SimpleExpr17 ;
+_.                         SimpleExpr   ::= SimpleExpr16 ;
 
 {-
 %inline indexop_expr(dot, index, right):
@@ -2102,12 +2291,14 @@ labeled_simple_expr:
 ;
 -}
 
-LabeldSimpleExpr. LabeledSimpleExpr ::= SimpleExpr ;
-LabeledExpr.      LabeledSimpleExpr ::= LABEL SimpleExpr ;
-Label.            LabeledSimpleExpr ::= "~" LIDENT ;
-TypedLabel.       LabeledSimpleExpr ::= "~" "(" LIDENT TypeConstraint ")" ;
-OptLabel.         LabeledSimpleExpr ::= "?" LIDENT ;
-OptLabeledExpr.   LabeledSimpleExpr ::= OPTLABEL SimpleExpr ;
+separator nonempty LabeledSimpleExpr "" ;
+
+LabeldSimpleExpr16. LabeledSimpleExpr ::= SimpleExpr16 ;
+LabeledExpr16.      LabeledSimpleExpr ::= LABEL SimpleExpr16 ;
+Label16.            LabeledSimpleExpr ::= "~" LIDENT ;
+TypedLabel16.       LabeledSimpleExpr ::= "~" "(" LIDENT TypeConstraint ")" ;
+OptLabel16.         LabeledSimpleExpr ::= "?" LIDENT ;
+OptLabeledExpr16.   LabeledSimpleExpr ::= OPTLABEL SimpleExpr16 ;
 
 {-
 %inline let_ident:
@@ -2216,11 +2407,11 @@ fun_body:
 ;
 -}
 
-FunBodyFunction.         FunBody ::= "function" Ext [Attribute] MatchCases ;
-FunBodyFinalFunExpr.     FunBody ::= FunExpr ;
-FunBodyFinalFunExprSemi. FunBody ::= FunExpr ";" ;
-FunBodyMoreFunExprs.     FunBody ::= FunExpr ";" SeqExpr ;
-FunBodyMoreFunExprsAttr. FunBody ::= FunExpr ";" "%" [AttrId] SeqExpr ;
+FunBodyFunction.         FunBody ::= "function" Ext [Attribute] [MatchCase] ;
+FunBodyFinalFunExpr.     FunBody ::= FunExpr1 ;
+FunBodyFinalFunExprSemi. FunBody ::= FunExpr1 ";" ;
+FunBodyMoreFunExprs.     FunBody ::= FunExpr1 ";" SeqExpr ;
+FunBodyMoreFunExprsAttr. FunBody ::= FunExpr1 ";" "%" [AttrId] SeqExpr ;
 
 {-
 %inline match_cases:
@@ -2228,8 +2419,7 @@ FunBodyMoreFunExprsAttr. FunBody ::= FunExpr ";" "%" [AttrId] SeqExpr ;
 ;
 -}
 
-MatchCases1. MatchCases ::= [MatchCase] ;
-MatchCases2. MatchCases ::= "|" [MatchCase] ;
+_. [MatchCase] ::= "|" [MatchCase] ;
 
 separator nonempty MatchCase "|" ;
 
