@@ -1492,10 +1492,11 @@ class_simple_expr:
 ;
 -}
 
-ParenClassExpr.       ClassSimpleExpr ::= "(" ClassExpr ")" ;
-ClassName.            ClassSimpleExpr ::= ActualClassParameters ClassLongident ;
-TypedClassExpr.       ClassSimpleExpr ::= "(" ClassExpr ":" ClassType ")" ;
-ClassSimplExprObject. ClassSimpleExpr ::= "object" [Attribute] ClassStructure "end" ;
+ParenClassExpr.         ClassSimpleExpr ::= "(" ClassExpr ")" ;
+ClassName.              ClassSimpleExpr ::= ClassLongident ;
+ClassNameWithParamters. ClassSimpleExpr ::= "[" [CoreType] "]" ClassLongident ;
+TypedClassExpr.         ClassSimpleExpr ::= "(" ClassExpr ":" ClassType ")" ;
+ClassSimplExprObject.   ClassSimpleExpr ::= "object" [Attribute] ClassStructure "end" ;
 
 {-
 class_fun_def:
@@ -1622,11 +1623,12 @@ class_signature:
 ;
 -}
 
-ClassSignatureName.      ClassSignature ::= ActualClassParameters CltyLongident ;
-ClassSignatureExtension. ClassSignature ::= Extension ;
-ClassSignatureObject.    ClassSignature ::= "object" [Attribute] ClassSelfType [ClassSigField] "end" ;
-WithAttribute.           ClassSignature ::= ClassSignature Attribute ;
-ClassSignatureLetOpen.   ClassSignature ::= "let" "open" OverrideFlag [Attribute] ModLongident "in" ClassSignature ;
+ClassSignatureName.              ClassSignature ::= CltyLongident ;
+ClassSignatureNameWithParamters. ClassSignature ::= "[" [CoreType] "]" CltyLongident ;
+ClassSignatureExtension.         ClassSignature ::= Extension ;
+ClassSignatureObject.            ClassSignature ::= "object" [Attribute] ClassSelfType [ClassSigField] "end" ;
+WithAttribute.                   ClassSignature ::= ClassSignature Attribute ;
+ClassSignatureLetOpen.           ClassSignature ::= "let" "open" OverrideFlag [Attribute] ModLongident "in" ClassSignature ;
 
 {-
 class_self_type:
@@ -1648,10 +1650,7 @@ NoClassSelfType. ClassSelfType ::= ;
 ;
 -}
 
-NoActualClassParameters. ActualClassParameters ::= ;
-ActualClassParameters.   ActualClassParameters ::= "[" [CoreType] "]" ;
-
-separator nonempty CoreType "," ;
+-- This definition is inlined manually
 
 {-
 class_sig_field:
@@ -2179,8 +2178,7 @@ AndLetBinding. AndLetBinding ::= "and" [Attribute] LetBindingBody [PostItemAttri
 {-
 letop_binding_body:
     let_ident strict_binding
-  | val_ident
-      (* Let-punning *)
+  | val_ident (* Let-punning *)
   | simple_pattern COLON core_type EQUAL seq_expr
   | pattern_no_exn EQUAL seq_expr
 ;
@@ -3071,6 +3069,8 @@ core_type:
 
 CoreTypeWithoutAttribute. CoreType ::= AliasType ;
 CoreTypeWithAttribute.    CoreType ::= CoreType Attribute ;
+
+separator nonempty CoreType "," ;
 
 {-
 (* A core type without attributes is currently defined as an alias type, but
