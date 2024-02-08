@@ -97,7 +97,12 @@ token FLOAT (digit (digit | '_')* ('.' (digit | '_')*)? (["eE"] ["+-"]? digit (d
             { INFIXOP0 op }
 -}
 
-token RELOP ["=<>|&$"] ["!$%&*+-./:<=>?@^|~"]* ;
+-- The operators || and && are excluded from RELOP in order to handle
+-- their precedences explicitly
+token RELOP ["=<>$"] ["!$%&*+-./:<=>?@^|~"]+
+          | '|' ["!$%&*+-./:<=>?@^~"] ["!$%&*+-./:<=>?@^|~"]*
+          | '&' ["!$%*+-./:<=>?@^|~"] ["!$%&*+-./:<=>?@^|~"]*
+          | ({"||"} | {"&&"}) ["!$%&*+-./:<=>?@^|~"]+ ;
 
 {-
 %token <string> INFIXOP1      "@"    (* just an example *)
@@ -115,7 +120,9 @@ token CONCATOP ["@^"] ["!$%&*+-./:<=>?@^|~"]* ;
             { INFIXOP2 op }
 -}
 
-token PLUSMINUSOP ["+-"] ["!$%&*+-./:<=>?@^|~"]* ;
+-- The operators -. and +. are excluded from PLUSMINUSOP in order to prevent
+-- the tokenizer from identifying them as PLUSMINUSOP
+token PLUSMINUSOP ('+' | '-') ["!$%&*+-/:<=>?@^|~"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> INFIXOP3      "land" (* just an example *)
@@ -124,7 +131,7 @@ token PLUSMINUSOP ["+-"] ["!$%&*+-./:<=>?@^|~"]* ;
             { INFIXOP3 op }
 -}
 
-token MULTDIVOP ["*/%"] ["!$%&*+-./:<=>?@^|~"]* ;
+token MULTDIVOP ["*/%"] ["!$%&*+-./:<=>?@^|~"]+ ;
 
 {-
 %token <string> INFIXOP4      "**"   (* just an example *)
@@ -3700,24 +3707,22 @@ InfixOp.        Operator ::= InfixOperator ;
 -}
 
 RelOp.                   InfixOperator ::= RELOP ;
-ConcatOp.                InfixOperator ::= CONCATOP ;
-PlusMinusOp.             InfixOperator ::= PLUSMINUSOP ;
-MultDivOp.               InfixOperator ::= MULTDIVOP ;
-PowOp.                   InfixOperator ::= POWOP ;
-InfixPlus.               InfixOperator ::= "+" ;
-InfixPlusDot.            InfixOperator ::= "+." ;
-InfixPlusEq.             InfixOperator ::= "+=" ;
-InfixMinus.              InfixOperator ::= "-" ;
-InfixMinusDot.           InfixOperator ::= "-." ;
-InfixStar.               InfixOperator ::= "*" ;
-InfixPercent.            InfixOperator ::= "%" ;
 InfixEqual.              InfixOperator ::= "=" ;
 InfixLess.               InfixOperator ::= "<" ;
 InfixGreater.            InfixOperator ::= ">" ;
-InfixOr.                 InfixOperator ::= "or" ;
 InfixBarBar.             InfixOperator ::= "||" ;
 InfixAmpersand.          InfixOperator ::= "&" ;
 InfixAmpersandAmpersand. InfixOperator ::= "&&" ;
+ConcatOp.                InfixOperator ::= CONCATOP ;
+PlusMinusOp.             InfixOperator ::= PLUSMINUSOP ;
+InfixPlus.               InfixOperator ::= "+" ;
+InfixMinus.              InfixOperator ::= "-" ;
+MultDivOp.               InfixOperator ::= MULTDIVOP ;
+InfixStar.               InfixOperator ::= "*" ;
+InfixSlash.              InfixOperator ::= "/" ;
+InfixPercent.            InfixOperator ::= "%" ;
+PowOp.                   InfixOperator ::= POWOP ;
+InfixOr.                 InfixOperator ::= "or" ;
 InfixColonEqual.         InfixOperator ::= ":=" ;
 
 {-
