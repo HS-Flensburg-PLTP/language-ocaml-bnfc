@@ -349,7 +349,8 @@ token STRING '"' ((char - ["\"\\"])
                          | 'x' (letter | digit) (letter | digit)
                          | 'o' ["0123"] ["01234567"] ["01234567"]
                    ))
-                 | '\n')* '"' ;
+                 | '\n'
+                 | '\\' '\n' (' ' | '\t')* )* '"' ;
 
 {-
 %token <string * Location.t * string * Location.t * string option>
