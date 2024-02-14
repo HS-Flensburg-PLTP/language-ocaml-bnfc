@@ -148,7 +148,7 @@ token POWOP {"**"} ["!$%&*+-./:<=>?@^|~"]* ;
   | "." (dotsymbolchar symbolchar* as op) { DOTOP op }
 -}
 
-token DOTOP '.' ["$&*+-/<=>@^|"] ["!$%&*+-./:<=>?@^|~"]* ;
+token DOTOP '.' ["!$%&*+-/:=>?@^|"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> LETOP         "let*" (* just an example *)
