@@ -1,4 +1,4 @@
-# Revision history for ocaml-lbnf
+# Revision history for language-ocaml
 
 ## 0.1.0.0 -- YYYY-mm-dd
 

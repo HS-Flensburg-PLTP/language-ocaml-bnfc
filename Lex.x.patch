@@ -1,0 +1,254 @@
+--- src/Ocaml/Lex.x	2024-02-14 08:29:19
++++ src/Ocaml/Lex.x.bak	2024-02-14 08:29:19
+@@ -17,6 +17,8 @@
+ import Data.Word     (Word8)
+ }
+
++%wrapper "monadUserState"
++
+ -- Predefined character classes
+
+ $c = [A-Z\192-\221] # [\215]  -- capital isolatin1 letter (215 = \times) FIXME
+@@ -151,10 +153,18 @@
+ <0> $l $i*
+     { tok (eitherResIdent TV) }
+
++<0>       "(*"            { beginComment `andBegin` comment }
++<0>       "{" [a-z_]* "|" { beginQuotedString `andBegin` quoted }
++<comment> "(*"            { beginComment }
++<comment> "*)"            { endComment }
++<comment> (. | \n)        ;
++<quoted>  "|" [a-z_]* "}" { endQuotedString }
++<quoted>  (. | \n)        { quotedChar }
++
+ {
+ -- | Create a token with position.
+-tok :: (String -> Tok) -> (Posn -> String -> Token)
+-tok f p = PT p . f
++tok :: (String -> Tok) -> AlexInput -> Int -> Alex Token
++tok f (p, _, _, input) len = return (PT p (f (take len input)))
+
+ -- | Token without position.
+ data Tok
+@@ -213,31 +223,34 @@
+
+ -- | Token with position.
+ data Token
+-  = PT  Posn Tok
+-  | Err Posn
+-  deriving (Eq, Show, Ord)
++  = PT  AlexPosn Tok
++  | Err AlexPosn
++  | EOF
++  deriving (Eq, Show)
+
+ -- | Pretty print a position.
+-printPosn :: Posn -> String
+-printPosn (Pn _ l c) = "line " ++ show l ++ ", column " ++ show c
++printPosn :: AlexPosn -> String
++printPosn (AlexPn _ l c) = "line " ++ show l ++ ", column " ++ show c
+
+ -- | Pretty print the position of the first token in the list.
+ tokenPos :: [Token] -> String
+-tokenPos (t:_) = printPosn (tokenPosn t)
+-tokenPos []    = "end of file"
++tokenPos (PT p _:_) = printPosn p
++tokenPos (Err p:_)  = printPosn p
++tokenPos []         = "end of file"
+
+ -- | Get the position of a token.
+-tokenPosn :: Token -> Posn
++tokenPosn :: Token -> AlexPosn
+ tokenPosn (PT p _) = p
+ tokenPosn (Err p)  = p
++tokenPosn EOF      = error "no position"
+
+ -- | Get line and column of a token.
+ tokenLineCol :: Token -> (Int, Int)
+ tokenLineCol = posLineCol . tokenPosn
+
+ -- | Get line and column of a position.
+-posLineCol :: Posn -> (Int, Int)
+-posLineCol (Pn _ l c) = (l,c)
++posLineCol :: AlexPosn -> (Int, Int)
++posLineCol (AlexPn _ l c) = (l,c)
+
+ -- | Convert a token into "position token" form.
+ mkPosToken :: Token -> ((Int, Int), String)
+@@ -368,85 +381,110 @@
+     where
+     bs = s
+
+--- | Unquote string literal.
+-unescapeInitTail :: String -> String
+-unescapeInitTail = id . unesc . tail . id
+-  where
+-  unesc s = case s of
+-    '\\':c:cs | elem c ['\"', '\\', '\''] -> c : unesc cs
+-    '\\':'n':cs  -> '\n' : unesc cs
+-    '\\':'t':cs  -> '\t' : unesc cs
+-    '\\':'r':cs  -> '\r' : unesc cs
+-    '\\':'f':cs  -> '\f' : unesc cs
+-    '"':[]       -> []
+-    c:cs         -> c : unesc cs
+-    _            -> []
+-
+ -------------------------------------------------------------------
+ -- Alex wrapper code.
+ -- A modified "posn" wrapper.
+ -------------------------------------------------------------------
+
+-data Posn = Pn !Int !Int !Int
+-  deriving (Eq, Show, Ord)
++tokens :: String -> [Token]
++tokens str =
++  case runAlex str go of
++    Left message -> error message
++    Right ts     -> ts
++    where
++      go :: Alex [Token]
++      go = do
++        t <- alexMonadScan
++        case t of
++            EOF   -> return []
++            Err _ -> return [t]
++            _     -> fmap (t:) go
+
+-alexStartPos :: Posn
+-alexStartPos = Pn 0 1 1
++data AlexUserState = AlexUserState
++    { commentNesting :: Int
++    , quotedString :: Maybe String
++    , quotedStringContent :: String
++    }
+
+-alexMove :: Posn -> Char -> Posn
+-alexMove (Pn a l c) '\t' = Pn (a+1)  l     (((c+7) `div` 8)*8+1)
+-alexMove (Pn a l c) '\n' = Pn (a+1) (l+1)   1
+-alexMove (Pn a l c) _    = Pn (a+1)  l     (c+1)
++alexInitUserState :: AlexUserState
++alexInitUserState = AlexUserState 0 Nothing ""
+
+-type Byte = Word8
++getCommentNesting :: Alex Int
++getCommentNesting = commentNesting <$> alexGetUserState
+
+-type AlexInput = (Posn,     -- current position,
+-                  Char,     -- previous char
+-                  [Byte],   -- pending bytes on the current char
+-                  String)   -- current input string
++setCommentNesting :: Int -> Alex ()
++setCommentNesting nesting = do
++  ust <- alexGetUserState
++  alexSetUserState ust{ commentNesting = nesting }
+
+-tokens :: String -> [Token]
+-tokens str = go (alexStartPos, '\n', [], str)
+-    where
+-      go :: AlexInput -> [Token]
+-      go inp@(pos, _, _, str) =
+-               case alexScan inp 0 of
+-                AlexEOF                   -> []
+-                AlexError (pos, _, _, _)  -> [Err pos]
+-                AlexSkip  inp' len        -> go inp'
+-                AlexToken inp' len act    -> act pos (take len str) : (go inp')
++getQuotedString :: Alex (Maybe String)
++getQuotedString = quotedString <$> alexGetUserState
+
+-alexGetByte :: AlexInput -> Maybe (Byte,AlexInput)
+-alexGetByte (p, c, (b:bs), s) = Just (b, (p, c, bs, s))
+-alexGetByte (p, _, [], s) =
+-  case s of
+-    []  -> Nothing
+-    (c:s) ->
+-             let p'     = alexMove p c
+-                 (b:bs) = utf8Encode c
+-              in p' `seq` Just (b, (p', c, bs, s))
++setQuotedString :: Maybe String -> Alex ()
++setQuotedString maybeQuotedString = do
++  ust <- alexGetUserState
++  alexSetUserState ust{ quotedString = maybeQuotedString }
+
+-alexInputPrevChar :: AlexInput -> Char
+-alexInputPrevChar (p, c, bs, s) = c
++getQuotedStringContent :: Alex String
++getQuotedStringContent = quotedStringContent <$> alexGetUserState
+
+--- | Encode a Haskell String to a list of Word8 values, in UTF8 format.
+-utf8Encode :: Char -> [Word8]
+-utf8Encode = map fromIntegral . go . ord
+-  where
+-  go oc
+-   | oc <= 0x7f       = [oc]
++setQuotedStringContent :: String -> Alex ()
++setQuotedStringContent content = do
++  ust <- alexGetUserState
++  alexSetUserState ust{ quotedStringContent = content }
+
+-   | oc <= 0x7ff      = [ 0xc0 + (oc `Data.Bits.shiftR` 6)
+-                        , 0x80 + oc Data.Bits..&. 0x3f
+-                        ]
++alexEOF :: Alex Token
++alexEOF = return EOF
+
+-   | oc <= 0xffff     = [ 0xe0 + (oc `Data.Bits.shiftR` 12)
+-                        , 0x80 + ((oc `Data.Bits.shiftR` 6) Data.Bits..&. 0x3f)
+-                        , 0x80 + oc Data.Bits..&. 0x3f
+-                        ]
+-   | otherwise        = [ 0xf0 + (oc `Data.Bits.shiftR` 18)
+-                        , 0x80 + ((oc `Data.Bits.shiftR` 12) Data.Bits..&. 0x3f)
+-                        , 0x80 + ((oc `Data.Bits.shiftR` 6) Data.Bits..&. 0x3f)
+-                        , 0x80 + oc Data.Bits..&. 0x3f
+-                        ]
++customAlexError :: String -> Alex Token
++customAlexError message = do
++  (p, _, _, _) <- alexGetInput
++  return (Err p)
++
++beginComment :: AlexInput -> Int -> Alex Token
++beginComment input len = do
++  nesting <- getCommentNesting
++  setCommentNesting (nesting + 1)
++  skip input len
++
++endComment :: AlexInput -> Int -> Alex Token
++endComment input len = do
++  nesting <- getCommentNesting
++  setCommentNesting (nesting - 1)
++  if nesting == 1
++      then begin 0 input len
++      else skip input len
++
++beginQuotedString :: AlexInput -> Int -> Alex Token
++beginQuotedString (_, _, _, input) len = do
++  maybeQuotedString <- getQuotedString
++  case maybeQuotedString of
++      Just _ -> customAlexError "Begin of quoted string but the most recent quoted string is not yet closed"
++      Nothing -> do
++        setQuotedString (Just (take (len - 2) (tail input)))
++        skip input len
++
++endQuotedString :: AlexInput -> Int -> Alex Token
++endQuotedString (pos, _, _, input) len = do
++  maybeQuotedString <- getQuotedString
++  let quotation = take (len - 2) (tail input)
++  case maybeQuotedString of
++      Nothing -> customAlexError ("Closing quoted string " ++ quotation ++ " without opening")
++      Just q -> if q == quotation
++                   then do
++                        setQuotedString Nothing
++                        quotedStringContent <- getQuotedStringContent
++                        setQuotedStringContent ""
++                        alexSetStartCode 0
++                        return (PT pos (T_STRING quotedStringContent))
++                   else do
++                        content <- getQuotedStringContent
++                        setQuotedStringContent (content ++ take len input)
++                        skip input len
++
++quotedChar :: AlexInput -> Int -> Alex Token
++quotedChar (_, _, _, input) len = do
++  content <- getQuotedStringContent
++  setQuotedStringContent (content ++ take len input)
++  skip input len
+ }
