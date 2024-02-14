@@ -97,12 +97,7 @@ token FLOAT (digit (digit | '_')* ('.' (digit | '_')*)? (["eE"] ["+-"]? digit (d
             { INFIXOP0 op }
 -}
 
--- The operators || and && are excluded from RELOP in order to handle
--- their precedences explicitly
-token RELOP ["=<>$"] ["!$%&*+-./:<=>?@^|~"]+
-          | '|' ["!$%&*+-./:<=>?@^~"] ["!$%&*+-./:<=>?@^|~"]*
-          | '&' ["!$%*+-./:<=>?@^|~"] ["!$%&*+-./:<=>?@^|~"]*
-          | ({"||"} | {"&&"}) ["!$%&*+-./:<=>?@^|~"]+ ;
+token RELOP ["=<>|&$"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> INFIXOP1      "@"    (* just an example *)
@@ -120,9 +115,7 @@ token CONCATOP ["@^"] ["!$%&*+-./:<=>?@^|~"]* ;
             { INFIXOP2 op }
 -}
 
--- The operators -. and +. are excluded from PLUSMINUSOP in order to prevent
--- the tokenizer from identifying them as PLUSMINUSOP
-token PLUSMINUSOP ('+' | '-') ["!$%&*+-/:<=>?@^|~"] ["!$%&*+-./:<=>?@^|~"]* ;
+token PLUSMINUSOP ["+-"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> INFIXOP3      "land" (* just an example *)
@@ -131,7 +124,7 @@ token PLUSMINUSOP ('+' | '-') ["!$%&*+-/:<=>?@^|~"] ["!$%&*+-./:<=>?@^|~"]* ;
             { INFIXOP3 op }
 -}
 
-token MULTDIVOP ["*/%"] ["!$%&*+-./:<=>?@^|~"]+ ;
+token MULTDIVOP ["*/%"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> INFIXOP4      "**"   (* just an example *)
