@@ -439,8 +439,6 @@ token UIDENT upper (letter | digit | '_' | '\'')* ;
 %token <string * Location.t> COMMENT    "(* comment *)"
 -}
 
-comment "(*" "*)" ;
-
 {-
 %token <Docstrings.docstring> DOCSTRING "(** documentation *)"
 
