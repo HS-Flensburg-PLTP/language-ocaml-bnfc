@@ -2777,9 +2777,9 @@ primitive_declaration:
 ;
 -}
 
-separator nonempty RawString "" ;
+separator nonempty STRING "" ;
 
-PrmitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIdent ":" PolyType "=" [RawString] [PostItemAttribute] ;
+PrmitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIdent ":" PolyType "=" [STRING] [PostItemAttribute] ;
 
 {-
 (* Type declarations and type substitutions. *)
@@ -3918,7 +3918,7 @@ ToplevelTrue.        ToplevelDirectiveArgument ::= "true" ;
 ;
 -}
 
-RawString. RawString ::= STRING ;
+-- This definition is inlined manually
 
 {-
 name_tag:
