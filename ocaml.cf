@@ -514,7 +514,7 @@ The precedences must be listed from low to high.
 /* Entry points */
 -}
 
-entrypoints Implementation;
+entrypoints Implementation, UseFile;
 
 {-
 /* Several start symbols are marked with AVOID so that they are not used by
@@ -847,8 +847,6 @@ implementation:
 ;
 -}
 
--- TODO: End of File?
-
 Implementation. Implementation ::= Structure ;
 
 {-
@@ -859,8 +857,6 @@ interface:
 ;
 /* END AVOID */
 -}
-
--- TODO: End of File?
 
 Interface. Interface ::= Signature ;
 
@@ -890,19 +886,27 @@ use_file:
   (* An optional standalone expression,
      followed with a series of elements,
      followed with EOF. *)
-  extra_def(append(
-    optional_use_file_standalone_expression,
-    flatten(use_file_element*)
-  ))
-  EOF
+    optional_use_file_standalone_expression use_file_element*
+    EOF
 ;
+-}
 
+UseFile.           UseFile ::= [UseFileElement] ;
+UseFileWithStrExp. UseFile ::= SeqExpr [PostItemAttribute] [UseFileElement] ;
+
+separator UseFileElement "" ;
+
+{-
 (* An optional standalone expression is just an expression with attributes
    (str_exp), with extra wrapping. *)
 %inline optional_use_file_standalone_expression:
-  iloption(text_def(top_def(str_exp)))
+  iloption(str_exp)
 ;
+-}
 
+-- This definition is inlined manually
+
+{-
 (* An element in a #used file is one of the following:
    - a double semicolon followed with an optional standalone expression;
    - a structure item;
@@ -910,10 +914,17 @@ use_file:
  *)
 %inline use_file_element:
   preceded(SEMISEMI, optional_use_file_standalone_expression)
-| text_def(top_def(structure_item))
-| text_def(mark_rhs_docs(toplevel_directive))
+| structure_item
+| toplevel_directive
 ;
+-}
 
+NoUseFileElement.         UseFileElement ::= ";;" ;
+UseFileStrExp.            UseFileElement ::= ";;" SeqExpr [PostItemAttribute] ;
+UseFileStructureItem.     UseFileElement ::= StructureItem ;
+UseFileToplevelDirective. UseFileElement ::= ToplevelDirective ;
+
+{-
 (* -------------------------------------------------------------------------- *)
 
 (* Functor arguments appear in module expressions and module types. *)
