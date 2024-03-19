@@ -57,11 +57,11 @@ executable language-ocaml
     import:           warnings
     main-is:          Main.hs
     other-modules:
-        Ocaml.Abs
-        Ocaml.ErrM
-        Ocaml.Lex
-        Ocaml.Par
-        Ocaml.Print
+        Language.Ocaml.Abs
+        Language.Ocaml.ErrM
+        Language.Ocaml.Lex
+        Language.Ocaml.Par
+        Language.Ocaml.Print
     build-depends:
         base >=4.16 && <4.18,
         array ^>=0.5.4.0
@@ -73,9 +73,9 @@ library
         base >=4.16 && <4.18,
         array ^>=0.5.4.0
   exposed-modules:
-        Ocaml.Abs
-        Ocaml.ErrM
-        Ocaml.Lex
-        Ocaml.Par
-        Ocaml.Print
+        Language.Ocaml.Abs
+        Language.Ocaml.ErrM
+        Language.Ocaml.Lex
+        Language.Ocaml.Par
+        Language.Ocaml.Print
   hs-source-dirs:   src

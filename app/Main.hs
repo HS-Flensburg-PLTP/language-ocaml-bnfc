@@ -2,9 +2,9 @@
 module Main where
 
 import Data.List (intercalate)
-import Ocaml.Lex (Tok (..), TokSymbol (..), Token (..))
-import Ocaml.Par (myLexer, pImplementation)
-import Ocaml.Print (Print, printTree)
+import Language.Ocaml.Lex (Tok (..), TokSymbol (..), Token (..))
+import Language.Ocaml.Par (myLexer, pImplementation)
+import Language.Ocaml.Print (Print, printTree)
 import System.Environment (getArgs)
 import System.Exit (exitFailure, exitSuccess)
 
