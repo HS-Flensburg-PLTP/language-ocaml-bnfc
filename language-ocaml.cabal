@@ -54,30 +54,28 @@ common warnings
     ghc-options: -Wall
 
 executable language-ocaml
-    -- Import common warning flags.
     import:           warnings
-
-    -- .hs or .lhs file containing the Main module.
     main-is:          Main.hs
-
-    -- Modules included in this executable, other than Main.
     other-modules:
         Ocaml.Abs
         Ocaml.ErrM
         Ocaml.Lex
         Ocaml.Par
         Ocaml.Print
-
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions:
-
-    -- Other library packages from which modules are imported.
     build-depends:
         base >=4.16 && <4.18,
         array ^>=0.5.4.0
-
-    -- Directories containing source files.
     hs-source-dirs:   app, src
-
-    -- Base language which the package is written in.
     default-language: Haskell2010
+
+library
+  build-depends:
+        base >=4.16 && <4.18,
+        array ^>=0.5.4.0
+  exposed-modules:
+        Ocaml.Abs
+        Ocaml.ErrM
+        Ocaml.Lex
+        Ocaml.Par
+        Ocaml.Print
+  hs-source-dirs:   src
