@@ -79,3 +79,4 @@ library
         Language.Ocaml.Par
         Language.Ocaml.Print
   hs-source-dirs:   src
+  default-language: Haskell2010
