@@ -3200,9 +3200,9 @@ happyReduction_20 happy_x_1
 
 happyReduce_21 = happySpecReduce_1  19# happyReduction_21
 happyReduction_21 happy_x_1
-	 =  case happyOutTok happy_x_1 of { (PT _ (T_LIDENT happy_var_1)) -> 
+	 =  case happyOutTok happy_x_1 of { happy_var_1 -> 
 	happyIn24
-		 (Language.Ocaml.Abs.LIDENT happy_var_1
+		 (Language.Ocaml.Abs.LIDENT (mkPosToken happy_var_1)
 	)}
 
 happyReduce_22 = happySpecReduce_1  20# happyReduction_22
@@ -12605,7 +12605,7 @@ happyNewToken action sts stk (tk:tks) =
 	PT _ (T_BinLiteral happy_dollar_dollar) -> cont 120#;
 	PT _ (T_BinLiteralModifier happy_dollar_dollar) -> cont 121#;
 	PT _ (T_LABEL happy_dollar_dollar) -> cont 122#;
-	PT _ (T_LIDENT happy_dollar_dollar) -> cont 123#;
+	PT _ (T_LIDENT _) -> cont 123#;
 	PT _ (T_OPTLABEL happy_dollar_dollar) -> cont 124#;
 	PT _ (T_PREFIXOP happy_dollar_dollar) -> cont 125#;
 	PT _ (T_HASHOP happy_dollar_dollar) -> cont 126#;

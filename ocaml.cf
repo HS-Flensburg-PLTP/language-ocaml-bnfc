@@ -253,7 +253,7 @@ token LABEL '~' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
       { warn_latin1 lexbuf; LIDENT name }
 -}
 
-token LIDENT (lower | '_') (letter | digit | '_' | '\'')* ;
+position token LIDENT (lower | '_') (letter | digit | '_' | '\'')* ;
 
 {-
 %token LPAREN                 "("

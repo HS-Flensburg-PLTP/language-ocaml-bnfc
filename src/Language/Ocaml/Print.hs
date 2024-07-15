@@ -176,7 +176,7 @@ instance Print Language.Ocaml.Abs.BinLiteralModifier where
 instance Print Language.Ocaml.Abs.LABEL where
   prt _ (Language.Ocaml.Abs.LABEL i) = doc $ showString i
 instance Print Language.Ocaml.Abs.LIDENT where
-  prt _ (Language.Ocaml.Abs.LIDENT i) = doc $ showString i
+  prt _ (Language.Ocaml.Abs.LIDENT (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.OPTLABEL where
   prt _ (Language.Ocaml.Abs.OPTLABEL i) = doc $ showString i
 instance Print Language.Ocaml.Abs.PREFIXOP where
