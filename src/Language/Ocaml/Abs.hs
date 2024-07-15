@@ -680,22 +680,16 @@ data TypeConstraint
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Pattern
-    = Pattern PatternPattern | ExceptionPattern Ext [Attribute] Pattern
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data PatternNoExn = PatternNoExn PatternPatternNoExn
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data PatternPattern
     = ConsPattern Pattern Pattern
     | PatternWithAttribute Pattern Attribute
     | PatternGen PatternGen
     | AsPattern Pattern ValIdent
     | TuplePattern PatternCommaListPattern
     | OrPattern Pattern Pattern
+    | ExceptionPattern Ext [Attribute] Pattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data PatternPatternNoExn
+data PatternNoExn
     = ConsPatternNoExn PatternNoExn Pattern
     | PatternWithAttributeNoExn PatternNoExn Attribute
     | PatternGenNoExn PatternGen

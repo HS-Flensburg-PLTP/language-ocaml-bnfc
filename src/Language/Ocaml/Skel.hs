@@ -817,24 +817,16 @@ transTypeConstraint x = case x of
 
 transPattern :: Language.Ocaml.Abs.Pattern -> Result
 transPattern x = case x of
-  Language.Ocaml.Abs.Pattern patternpattern -> failure x
-  Language.Ocaml.Abs.ExceptionPattern ext attributes pattern_ -> failure x
-
-transPatternNoExn :: Language.Ocaml.Abs.PatternNoExn -> Result
-transPatternNoExn x = case x of
-  Language.Ocaml.Abs.PatternNoExn patternpatternnoexn -> failure x
-
-transPatternPattern :: Language.Ocaml.Abs.PatternPattern -> Result
-transPatternPattern x = case x of
   Language.Ocaml.Abs.ConsPattern pattern_1 pattern_2 -> failure x
   Language.Ocaml.Abs.PatternWithAttribute pattern_ attribute -> failure x
   Language.Ocaml.Abs.PatternGen patterngen -> failure x
   Language.Ocaml.Abs.AsPattern pattern_ valident -> failure x
   Language.Ocaml.Abs.TuplePattern patterncommalistpattern -> failure x
   Language.Ocaml.Abs.OrPattern pattern_1 pattern_2 -> failure x
+  Language.Ocaml.Abs.ExceptionPattern ext attributes pattern_ -> failure x
 
-transPatternPatternNoExn :: Language.Ocaml.Abs.PatternPatternNoExn -> Result
-transPatternPatternNoExn x = case x of
+transPatternNoExn :: Language.Ocaml.Abs.PatternNoExn -> Result
+transPatternNoExn x = case x of
   Language.Ocaml.Abs.ConsPatternNoExn patternnoexn pattern_ -> failure x
   Language.Ocaml.Abs.PatternWithAttributeNoExn patternnoexn attribute -> failure x
   Language.Ocaml.Abs.PatternGenNoExn patterngen -> failure x

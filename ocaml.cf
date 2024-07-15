@@ -2571,8 +2571,13 @@ pattern:
 ;
 -}
 
-Pattern.          Pattern ::= PatternPattern ;
-ExceptionPattern. Pattern ::= "exception" Ext [Attribute] Pattern ;
+ConsPattern.          Pattern ::= Pattern "::" Pattern ;
+PatternWithAttribute. Pattern ::= Pattern Attribute ;
+PatternGen.           Pattern ::= PatternGen ;
+AsPattern.            Pattern ::= Pattern "as" ValIdent ;
+TuplePattern.         Pattern ::= PatternCommaListPattern ;
+OrPattern.            Pattern ::= Pattern "|" Pattern ;
+ExceptionPattern.     Pattern ::= "exception" Ext [Attribute] Pattern ;
 
 {-
 pattern_no_exn:
@@ -2580,7 +2585,12 @@ pattern_no_exn:
 ;
 -}
 
-PatternNoExn. PatternNoExn ::= PatternPatternNoExn ;
+ConsPatternNoExn.          PatternNoExn ::= PatternNoExn "::" Pattern ;
+PatternWithAttributeNoExn. PatternNoExn ::= PatternNoExn Attribute ;
+PatternGenNoExn.           PatternNoExn ::= PatternGen ;
+AsPatternNoExn.            PatternNoExn ::= PatternNoExn "as" ValIdent ;
+TuplePatternNoExn.         PatternNoExn ::= PatternCommaListPatternNoExn ;
+OrPatternNoExn.            PatternNoExn ::= PatternNoExn "|" Pattern ;
 
 {-
 %inline pattern_(self):
@@ -2593,19 +2603,7 @@ PatternNoExn. PatternNoExn ::= PatternPatternNoExn ;
 ;
 -}
 
-ConsPattern.          PatternPattern ::= Pattern "::" Pattern ;
-PatternWithAttribute. PatternPattern ::= Pattern Attribute ;
-PatternGen.           PatternPattern ::= PatternGen ;
-AsPattern.            PatternPattern ::= Pattern "as" ValIdent ;
-TuplePattern.         PatternPattern ::= PatternCommaListPattern ;
-OrPattern.            PatternPattern ::= Pattern "|" Pattern ;
-
-ConsPatternNoExn.          PatternPatternNoExn ::= PatternNoExn "::" Pattern ;
-PatternWithAttributeNoExn. PatternPatternNoExn ::= PatternNoExn Attribute ;
-PatternGenNoExn.           PatternPatternNoExn ::= PatternGen ;
-AsPatternNoExn.            PatternPatternNoExn ::= PatternNoExn "as" ValIdent ;
-TuplePatternNoExn.         PatternPatternNoExn ::= PatternCommaListPatternNoExn ;
-OrPatternNoExn.            PatternPatternNoExn ::= PatternNoExn "|" Pattern ;
+-- This definition is inlined manually
 
 {-
 pattern_gen:
@@ -3018,8 +3016,6 @@ generic_constructor_declaration(opening):
 -}
 
 ConstructorDeclaration. ConstructorDeclaration ::= ConstrIdent GeneralizedConstructorArguments [Attribute] ;
-
-separator nonempty ConstructorDeclaration "|" ;
 
 {-
 str_exception_declaration:

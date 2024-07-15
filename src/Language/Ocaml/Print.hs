@@ -974,23 +974,15 @@ instance Print Language.Ocaml.Abs.TypeConstraint where
 
 instance Print Language.Ocaml.Abs.Pattern where
   prt i = \case
-    Language.Ocaml.Abs.Pattern patternpattern -> prPrec i 0 (concatD [prt 0 patternpattern])
-    Language.Ocaml.Abs.ExceptionPattern ext attributes pattern_ -> prPrec i 0 (concatD [doc (showString "exception"), prt 0 ext, prt 0 attributes, prt 0 pattern_])
-
-instance Print Language.Ocaml.Abs.PatternNoExn where
-  prt i = \case
-    Language.Ocaml.Abs.PatternNoExn patternpatternnoexn -> prPrec i 0 (concatD [prt 0 patternpatternnoexn])
-
-instance Print Language.Ocaml.Abs.PatternPattern where
-  prt i = \case
     Language.Ocaml.Abs.ConsPattern pattern_1 pattern_2 -> prPrec i 0 (concatD [prt 0 pattern_1, doc (showString "::"), prt 0 pattern_2])
     Language.Ocaml.Abs.PatternWithAttribute pattern_ attribute -> prPrec i 0 (concatD [prt 0 pattern_, prt 0 attribute])
     Language.Ocaml.Abs.PatternGen patterngen -> prPrec i 0 (concatD [prt 0 patterngen])
     Language.Ocaml.Abs.AsPattern pattern_ valident -> prPrec i 0 (concatD [prt 0 pattern_, doc (showString "as"), prt 0 valident])
     Language.Ocaml.Abs.TuplePattern patterncommalistpattern -> prPrec i 0 (concatD [prt 0 patterncommalistpattern])
     Language.Ocaml.Abs.OrPattern pattern_1 pattern_2 -> prPrec i 0 (concatD [prt 0 pattern_1, doc (showString "|"), prt 0 pattern_2])
+    Language.Ocaml.Abs.ExceptionPattern ext attributes pattern_ -> prPrec i 0 (concatD [doc (showString "exception"), prt 0 ext, prt 0 attributes, prt 0 pattern_])
 
-instance Print Language.Ocaml.Abs.PatternPatternNoExn where
+instance Print Language.Ocaml.Abs.PatternNoExn where
   prt i = \case
     Language.Ocaml.Abs.ConsPatternNoExn patternnoexn pattern_ -> prPrec i 0 (concatD [prt 0 patternnoexn, doc (showString "::"), prt 0 pattern_])
     Language.Ocaml.Abs.PatternWithAttributeNoExn patternnoexn attribute -> prPrec i 0 (concatD [prt 0 patternnoexn, prt 0 attribute])
@@ -1206,8 +1198,6 @@ instance Print Language.Ocaml.Abs.TypeVariance where
 instance Print [Language.Ocaml.Abs.ConstructorDeclaration] where
   prt _ [] = concatD []
   prt _ [x] = concatD [prt 0 x]
-  prt _ [x] = concatD [prt 0 x]
-  prt _ (x:xs) = concatD [prt 0 x, doc (showString "|"), prt 0 xs]
   prt _ (x:xs) = concatD [prt 0 x, doc (showString "|"), prt 0 xs]
 
 instance Print Language.Ocaml.Abs.ConstructorDeclarations where
