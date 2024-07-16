@@ -471,16 +471,12 @@ instance Print Language.Ocaml.Abs.ClassSimpleExpr where
     Language.Ocaml.Abs.ClassName classlongident -> prPrec i 0 (concatD [prt 0 classlongident])
     Language.Ocaml.Abs.ClassNameWithParamters coretypes classlongident -> prPrec i 0 (concatD [doc (showString "["), prt 0 coretypes, doc (showString "]"), prt 0 classlongident])
     Language.Ocaml.Abs.TypedClassExpr classexpr classtype -> prPrec i 0 (concatD [doc (showString "("), prt 0 classexpr, doc (showString ":"), prt 0 classtype, doc (showString ")")])
-    Language.Ocaml.Abs.ClassSimplExprObject attributes classstructure -> prPrec i 0 (concatD [doc (showString "object"), prt 0 attributes, prt 0 classstructure, doc (showString "end")])
+    Language.Ocaml.Abs.ClassSimplExprObject attributes classselfpattern classfields -> prPrec i 0 (concatD [doc (showString "object"), prt 0 attributes, prt 0 classselfpattern, prt 0 classfields, doc (showString "end")])
 
 instance Print Language.Ocaml.Abs.ClassFunDef where
   prt i = \case
     Language.Ocaml.Abs.ClassFun labeledsimplepattern classexpr -> prPrec i 0 (concatD [prt 0 labeledsimplepattern, doc (showString "->"), prt 0 classexpr])
     Language.Ocaml.Abs.LabeledClassFunDef labeledsimplepattern classfundef -> prPrec i 0 (concatD [prt 0 labeledsimplepattern, prt 0 classfundef])
-
-instance Print Language.Ocaml.Abs.ClassStructure where
-  prt i = \case
-    Language.Ocaml.Abs.ClassSelfPattern classselfpattern classfields -> prPrec i 0 (concatD [prt 0 classselfpattern, prt 0 classfields])
 
 instance Print Language.Ocaml.Abs.ClassSelfPattern where
   prt i = \case
@@ -816,7 +812,7 @@ instance Print Language.Ocaml.Abs.SimpleExpr where
     Language.Ocaml.Abs.New ext attributes classlongident -> prPrec i 19 (concatD [doc (showString "new"), prt 0 ext, prt 0 attributes, prt 0 classlongident])
     Language.Ocaml.Abs.Module ext attributes moduleexpr -> prPrec i 19 (concatD [doc (showString "("), doc (showString "module"), prt 0 ext, prt 0 attributes, prt 0 moduleexpr, doc (showString ")")])
     Language.Ocaml.Abs.TypedModule ext attributes moduleexpr moduletype -> prPrec i 19 (concatD [doc (showString "("), doc (showString "module"), prt 0 ext, prt 0 attributes, prt 0 moduleexpr, doc (showString ":"), prt 0 moduletype, doc (showString ")")])
-    Language.Ocaml.Abs.Object ext attributes classstructure -> prPrec i 19 (concatD [doc (showString "object"), prt 0 ext, prt 0 attributes, prt 0 classstructure, doc (showString "end")])
+    Language.Ocaml.Abs.Object ext attributes classselfpattern classfields -> prPrec i 19 (concatD [doc (showString "object"), prt 0 ext, prt 0 attributes, prt 0 classselfpattern, prt 0 classfields, doc (showString "end")])
     Language.Ocaml.Abs.PrefixApp prefixop simpleexpr -> prPrec i 18 (concatD [prt 0 prefixop, prt 19 simpleexpr])
     Language.Ocaml.Abs.BangApp simpleexpr -> prPrec i 18 (concatD [doc (showString "!"), prt 19 simpleexpr])
     Language.Ocaml.Abs.ArrayExpr simpleexpr seqexpr -> prPrec i 17 (concatD [prt 17 simpleexpr, doc (showString "."), doc (showString "("), prt 0 seqexpr, doc (showString ")")])
@@ -1015,10 +1011,6 @@ instance Print Language.Ocaml.Abs.SimplePatternNotIdent where
     Language.Ocaml.Abs.SimpleDelimitedPattern simpledelimitedpattern -> prPrec i 0 (concatD [prt 0 simpledelimitedpattern])
     Language.Ocaml.Abs.ParenModule ext attributes modulename -> prPrec i 0 (concatD [doc (showString "("), doc (showString "module"), prt 0 ext, prt 0 attributes, prt 0 modulename, doc (showString ")")])
     Language.Ocaml.Abs.TypedParenModule ext attributes modulename packagetype -> prPrec i 0 (concatD [doc (showString "("), doc (showString "module"), prt 0 ext, prt 0 attributes, prt 0 modulename, doc (showString ":"), prt 0 packagetype, doc (showString ")")])
-    Language.Ocaml.Abs.SimplePatternNotIdent_ simplepatternnotident -> prPrec i 0 (concatD [prt 0 simplepatternnotident])
-
-instance Print Language.Ocaml.Abs.SimplePatternNotIdent_ where
-  prt i = \case
     Language.Ocaml.Abs.UnderscorePattern -> prPrec i 0 (concatD [doc (showString "_")])
     Language.Ocaml.Abs.ConstantPattern signedconstant -> prPrec i 0 (concatD [prt 0 signedconstant])
     Language.Ocaml.Abs.RangePattern signedconstant1 signedconstant2 -> prPrec i 0 (concatD [prt 0 signedconstant1, doc (showString ".."), prt 0 signedconstant2])
@@ -1036,8 +1028,8 @@ instance Print Language.Ocaml.Abs.SimplePatternNotIdent_ where
 instance Print Language.Ocaml.Abs.SimpleDelimitedPattern where
   prt i = \case
     Language.Ocaml.Abs.RecordPattern recordpatcontent -> prPrec i 0 (concatD [doc (showString "{"), prt 0 recordpatcontent, doc (showString "}")])
-    Language.Ocaml.Abs.ListPattern patternsemis -> prPrec i 0 (concatD [doc (showString "["), prt 0 patternsemis, doc (showString "]")])
-    Language.Ocaml.Abs.ArrayPattern patternsemis -> prPrec i 0 (concatD [doc (showString "[|"), prt 0 patternsemis, doc (showString "|]")])
+    Language.Ocaml.Abs.ListPattern patterns -> prPrec i 0 (concatD [doc (showString "["), prt 0 patterns, doc (showString "]")])
+    Language.Ocaml.Abs.ArrayPattern patterns -> prPrec i 0 (concatD [doc (showString "[|"), prt 0 patterns, doc (showString "|]")])
     Language.Ocaml.Abs.EmptyArrayPattern -> prPrec i 0 (concatD [doc (showString "[|"), doc (showString "|]")])
 
 instance Print Language.Ocaml.Abs.PatternCommaListPattern where
@@ -1050,11 +1042,7 @@ instance Print Language.Ocaml.Abs.PatternCommaListPatternNoExn where
     Language.Ocaml.Abs.MorePatternNoExn patterncommalistpatternnoexn pattern_ -> prPrec i 0 (concatD [prt 0 patterncommalistpatternnoexn, doc (showString ","), prt 0 pattern_])
     Language.Ocaml.Abs.TwoPatternNoExn patternnoexn pattern_ -> prPrec i 0 (concatD [prt 0 patternnoexn, doc (showString ","), prt 0 pattern_])
 
-instance Print Language.Ocaml.Abs.PatternSemi where
-  prt i = \case
-    Language.Ocaml.Abs.PatternSemi pattern_ -> prPrec i 0 (concatD [prt 0 pattern_])
-
-instance Print [Language.Ocaml.Abs.PatternSemi] where
+instance Print [Language.Ocaml.Abs.Pattern] where
   prt _ [] = concatD []
   prt _ [x] = concatD [prt 0 x]
   prt _ [x] = concatD [prt 0 x, doc (showString ";")]
@@ -1096,7 +1084,7 @@ instance Print [Language.Ocaml.Abs.STRING] where
 
 instance Print Language.Ocaml.Abs.PrimitiveDeclaration where
   prt i = \case
-    Language.Ocaml.Abs.PrmitiveDeclaration ext attributes valident polytype strings postitemattributes -> prPrec i 0 (concatD [doc (showString "external"), prt 0 ext, prt 0 attributes, prt 0 valident, doc (showString ":"), prt 0 polytype, doc (showString "="), prt 0 strings, prt 0 postitemattributes])
+    Language.Ocaml.Abs.PrimitiveDeclaration ext attributes valident polytype strings postitemattributes -> prPrec i 0 (concatD [doc (showString "external"), prt 0 ext, prt 0 attributes, prt 0 valident, doc (showString ":"), prt 0 polytype, doc (showString "="), prt 0 strings, prt 0 postitemattributes])
 
 instance Print Language.Ocaml.Abs.AndTypeDeclaration where
   prt i = \case

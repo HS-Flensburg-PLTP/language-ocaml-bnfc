@@ -363,16 +363,12 @@ transClassSimpleExpr x = case x of
   Language.Ocaml.Abs.ClassName classlongident -> failure x
   Language.Ocaml.Abs.ClassNameWithParamters coretypes classlongident -> failure x
   Language.Ocaml.Abs.TypedClassExpr classexpr classtype -> failure x
-  Language.Ocaml.Abs.ClassSimplExprObject attributes classstructure -> failure x
+  Language.Ocaml.Abs.ClassSimplExprObject attributes classselfpattern classfields -> failure x
 
 transClassFunDef :: Language.Ocaml.Abs.ClassFunDef -> Result
 transClassFunDef x = case x of
   Language.Ocaml.Abs.ClassFun labeledsimplepattern classexpr -> failure x
   Language.Ocaml.Abs.LabeledClassFunDef labeledsimplepattern classfundef -> failure x
-
-transClassStructure :: Language.Ocaml.Abs.ClassStructure -> Result
-transClassStructure x = case x of
-  Language.Ocaml.Abs.ClassSelfPattern classselfpattern classfields -> failure x
 
 transClassSelfPattern :: Language.Ocaml.Abs.ClassSelfPattern -> Result
 transClassSelfPattern x = case x of
@@ -691,7 +687,7 @@ transSimpleExpr x = case x of
   Language.Ocaml.Abs.New ext attributes classlongident -> failure x
   Language.Ocaml.Abs.Module ext attributes moduleexpr -> failure x
   Language.Ocaml.Abs.TypedModule ext attributes moduleexpr moduletype -> failure x
-  Language.Ocaml.Abs.Object ext attributes classstructure -> failure x
+  Language.Ocaml.Abs.Object ext attributes classselfpattern classfields -> failure x
   Language.Ocaml.Abs.PrefixApp prefixop simpleexpr -> failure x
   Language.Ocaml.Abs.BangApp simpleexpr -> failure x
   Language.Ocaml.Abs.ArrayExpr simpleexpr seqexpr -> failure x
@@ -853,10 +849,6 @@ transSimplePatternNotIdent x = case x of
   Language.Ocaml.Abs.SimpleDelimitedPattern simpledelimitedpattern -> failure x
   Language.Ocaml.Abs.ParenModule ext attributes modulename -> failure x
   Language.Ocaml.Abs.TypedParenModule ext attributes modulename packagetype -> failure x
-  Language.Ocaml.Abs.SimplePatternNotIdent_ simplepatternnotident -> failure x
-
-transSimplePatternNotIdent_ :: Language.Ocaml.Abs.SimplePatternNotIdent_ -> Result
-transSimplePatternNotIdent_ x = case x of
   Language.Ocaml.Abs.UnderscorePattern -> failure x
   Language.Ocaml.Abs.ConstantPattern signedconstant -> failure x
   Language.Ocaml.Abs.RangePattern signedconstant1 signedconstant2 -> failure x
@@ -874,8 +866,8 @@ transSimplePatternNotIdent_ x = case x of
 transSimpleDelimitedPattern :: Language.Ocaml.Abs.SimpleDelimitedPattern -> Result
 transSimpleDelimitedPattern x = case x of
   Language.Ocaml.Abs.RecordPattern recordpatcontent -> failure x
-  Language.Ocaml.Abs.ListPattern patternsemis -> failure x
-  Language.Ocaml.Abs.ArrayPattern patternsemis -> failure x
+  Language.Ocaml.Abs.ListPattern patterns -> failure x
+  Language.Ocaml.Abs.ArrayPattern patterns -> failure x
   Language.Ocaml.Abs.EmptyArrayPattern -> failure x
 
 transPatternCommaListPattern :: Language.Ocaml.Abs.PatternCommaListPattern -> Result
@@ -887,10 +879,6 @@ transPatternCommaListPatternNoExn :: Language.Ocaml.Abs.PatternCommaListPatternN
 transPatternCommaListPatternNoExn x = case x of
   Language.Ocaml.Abs.MorePatternNoExn patterncommalistpatternnoexn pattern_ -> failure x
   Language.Ocaml.Abs.TwoPatternNoExn patternnoexn pattern_ -> failure x
-
-transPatternSemi :: Language.Ocaml.Abs.PatternSemi -> Result
-transPatternSemi x = case x of
-  Language.Ocaml.Abs.PatternSemi pattern_ -> failure x
 
 transOptionalSemi :: Language.Ocaml.Abs.OptionalSemi -> Result
 transOptionalSemi x = case x of
@@ -923,7 +911,7 @@ transValueDescription x = case x of
 
 transPrimitiveDeclaration :: Language.Ocaml.Abs.PrimitiveDeclaration -> Result
 transPrimitiveDeclaration x = case x of
-  Language.Ocaml.Abs.PrmitiveDeclaration ext attributes valident polytype strings postitemattributes -> failure x
+  Language.Ocaml.Abs.PrimitiveDeclaration ext attributes valident polytype strings postitemattributes -> failure x
 
 transAndTypeDeclaration :: Language.Ocaml.Abs.AndTypeDeclaration -> Result
 transAndTypeDeclaration x = case x of

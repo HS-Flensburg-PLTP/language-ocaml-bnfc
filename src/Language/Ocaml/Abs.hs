@@ -245,16 +245,12 @@ data ClassSimpleExpr
     | ClassName ClassLongident
     | ClassNameWithParamters [CoreType] ClassLongident
     | TypedClassExpr ClassExpr ClassType
-    | ClassSimplExprObject [Attribute] ClassStructure
+    | ClassSimplExprObject [Attribute] ClassSelfPattern [ClassField]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ClassFunDef
     = ClassFun LabeledSimplePattern ClassExpr
     | LabeledClassFunDef LabeledSimplePattern ClassFunDef
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data ClassStructure
-    = ClassSelfPattern ClassSelfPattern [ClassField]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ClassSelfPattern
@@ -560,7 +556,7 @@ data SimpleExpr
     | New Ext [Attribute] ClassLongident
     | Module Ext [Attribute] ModuleExpr
     | TypedModule Ext [Attribute] ModuleExpr ModuleType
-    | Object Ext [Attribute] ClassStructure
+    | Object Ext [Attribute] ClassSelfPattern [ClassField]
     | PrefixApp PREFIXOP SimpleExpr
     | BangApp SimpleExpr
     | ArrayExpr SimpleExpr SeqExpr
@@ -715,11 +711,7 @@ data SimplePatternNotIdent
     | SimpleDelimitedPattern SimpleDelimitedPattern
     | ParenModule Ext [Attribute] ModuleName
     | TypedParenModule Ext [Attribute] ModuleName PackageType
-    | SimplePatternNotIdent_ SimplePatternNotIdent_
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data SimplePatternNotIdent_
-    = UnderscorePattern
+    | UnderscorePattern
     | ConstantPattern SignedConstant
     | RangePattern SignedConstant SignedConstant
     | ConstrNamePattern ConstrLongident
@@ -736,8 +728,8 @@ data SimplePatternNotIdent_
 
 data SimpleDelimitedPattern
     = RecordPattern RecordPatContent
-    | ListPattern [PatternSemi]
-    | ArrayPattern [PatternSemi]
+    | ListPattern [Pattern]
+    | ArrayPattern [Pattern]
     | EmptyArrayPattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -749,9 +741,6 @@ data PatternCommaListPattern
 data PatternCommaListPatternNoExn
     = MorePatternNoExn PatternCommaListPatternNoExn Pattern
     | TwoPatternNoExn PatternNoExn Pattern
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data PatternSemi = PatternSemi Pattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data OptionalSemi = NoSemi | ASemi
@@ -779,7 +768,7 @@ data ValueDescription
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data PrimitiveDeclaration
-    = PrmitiveDeclaration Ext [Attribute] ValIdent PolyType [STRING] [PostItemAttribute]
+    = PrimitiveDeclaration Ext [Attribute] ValIdent PolyType [STRING] [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AndTypeDeclaration

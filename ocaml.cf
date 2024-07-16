@@ -1506,7 +1506,7 @@ ParenClassExpr.         ClassSimpleExpr ::= "(" ClassExpr ")" ;
 ClassName.              ClassSimpleExpr ::= ClassLongident ;
 ClassNameWithParamters. ClassSimpleExpr ::= "[" [CoreType] "]" ClassLongident ;
 TypedClassExpr.         ClassSimpleExpr ::= "(" ClassExpr ":" ClassType ")" ;
-ClassSimplExprObject.   ClassSimpleExpr ::= "object" [Attribute] ClassStructure "end" ;
+ClassSimplExprObject.   ClassSimpleExpr ::= "object" [Attribute] ClassSelfPattern [ClassField] "end" ;
 
 {-
 class_fun_def:
@@ -1524,7 +1524,7 @@ LabeledClassFunDef. ClassFunDef ::= LabeledSimplePattern ClassFunDef ;
 ;
 -}
 
-ClassSelfPattern. ClassStructure ::= ClassSelfPattern [ClassField] ;
+-- This definition is inlined manually
 
 {-
 class_self_pattern:
@@ -2211,7 +2211,7 @@ EmptyBeginEnd.             SimpleExpr19  ::= "begin" Ext [Attribute] "end" ;
 New.                       SimpleExpr19  ::= "new" Ext [Attribute] ClassLongident ;
 Module.                    SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ")" ;
 TypedModule.               SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
-Object.                    SimpleExpr19  ::= "object" Ext [Attribute] ClassStructure "end" ;
+Object.                    SimpleExpr19  ::= "object" Ext [Attribute] ClassSelfPattern [ClassField] "end" ;
 
 -- prefix-symbol precedence 18
 PrefixApp.                 SimpleExpr18 ::= PREFIXOP SimpleExpr19 ;
@@ -2651,7 +2651,19 @@ ParenPattern.           SimplePatternNotIdent ::= "(" Pattern ")" ;
 SimpleDelimitedPattern. SimplePatternNotIdent ::= SimpleDelimitedPattern ;
 ParenModule.            SimplePatternNotIdent ::= "(" "module" Ext [Attribute] ModuleName ")" ;
 TypedParenModule.       SimplePatternNotIdent ::= "(" "module" Ext [Attribute] ModuleName ":" PackageType ")" ;
-SimplePatternNotIdent_. SimplePatternNotIdent ::= SimplePatternNotIdent_ ;
+UnderscorePattern.      SimplePatternNotIdent ::= "_" ;
+ConstantPattern.        SimplePatternNotIdent ::= SignedConstant ;
+RangePattern.           SimplePatternNotIdent ::= SignedConstant ".." SignedConstant ;
+ConstrNamePattern.      SimplePatternNotIdent ::= ConstrLongident ;
+TagPattern.             SimplePatternNotIdent ::= NameTag ;
+TypeConstrPattern.      SimplePatternNotIdent ::= "#" TypeLongident ;
+DotPattern.             SimplePatternNotIdent ::= ModLongident "." SimpleDelimitedPattern ;
+EmptyStringPattern.     SimplePatternNotIdent ::= ModLongident "." "[" "]" ;
+EmptyArrayPattern_.     SimplePatternNotIdent ::= ModLongident "." "(" ")" ;
+ArrayPattern_.          SimplePatternNotIdent ::= ModLongident "." "(" Pattern ")" ;
+TypedPattern.           SimplePatternNotIdent ::= "(" Pattern ":" CoreType ")" ;
+ModulePattern.          SimplePatternNotIdent ::= "(" "module" Ext [Attribute] ModuleName ":" PackageType ")" ;
+ExtensionPattern.       SimplePatternNotIdent ::= Extension ;
 
 {-
 %inline simple_pattern_not_ident_:
@@ -2671,19 +2683,7 @@ SimplePatternNotIdent_. SimplePatternNotIdent ::= SimplePatternNotIdent_ ;
 ;
 -}
 
-UnderscorePattern.  SimplePatternNotIdent_ ::= "_" ;
-ConstantPattern.    SimplePatternNotIdent_ ::= SignedConstant ;
-RangePattern.       SimplePatternNotIdent_ ::= SignedConstant ".." SignedConstant ;
-ConstrNamePattern.  SimplePatternNotIdent_ ::= ConstrLongident ;
-TagPattern.         SimplePatternNotIdent_ ::= NameTag ;
-TypeConstrPattern.  SimplePatternNotIdent_ ::= "#" TypeLongident ;
-DotPattern.         SimplePatternNotIdent_ ::= ModLongident "." SimpleDelimitedPattern ;
-EmptyStringPattern. SimplePatternNotIdent_ ::= ModLongident "." "[" "]" ;
-EmptyArrayPattern_. SimplePatternNotIdent_ ::= ModLongident "." "(" ")" ;
-ArrayPattern_.      SimplePatternNotIdent_ ::= ModLongident "." "(" Pattern ")" ;
-TypedPattern.       SimplePatternNotIdent_ ::= "(" Pattern ":" CoreType ")" ;
-ModulePattern.      SimplePatternNotIdent_ ::= "(" "module" Ext [Attribute] ModuleName ":" PackageType ")" ;
-ExtensionPattern.   SimplePatternNotIdent_ ::= Extension ;
+-- This definition is inlined manually
 
 {-
 simple_delimited_pattern:
@@ -2694,8 +2694,8 @@ simple_delimited_pattern:
 -}
 
 RecordPattern.     SimpleDelimitedPattern ::= "{" RecordPatContent "}" ;
-ListPattern.       SimpleDelimitedPattern ::= "[" [PatternSemi] "]" ;
-ArrayPattern.      SimpleDelimitedPattern ::= "[|" [PatternSemi] "|]" ;
+ListPattern.       SimpleDelimitedPattern ::= "[" [Pattern] "]" ;
+ArrayPattern.      SimpleDelimitedPattern ::= "[|" [Pattern] "|]" ;
 EmptyArrayPattern. SimpleDelimitedPattern ::= "[|" "|]" ;
 
 {-
@@ -2717,11 +2717,9 @@ TwoPatternNoExn.  PatternCommaListPatternNoExn ::= PatternNoExn "," Pattern ;
 ;
 -}
 
-PatternSemi. PatternSemi ::= Pattern ;
-
-(:[]). [PatternSemi] ::= PatternSemi ;
-(:[]). [PatternSemi] ::= PatternSemi ";" ;
-(:).   [PatternSemi] ::= PatternSemi ";" [PatternSemi] ;
+(:[]). [Pattern] ::= Pattern ;
+(:[]). [Pattern] ::= Pattern ";" ;
+(:).   [Pattern] ::= Pattern ";" [Pattern] ;
 
 {-
 (* A label-pattern list is a nonempty list of label-pattern pairs, optionally
@@ -2777,7 +2775,7 @@ primitive_declaration:
 
 separator nonempty STRING "" ;
 
-PrmitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIdent ":" PolyType "=" [STRING] [PostItemAttribute] ;
+PrimitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIdent ":" PolyType "=" [STRING] [PostItemAttribute] ;
 
 {-
 (* Type declarations and type substitutions. *)
