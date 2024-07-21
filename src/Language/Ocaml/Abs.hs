@@ -64,7 +64,7 @@ data ModuleExpr
     = ModuleExprStruct [Attribute] Structure
     | ModuleExprFunctor [Attribute] [FunctorArg] ModuleExpr
     | ModuleExprParen ParenModuleExpr
-    | ModuleExpr ModuleExpr Attribute
+    | ModuleExprWithAttribute ModuleExpr Attribute
     | ModuleExprIdent ModLongident
     | ModuleExprFunctorApp ModuleExpr ParenModuleExpr
     | FunctorAppUnit ModuleExpr
@@ -72,16 +72,16 @@ data ModuleExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ParenModuleExpr
-    = TypedParenModuleExpr ModuleExpr ModuleType
-    | ParenModuleExpr ModuleExpr
+    = ModuleExprWithType ModuleExpr ModuleType
+    | ModuleExpr ModuleExpr
     | ValParenModuleExpr [Attribute] ExprColonPackageType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ExprColonPackageType
     = Expr Expr
-    | TypedExpr Expr ModuleType
-    | TypedCoercionExpr Expr ModuleType ModuleType
-    | CoercionExpr Expr ModuleType
+    | ExprWithType Expr ModuleType
+    | ExprWithCoercionFromTo Expr ModuleType ModuleType
+    | ExprWithCoercionTo Expr ModuleType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Structure
@@ -98,26 +98,26 @@ data StructureElement
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data StructureItem
-    = StructureLetBindings LetBindingsExt
-    | StructureItemExtension ItemExtension [PostItemAttribute]
-    | StructureFloatingAttribute FloatingAttribute
-    | StructurePrimitiveDeclaration PrimitiveDeclaration
-    | StructureValueDescription ValueDescription
-    | StructureTypeDeclarations TypeDeclaration [AndTypeDeclaration]
-    | StructureStrTypeExtension StrTypeExtension
+    = StrLetBindings LetBindingsExt
+    | StrItemExtension ItemExtension [PostItemAttribute]
+    | StrFloatingAttribute FloatingAttribute
+    | StrPrimitiveDeclaration PrimitiveDeclaration
+    | StrValueDescription ValueDescription
+    | StrTypeDeclarations TypeDeclaration [AndTypeDeclaration]
+    | StrTypeExtension Ext [Attribute] TypeParameters TypeLongident PrivateFlag BarLlistExtensionConstructor [PostItemAttribute]
     | StrExceptionDeclaration StrExceptionDeclaration
-    | StructureModuleBinding Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute]
-    | StructureRecModuleBindings Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute] [AndModuleBinding]
-    | StructureModuleTypeDeclaration ModuleTypeDeclaration
-    | StructureOpenDeclaration OpenDeclaration
-    | StructureClassDeclarations Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ClassFunBinding [PostItemAttribute] [AndClassDeclaration]
-    | StructureClassTypeDeclarations ClassTypeDeclarations
-    | StructureIncludeStatement Ext [Attribute] ModuleExpr [PostItemAttribute]
+    | StrModuleBinding Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute]
+    | StrRecModuleBindings Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute] [AndModuleBinding]
+    | StrModuleTypeDeclaration ModuleTypeDeclaration
+    | StrOpenDeclaration OpenDeclaration
+    | StrClassDeclarations Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ClassFunBinding [PostItemAttribute] [AndClassDeclaration]
+    | StrClassTypeDeclarations ClassTypeDeclarations
+    | StrIncludeStatement Ext [Attribute] ModuleExpr [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ModuleBindingBody
     = ModuleBinding ModuleExpr
-    | TypedModuleBinding ModuleType ModuleExpr
+    | ModuleBindingWitgType ModuleType ModuleExpr
     | FunctorBinding FunctorArg ModuleBindingBody
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -144,7 +144,7 @@ data ModuleType
     = ModuleTypeSignature [Attribute] Signature
     | ModuleTypeFunctor [Attribute] [FunctorArg] ModuleType
     | ModuleTypeOf [Attribute] ModuleExpr
-    | ParenModuleType ModuleType
+    | ModuleType ModuleType
     | ModuleTypeWithAttribute ModuleType Attribute
     | ModuleTypeModuleIdent ModLongident
     | ModuleTypeNoArgFunctorApp ModuleType
@@ -166,7 +166,7 @@ data SignatureItem
     | SigPrimitiveDeclaration PrimitiveDeclaration
     | SigTypeDeclarations TypeDeclaration [AndTypeDeclaration]
     | SigTypeSubstDeclarations TypeSubstDeclarations
-    | SigSigTypeExtension SigTypeExtension
+    | SigTypeExtension Ext [Attribute] TypeParameters TypeLongident PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute]
     | SigSigExceptionDeclaration SigExceptionDeclaration
     | SigModuleDeclaration ModuleDeclaration
     | SigModuleAlias ModuleAlias
@@ -222,7 +222,7 @@ data AndClassDeclaration
 
 data ClassFunBinding
     = ClassFunBinding ClassExpr
-    | TypedClassFunBinding ClassType ClassExpr
+    | ClassFunBindingWithType ClassType ClassExpr
     | LabeledClassFunBinding LabeledSimplePattern ClassFunBinding
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -235,16 +235,16 @@ data ClassExpr
     | ClassExprFunctor [Attribute] ClassFunDef
     | ClassExprLetBindings LetBindingsNoExt ClassExpr
     | ClassExprLetOpen OverrideFlag [Attribute] ModLongident ClassExpr
-    | ClassExpr ClassExpr Attribute
+    | ClassExprWithAttribute ClassExpr Attribute
     | LabeledClassSimpleExpr ClassSimpleExpr [LabeledSimpleExpr]
     | ClassExprExtension Extension
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ClassSimpleExpr
-    = ParenClassExpr ClassExpr
+    = ClassExpr ClassExpr
     | ClassName ClassLongident
     | ClassNameWithParamters [CoreType] ClassLongident
-    | TypedClassExpr ClassExpr ClassType
+    | ClassExprWithType ClassExpr ClassType
     | ClassSimplExprObject [Attribute] ClassSelfPattern [ClassField]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -254,8 +254,8 @@ data ClassFunDef
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ClassSelfPattern
-    = ParenClassPattern Pattern
-    | TypedClassPattern Pattern CoreType
+    = ClassPattern Pattern
+    | ClassPatternWithType Pattern CoreType
     | NoClassSelfPattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -279,10 +279,10 @@ data Value
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Method_
-    = Method1 NoOverrideFlag [Attribute] VirtualWithPrivateFlag LIDENT PolyType
-    | Method2 OverrideFlag [Attribute] PrivateFlag LIDENT StrictBinding
-    | Method3 OverrideFlag [Attribute] PrivateFlag LIDENT PolyType SeqExpr
-    | Method4 OverrideFlag [Attribute] PrivateFlag LIDENT [LIDENT] CoreType SeqExpr
+    = VirtualMethod NoOverrideFlag [Attribute] VirtualWithPrivateFlag LIDENT PolyType
+    | Method OverrideFlag [Attribute] PrivateFlag LIDENT StrictBinding
+    | MethodWithType OverrideFlag [Attribute] PrivateFlag LIDENT PolyType SeqExpr
+    | MethodWithLocallyAbstractType OverrideFlag [Attribute] PrivateFlag LIDENT [LIDENT] CoreType SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ClassType
@@ -343,11 +343,11 @@ data SeqExpr
 
 data LabeledSimplePattern
     = OptPattern LabelLetPattern OptDefault
-    | OptLabelVar LIDENT
+    | OptLabel LIDENT
     | OptLabeledPattern OPTLABEL LetPattern OptDefault
     | OptLabeledVar OPTLABEL PatternVar
     | LabeledPattern LabelLetPattern
-    | LabeledVar LIDENT
+    | Label LIDENT
     | LabeledSimplePattern LABEL SimplePattern
     | SimplePattern SimplePattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
@@ -359,11 +359,11 @@ data OptDefault = NoDefault | Default SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LabelLetPattern
-    = LabelLetPattern LIDENT | TypedLabelLetPattern LIDENT CoreType
+    = LabelVar LIDENT | LabelVarWithType LIDENT CoreType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LetPattern
-    = LetPattern Pattern | TypedLetPattern Pattern CoreType
+    = LetPattern Pattern | LetPatternWithType Pattern CoreType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data QualifiedDotop
@@ -417,9 +417,9 @@ data FunExpr
     | Let LetBindingsExt SeqExpr
     | LetOpBinding LETOP LetopBindings SeqExpr
     | LetModule Ext [Attribute] ModuleName ModuleBindingBody SeqExpr
-    | LetException Ext [Attribute] LetExceptionDeclaration SeqExpr
+    | LetException Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] SeqExpr
     | LetOpen OverrideFlag Ext [Attribute] ModuleExpr SeqExpr
-    | Fun Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation FunBody
+    | Fun Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation FunBody
     | Match Ext [Attribute] SeqExpr [MatchCase]
     | Try Ext [Attribute] SeqExpr [MatchCase]
     | While Ext [Attribute] SeqExpr SeqExpr
@@ -432,9 +432,9 @@ data Expr
     | Let15 LetBindingsExt SeqExpr
     | LetOpBinding15 LETOP LetopBindings SeqExpr
     | LetModule15 Ext [Attribute] ModuleName ModuleBindingBody SeqExpr
-    | LetException15 Ext [Attribute] LetExceptionDeclaration SeqExpr
+    | LetException15 Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] SeqExpr
     | LetOpen15 OverrideFlag Ext [Attribute] ModuleExpr SeqExpr
-    | Fun15 Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation FunBody
+    | Fun15 Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation FunBody
     | Match15 Ext [Attribute] SeqExpr [MatchCase]
     | Try15 Ext [Attribute] SeqExpr [MatchCase]
     | IfElse15 Ext [Attribute] SeqExpr Expr Expr
@@ -444,9 +444,9 @@ data Expr
     | Let13 LetBindingsExt SeqExpr
     | LetOpBinding13 LETOP LetopBindings SeqExpr
     | LetModule13 Ext [Attribute] ModuleName ModuleBindingBody SeqExpr
-    | LetException13 Ext [Attribute] LetExceptionDeclaration SeqExpr
+    | LetException13 Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] SeqExpr
     | LetOpen13 OverrideFlag Ext [Attribute] ModuleExpr SeqExpr
-    | Fun13 Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation FunBody
+    | Fun13 Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation FunBody
     | Match13 Ext [Attribute] SeqExpr [MatchCase]
     | Try13 Ext [Attribute] SeqExpr [MatchCase]
     | IfElse13 Ext [Attribute] SeqExpr Expr Expr
@@ -456,9 +456,9 @@ data Expr
     | Let12 LetBindingsExt SeqExpr
     | LetOpBinding12 LETOP LetopBindings SeqExpr
     | LetModule12 Ext [Attribute] ModuleName ModuleBindingBody SeqExpr
-    | LetException12 Ext [Attribute] LetExceptionDeclaration SeqExpr
+    | LetException12 Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] SeqExpr
     | LetOpen12 OverrideFlag Ext [Attribute] ModuleExpr SeqExpr
-    | Fun12 Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation FunBody
+    | Fun12 Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation FunBody
     | Match12 Ext [Attribute] SeqExpr [MatchCase]
     | Try12 Ext [Attribute] SeqExpr [MatchCase]
     | IfElse12 Ext [Attribute] SeqExpr Expr Expr
@@ -468,9 +468,9 @@ data Expr
     | Let11 LetBindingsExt SeqExpr
     | LetOpBinding11 LETOP LetopBindings SeqExpr
     | LetModule11 Ext [Attribute] ModuleName ModuleBindingBody SeqExpr
-    | LetException11 Ext [Attribute] LetExceptionDeclaration SeqExpr
+    | LetException11 Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] SeqExpr
     | LetOpen11 OverrideFlag Ext [Attribute] ModuleExpr SeqExpr
-    | Fun11 Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation FunBody
+    | Fun11 Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation FunBody
     | Match11 Ext [Attribute] SeqExpr [MatchCase]
     | Try11 Ext [Attribute] SeqExpr [MatchCase]
     | IfElse11 Ext [Attribute] SeqExpr Expr Expr
@@ -480,9 +480,9 @@ data Expr
     | Let10 LetBindingsExt SeqExpr
     | LetOpBinding10 LETOP LetopBindings SeqExpr
     | LetModule10 Ext [Attribute] ModuleName ModuleBindingBody SeqExpr
-    | LetException10 Ext [Attribute] LetExceptionDeclaration SeqExpr
+    | LetException10 Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] SeqExpr
     | LetOpen10 OverrideFlag Ext [Attribute] ModuleExpr SeqExpr
-    | Fun10 Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation FunBody
+    | Fun10 Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation FunBody
     | Match10 Ext [Attribute] SeqExpr [MatchCase]
     | Try10 Ext [Attribute] SeqExpr [MatchCase]
     | IfElse10 Ext [Attribute] SeqExpr Expr Expr
@@ -492,9 +492,9 @@ data Expr
     | Let9 LetBindingsExt SeqExpr
     | LetOpBinding9 LETOP LetopBindings SeqExpr
     | LetModule9 Ext [Attribute] ModuleName ModuleBindingBody SeqExpr
-    | LetException9 Ext [Attribute] LetExceptionDeclaration SeqExpr
+    | LetException9 Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] SeqExpr
     | LetOpen9 OverrideFlag Ext [Attribute] ModuleExpr SeqExpr
-    | Fun9 Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation FunBody
+    | Fun9 Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation FunBody
     | Match9 Ext [Attribute] SeqExpr [MatchCase]
     | Try9 Ext [Attribute] SeqExpr [MatchCase]
     | IfElse9 Ext [Attribute] SeqExpr Expr Expr
@@ -504,9 +504,9 @@ data Expr
     | Let7 LetBindingsExt SeqExpr
     | LetOpBinding7 LETOP LetopBindings SeqExpr
     | LetModule7 Ext [Attribute] ModuleName ModuleBindingBody SeqExpr
-    | LetException7 Ext [Attribute] LetExceptionDeclaration SeqExpr
+    | LetException7 Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] SeqExpr
     | LetOpen7 OverrideFlag Ext [Attribute] ModuleExpr SeqExpr
-    | Fun7 Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation FunBody
+    | Fun7 Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation FunBody
     | Match7 Ext [Attribute] SeqExpr [MatchCase]
     | Try7 Ext [Attribute] SeqExpr [MatchCase]
     | IfElse7 Ext [Attribute] SeqExpr Expr Expr
@@ -516,9 +516,9 @@ data Expr
     | Let6 LetBindingsExt SeqExpr
     | LetOpBinding6 LETOP LetopBindings SeqExpr
     | LetModule6 Ext [Attribute] ModuleName ModuleBindingBody SeqExpr
-    | LetException6 Ext [Attribute] LetExceptionDeclaration SeqExpr
+    | LetException6 Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] SeqExpr
     | LetOpen6 OverrideFlag Ext [Attribute] ModuleExpr SeqExpr
-    | Fun6 Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation FunBody
+    | Fun6 Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation FunBody
     | Match6 Ext [Attribute] SeqExpr [MatchCase]
     | Try6 Ext [Attribute] SeqExpr [MatchCase]
     | IfElse6 Ext [Attribute] SeqExpr Expr Expr
@@ -529,10 +529,10 @@ data Expr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data SimpleExpr
-    = ParenSeqExpr SeqExpr
-    | TypedSeqExpr SeqExpr TypeConstraint
+    = SeqExpr SeqExpr
+    | SeqExprWithType SeqExpr TypeConstraint
     | ValLongident_ ValLongident
-    | Constant_ Constant
+    | Constant Constant
     | ConstrName ConstrLongident
     | NameTag_ NameTag
     | ObjectExpr [ObjectExprField]
@@ -555,7 +555,7 @@ data SimpleExpr
     | EmptyBeginEnd Ext [Attribute]
     | New Ext [Attribute] ClassLongident
     | Module Ext [Attribute] ModuleExpr
-    | TypedModule Ext [Attribute] ModuleExpr ModuleType
+    | ModuleWithType Ext [Attribute] ModuleExpr ModuleType
     | Object Ext [Attribute] ClassSelfPattern [ClassField]
     | PrefixApp PREFIXOP SimpleExpr
     | BangApp SimpleExpr
@@ -571,21 +571,21 @@ data SimpleExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LabeledSimpleExpr
-    = LabeldSimpleExpr16 SimpleExpr
+    = LabeledSimpleExpr16 SimpleExpr
     | LabeledExpr16 LABEL SimpleExpr
     | Label16 LIDENT
-    | TypedLabel16 LIDENT TypeConstraint
+    | Label16WithType LIDENT TypeConstraint
     | OptLabel16 LIDENT
     | OptLabeledExpr16 OPTLABEL SimpleExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LetBindingBodyNoPunning
     = StrictBinding ValIdent StrictBinding
-    | MonoTypedBinding ValIdent TypeConstraint SeqExpr
-    | PolyTypedBinding ValIdent [TypeVar] CoreType SeqExpr
-    | TypedBindingTodo ValIdent [LIDENT] CoreType SeqExpr
-    | PatternNoExnBindingNoPunning PatternNoExn SeqExpr
-    | TypedBinding SimplePatternNotIdent CoreType SeqExpr
+    | BindingWithMonoType ValIdent TypeConstraint SeqExpr
+    | BindingWithPolyType ValIdent [TypeVar] CoreType SeqExpr
+    | BindingWithLocallyAbstractType ValIdent [LIDENT] CoreType SeqExpr
+    | PatternBinding PatternNoExn SeqExpr
+    | PatternBindingWithType SimplePatternNotIdent CoreType SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LetBindingBody
@@ -607,10 +607,10 @@ data AndLetBinding
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LetopBindingBody
-    = LetIdent ValIdent StrictBinding
+    = LetopStrictBinding ValIdent StrictBinding
     | LetopValIdent ValIdent
-    | SimplePatternBinding SimplePattern CoreType SeqExpr
-    | PatternNoExnBinding PatternNoExn SeqExpr
+    | LetopPatternBindingWithType SimplePattern CoreType SeqExpr
+    | LetopPatternBinding PatternNoExn SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LetopBindings
@@ -620,7 +620,7 @@ data LetopBindings
 
 data StrictBinding
     = Binding SeqExpr
-    | FunParams [FunParamAsList] OptionalTypeConstraint FunBody
+    | FunParams [FunParam] OptionalTypeConstraint FunBody
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data FunBody
@@ -637,8 +637,8 @@ data MatchCase
     | UnreachableMatchCase Pattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data FunParamAsList
-    = FunParam1 [LIDENT] | FunParam2 LabeledSimplePattern
+data FunParam
+    = LocallyAbstractTypeParam [LIDENT] | Param LabeledSimplePattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ExprComma = ExprComma Expr
@@ -671,8 +671,8 @@ data ObjectExprField = ObjectExprField LIDENT OptionalAssignExpr
 
 data TypeConstraint
     = TypeConstraint CoreType
-    | TypeConstraintCoercion CoreType CoreType
-    | TypeCoercion CoreType
+    | CoercionFromTo CoreType CoreType
+    | CoercionTo CoreType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Pattern
@@ -697,7 +697,7 @@ data PatternNoExn
 data PatternGen
     = SimplePatternGen SimplePattern
     | ConstrPattern ConstrLongident Pattern
-    | ConstrTypePattern ConstrLongident [LIDENT] SimplePattern
+    | ConstrPatternWithLocallyAbstractType ConstrLongident [LIDENT] SimplePattern
     | TagPatternGen NameTag Pattern
     | LazyPattern Ext [Attribute] SimplePattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
@@ -707,10 +707,10 @@ data SimplePattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data SimplePatternNotIdent
-    = ParenPattern Pattern
+    = Pattern Pattern
     | SimpleDelimitedPattern SimpleDelimitedPattern
-    | ParenModule Ext [Attribute] ModuleName
-    | TypedParenModule Ext [Attribute] ModuleName PackageType
+    | ModulePattern Ext [Attribute] ModuleName
+    | ModulePatternWithType Ext [Attribute] ModuleName PackageType
     | UnderscorePattern
     | ConstantPattern SignedConstant
     | RangePattern SignedConstant SignedConstant
@@ -721,8 +721,7 @@ data SimplePatternNotIdent
     | EmptyStringPattern ModLongident
     | EmptyArrayPattern_ ModLongident
     | ArrayPattern_ ModLongident Pattern
-    | TypedPattern Pattern CoreType
-    | ModulePattern Ext [Attribute] ModuleName PackageType
+    | PatternWithType Pattern CoreType
     | ExtensionPattern Extension
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -862,10 +861,6 @@ data SigExceptionDeclaration
     = SigExceptionDeclaration Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data LetExceptionDeclaration
-    = LetExceptionDeclaration ConstrIdent GeneralizedConstructorArguments [Attribute]
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
 data GeneralizedConstructorArguments
     = NoGeneralizedConstructorArguments
     | GeneralizedConstructorArguments1 ConstructorArguments
@@ -895,18 +890,10 @@ data LabelDeclarationSemi
     | LabelDeclarationSemiPolyType MutableFlag LIDENT [TypeVar] AliasType [Attribute] [Attribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data StrTypeExtension
-    = StrTypeExtension Ext [Attribute] TypeParameters TypeLongident PrivateFlag BarLlistExtensionConstructor [PostItemAttribute]
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
 data BarLlistExtensionConstructor
     = NoExtensionConstructors
     | BarExtensionConstructors [ExtensionConstructor]
     | ExtensionConstructors [ExtensionConstructor]
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data SigTypeExtension
-    = SigTypeExtension Ext [Attribute] TypeParameters TypeLongident PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data BarLlistExtensionConstructorDeclaration
@@ -1035,7 +1022,7 @@ data Constant = Int INT | Char CHAR | String STRING | Float FLOAT
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data SignedConstant
-    = Constant Constant
+    = UnsignedConstant Constant
     | NegInt INT
     | NegFloat FLOAT
     | PosInt INT
@@ -1112,8 +1099,8 @@ data ConstrLongident
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ValLongident
-    = ValLongident ValIdent
-    | QualifiedValLongident ModLongident ValIdent
+    = UnqualifiedValLongIdent ValIdent
+    | QualifiedValIdent ModLongident ValIdent
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LabelLongident
@@ -1364,8 +1351,8 @@ newtype BinLiteral = BinLiteral String
 newtype BinLiteralModifier = BinLiteralModifier String
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
 
-newtype LABEL = LABEL String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype LABEL = LABEL ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 newtype LIDENT = LIDENT ((C.Int, C.Int), String)
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
@@ -1405,6 +1392,9 @@ pattern BNFC'Position line col = C.Just (line, col)
 
 class HasPosition a where
   hasPosition :: a -> BNFC'Position
+
+instance HasPosition LABEL where
+  hasPosition (LABEL (p, _)) = C.Just p
 
 instance HasPosition LIDENT where
   hasPosition (LIDENT (p, _)) = C.Just p

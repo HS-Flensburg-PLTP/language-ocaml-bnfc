@@ -229,7 +229,7 @@ Bin.             INT ::= BinLiteral ;
 
 -- TODO: Implement LABEL correctly
 
-token LABEL '~' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
+position token LABEL '~' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
 
 {-
 %token LAZY                   "lazy"
@@ -986,14 +986,14 @@ module_expr:
 ;
 -}
 
-ModuleExprStruct.     ModuleExpr ::= "struct" [Attribute] Structure "end" ;
-ModuleExprFunctor.    ModuleExpr ::= "functor" [Attribute] [FunctorArg] "->" ModuleExpr ;
-ModuleExprParen.      ModuleExpr ::= ParenModuleExpr ;
-ModuleExpr.           ModuleExpr ::= ModuleExpr Attribute ;
-ModuleExprIdent.      ModuleExpr ::= ModLongident ;
-ModuleExprFunctorApp. ModuleExpr ::= ModuleExpr ParenModuleExpr ;
-FunctorAppUnit.       ModuleExpr ::= ModuleExpr "(" ")" ;
-ModuleExprExtension.  ModuleExpr ::= Extension ;
+ModuleExprStruct.        ModuleExpr ::= "struct" [Attribute] Structure "end" ;
+ModuleExprFunctor.       ModuleExpr ::= "functor" [Attribute] [FunctorArg] "->" ModuleExpr ;
+ModuleExprParen.         ModuleExpr ::= ParenModuleExpr ;
+ModuleExprWithAttribute. ModuleExpr ::= ModuleExpr Attribute ;
+ModuleExprIdent.         ModuleExpr ::= ModLongident ;
+ModuleExprFunctorApp.    ModuleExpr ::= ModuleExpr ParenModuleExpr ;
+FunctorAppUnit.          ModuleExpr ::= ModuleExpr "(" ")" ;
+ModuleExprExtension.     ModuleExpr ::= Extension ;
 
 {-
 (* A parenthesized module expression is a module expression that begins
@@ -1010,9 +1010,9 @@ paren_module_expr:
 ;
 -}
 
-TypedParenModuleExpr. ParenModuleExpr ::= "(" ModuleExpr ":" ModuleType ")" ;
-ParenModuleExpr.      ParenModuleExpr ::= "(" ModuleExpr ")" ;
-ValParenModuleExpr.   ParenModuleExpr ::= "(" "val" [Attribute] ExprColonPackageType ")" ;
+ModuleExprWithType.  ParenModuleExpr ::= "(" ModuleExpr ":" ModuleType ")" ;
+ModuleExpr.          ParenModuleExpr ::= "(" ModuleExpr ")" ;
+ValParenModuleExpr.  ParenModuleExpr ::= "(" "val" [Attribute] ExprColonPackageType ")" ;
 
 {-
 (* The various ways of annotating a core language expression that
@@ -1025,10 +1025,10 @@ ValParenModuleExpr.   ParenModuleExpr ::= "(" "val" [Attribute] ExprColonPackage
 ;
 -}
 
-Expr.              ExprColonPackageType ::= Expr ;
-TypedExpr.         ExprColonPackageType ::= Expr ":" ModuleType ;
-TypedCoercionExpr. ExprColonPackageType ::= Expr ":" ModuleType ":>" ModuleType ;
-CoercionExpr.      ExprColonPackageType ::= Expr ":>" ModuleType ;
+Expr.                   ExprColonPackageType ::= Expr ;
+ExprWithType.           ExprColonPackageType ::= Expr ":" ModuleType ;
+ExprWithCoercionFromTo. ExprColonPackageType ::= Expr ":" ModuleType ":>" ModuleType ;
+ExprWithCoercionTo.     ExprColonPackageType ::= Expr ":>" ModuleType ;
 
 {-
 (* A structure, which appears between STRUCT and END (among other places),
@@ -1102,21 +1102,21 @@ structure_item:
 ;
 -}
 
-StructureLetBindings.           StructureItem ::= LetBindingsExt ;
-StructureItemExtension.         StructureItem ::= ItemExtension [PostItemAttribute] ;
-StructureFloatingAttribute.     StructureItem ::= FloatingAttribute ;
-StructurePrimitiveDeclaration.  StructureItem ::= PrimitiveDeclaration ;
-StructureValueDescription.      StructureItem ::= ValueDescription ;
-StructureTypeDeclarations.      StructureItem ::= TypeDeclaration [AndTypeDeclaration] ;
-StructureStrTypeExtension.      StructureItem ::= StrTypeExtension ;
-StrExceptionDeclaration.        StructureItem ::= StrExceptionDeclaration ;
-StructureModuleBinding.         StructureItem ::= "module" Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute] ;
-StructureRecModuleBindings.     StructureItem ::= "module" Ext [Attribute] "rec" ModuleName ModuleBindingBody [PostItemAttribute] [AndModuleBinding] ;
-StructureModuleTypeDeclaration. StructureItem ::= ModuleTypeDeclaration ;
-StructureOpenDeclaration.       StructureItem ::= OpenDeclaration ;
-StructureClassDeclarations.     StructureItem ::= "class" Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ClassFunBinding [PostItemAttribute] [AndClassDeclaration] ;
-StructureClassTypeDeclarations. StructureItem ::= ClassTypeDeclarations ;
-StructureIncludeStatement.      StructureItem ::= "include" Ext [Attribute] ModuleExpr [PostItemAttribute] ;
+StrLetBindings.           StructureItem ::= LetBindingsExt ;
+StrItemExtension.         StructureItem ::= ItemExtension [PostItemAttribute] ;
+StrFloatingAttribute.     StructureItem ::= FloatingAttribute ;
+StrPrimitiveDeclaration.  StructureItem ::= PrimitiveDeclaration ;
+StrValueDescription.      StructureItem ::= ValueDescription ;
+StrTypeDeclarations.      StructureItem ::= TypeDeclaration [AndTypeDeclaration] ;
+StrTypeExtension.         StructureItem ::= "type" Ext [Attribute] TypeParameters TypeLongident "+=" PrivateFlag BarLlistExtensionConstructor [PostItemAttribute] ;
+StrExceptionDeclaration.  StructureItem ::= StrExceptionDeclaration ;
+StrModuleBinding.         StructureItem ::= "module" Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute] ;
+StrRecModuleBindings.     StructureItem ::= "module" Ext [Attribute] "rec" ModuleName ModuleBindingBody [PostItemAttribute] [AndModuleBinding] ;
+StrModuleTypeDeclaration. StructureItem ::= ModuleTypeDeclaration ;
+StrOpenDeclaration.       StructureItem ::= OpenDeclaration ;
+StrClassDeclarations.     StructureItem ::= "class" Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ClassFunBinding [PostItemAttribute] [AndClassDeclaration] ;
+StrClassTypeDeclarations. StructureItem ::= ClassTypeDeclarations ;
+StrIncludeStatement.      StructureItem ::= "include" Ext [Attribute] ModuleExpr [PostItemAttribute] ;
 
 {-
 %inline include_statement(thing):
@@ -1147,9 +1147,9 @@ module_binding_body:
 ;
 -}
 
-ModuleBinding.      ModuleBindingBody ::= "=" ModuleExpr ;
-TypedModuleBinding. ModuleBindingBody ::= ":" ModuleType "=" ModuleExpr ;
-FunctorBinding.     ModuleBindingBody ::= FunctorArg ModuleBindingBody ;
+ModuleBinding.         ModuleBindingBody ::= "=" ModuleExpr ;
+ModuleBindingWitgType. ModuleBindingBody ::= ":" ModuleType "=" ModuleExpr ;
+FunctorBinding.        ModuleBindingBody ::= FunctorArg ModuleBindingBody ;
 
 {-
 (* A group of recursive module bindings. *)
@@ -1248,7 +1248,7 @@ separator nonempty WithConstraint "and" ;
 ModuleTypeSignature.       ModuleType ::= "sig" [Attribute] Signature "end" ;
 ModuleTypeFunctor.         ModuleType ::= "functor" [Attribute] [FunctorArg] "->" ModuleType ;
 ModuleTypeOf.              ModuleType ::= "module" "type" "of" [Attribute] ModuleExpr ;
-ParenModuleType.           ModuleType ::= "(" ModuleType ")" ;
+ModuleType.                ModuleType ::= "(" ModuleType ")" ;
 ModuleTypeWithAttribute.   ModuleType ::= ModuleType Attribute ;
 ModuleTypeModuleIdent.     ModuleType ::= ModLongident ;
 ModuleTypeNoArgFunctorApp. ModuleType ::= "(" ")" "->" ModuleType ;
@@ -1310,7 +1310,7 @@ SigValueDescription.        SignatureItem ::= ValueDescription ;
 SigPrimitiveDeclaration.    SignatureItem ::= PrimitiveDeclaration ;
 SigTypeDeclarations.        SignatureItem ::= TypeDeclaration [AndTypeDeclaration] ;
 SigTypeSubstDeclarations.   SignatureItem ::= TypeSubstDeclarations ;
-SigSigTypeExtension.        SignatureItem ::= SigTypeExtension ;
+SigTypeExtension.           SignatureItem ::= "type" Ext [Attribute] TypeParameters TypeLongident "+=" PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute] ;
 SigSigExceptionDeclaration. SignatureItem ::= SigExceptionDeclaration ;
 SigModuleDeclaration.       SignatureItem ::= ModuleDeclaration ;
 SigModuleAlias.             SignatureItem ::= ModuleAlias ;
@@ -1450,9 +1450,9 @@ class_fun_binding:
 ;
 -}
 
-ClassFunBinding.        ClassFunBinding ::= "=" ClassExpr ;
-TypedClassFunBinding.   ClassFunBinding ::= ":" ClassType "=" ClassExpr ;
-LabeledClassFunBinding. ClassFunBinding ::= LabeledSimplePattern ClassFunBinding ;
+ClassFunBinding.         ClassFunBinding ::= "=" ClassExpr ;
+ClassFunBindingWithType. ClassFunBinding ::= ":" ClassType "=" ClassExpr ;
+LabeledClassFunBinding.  ClassFunBinding ::= LabeledSimplePattern ClassFunBinding ;
 
 {-
 formal_class_parameters:
@@ -1489,7 +1489,7 @@ ClassSimpleExpr.        ClassExpr ::= ClassSimpleExpr ;
 ClassExprFunctor.       ClassExpr ::= "fun" [Attribute] ClassFunDef ;
 ClassExprLetBindings.   ClassExpr ::= LetBindingsNoExt "in" ClassExpr ;
 ClassExprLetOpen.       ClassExpr ::= "let" "open" OverrideFlag [Attribute] ModLongident "in" ClassExpr ;
-ClassExpr.              ClassExpr ::= ClassExpr Attribute ;
+ClassExprWithAttribute. ClassExpr ::= ClassExpr Attribute ;
 LabeledClassSimpleExpr. ClassExpr ::= ClassSimpleExpr [LabeledSimpleExpr] ;
 ClassExprExtension.     ClassExpr ::= Extension ;
 
@@ -1502,10 +1502,10 @@ class_simple_expr:
 ;
 -}
 
-ParenClassExpr.         ClassSimpleExpr ::= "(" ClassExpr ")" ;
+ClassExpr.              ClassSimpleExpr ::= "(" ClassExpr ")" ;
 ClassName.              ClassSimpleExpr ::= ClassLongident ;
 ClassNameWithParamters. ClassSimpleExpr ::= "[" [CoreType] "]" ClassLongident ;
-TypedClassExpr.         ClassSimpleExpr ::= "(" ClassExpr ":" ClassType ")" ;
+ClassExprWithType.      ClassSimpleExpr ::= "(" ClassExpr ":" ClassType ")" ;
 ClassSimplExprObject.   ClassSimpleExpr ::= "object" [Attribute] ClassSelfPattern [ClassField] "end" ;
 
 {-
@@ -1534,9 +1534,9 @@ class_self_pattern:
 ;
 -}
 
-ParenClassPattern.  ClassSelfPattern ::= "(" Pattern ")" ;
-TypedClassPattern.  ClassSelfPattern ::= "(" Pattern ":" CoreType ")" ;
-NoClassSelfPattern. ClassSelfPattern ::= ;
+ClassPattern.         ClassSelfPattern ::= "(" Pattern ")" ;
+ClassPatternWithType. ClassSelfPattern ::= "(" Pattern ":" CoreType ")" ;
+NoClassSelfPattern.   ClassSelfPattern ::= ;
 
 {-
 %inline class_fields:
@@ -1595,10 +1595,10 @@ method_:
 ;
 -}
 
-Method1. Method_ ::= NoOverrideFlag [Attribute] VirtualWithPrivateFlag LIDENT ":" PolyType ;
-Method2. Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT StrictBinding ;
-Method3. Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" PolyType "=" SeqExpr ;
-Method4. Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" "type" [LIDENT] "." CoreType "=" SeqExpr ;
+VirtualMethod.                 Method_ ::= NoOverrideFlag [Attribute] VirtualWithPrivateFlag LIDENT ":" PolyType ;
+Method.                        Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT StrictBinding ;
+MethodWithType.                Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" PolyType "=" SeqExpr ;
+MethodWithLocallyAbstractType. Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" "type" [LIDENT] "." CoreType "=" SeqExpr ;
 
 {-
 /* Class types */
@@ -1810,11 +1810,11 @@ labeled_simple_pattern:
 -}
 
 OptPattern.           LabeledSimplePattern ::= "?" "(" LabelLetPattern OptDefault ")" ;
-OptLabelVar.          LabeledSimplePattern ::= "?" LIDENT ;
+OptLabel.             LabeledSimplePattern ::= "?" LIDENT ;
 OptLabeledPattern.    LabeledSimplePattern ::= OPTLABEL "(" LetPattern OptDefault ")" ;
 OptLabeledVar.        LabeledSimplePattern ::= OPTLABEL PatternVar ;
 LabeledPattern.       LabeledSimplePattern ::= "~" "(" LabelLetPattern ")" ;
-LabeledVar.           LabeledSimplePattern ::= "~" LIDENT ;
+Label.                LabeledSimplePattern ::= "~" LIDENT ;
 LabeledSimplePattern. LabeledSimplePattern ::= LABEL SimplePattern ;
 SimplePattern.        LabeledSimplePattern ::= SimplePattern ;
 
@@ -1844,8 +1844,8 @@ label_let_pattern:
 ;
 -}
 
-LabelLetPattern.      LabelLetPattern ::= LIDENT ;
-TypedLabelLetPattern. LabelLetPattern ::= LIDENT ":" CoreType ;
+LabelVar.         LabelLetPattern ::= LIDENT ;
+LabelVarWithType. LabelLetPattern ::= LIDENT ":" CoreType ;
 
 {-
 %inline label_var:
@@ -1862,8 +1862,8 @@ let_pattern:
 ;
 -}
 
-LetPattern.      LetPattern ::= Pattern ;
-TypedLetPattern. LetPattern ::= Pattern ":" CoreType ;
+LetPattern.         LetPattern ::= Pattern ;
+LetPatternWithType. LetPattern ::= Pattern ":" CoreType ;
 
 {-
 %inline qualified_dotop: ioption(DOT mod_longident {$2}) DOTOP ;
@@ -1965,9 +1965,9 @@ If.                    FunExpr3  ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
 Let.                   FunExpr1 ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding.          FunExpr1 ::= LETOP LetopBindings "in" SeqExpr ;
 LetModule.             FunExpr1 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException.          FunExpr1 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetException.          FunExpr1 ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
 LetOpen.               FunExpr1 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun.                   FunExpr1 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Fun.                   FunExpr1 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
 Match.                 FunExpr1 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try.                   FunExpr1 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 While.                 FunExpr1 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
@@ -2017,9 +2017,9 @@ Function15.     Expr15 ::= "function" Ext [Attribute] [MatchCase] ;
 Let15.          Expr15 ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding15. Expr15 ::= LETOP LetopBindings "in" SeqExpr ;
 LetModule15.    Expr15 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException15. Expr15 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetException15. Expr15 ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
 LetOpen15.      Expr15 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun15.          Expr15 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Fun15.          Expr15 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
 Match15.        Expr15 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try15.          Expr15 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 -- While15.        Expr15 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
@@ -2032,9 +2032,9 @@ Function13.     Expr13 ::= "function" Ext [Attribute] [MatchCase] ;
 Let13.          Expr13 ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding13. Expr13 ::= LETOP LetopBindings "in" SeqExpr ;
 LetModule13.    Expr13 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException13. Expr13 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetException13. Expr13 ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
 LetOpen13.      Expr13 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun13.          Expr13 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Fun13.          Expr13 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
 Match13.        Expr13 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try13.          Expr13 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 -- While13.        Expr13 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
@@ -2047,9 +2047,9 @@ Function12.     Expr12 ::= "function" Ext [Attribute] [MatchCase] ;
 Let12.          Expr12 ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding12. Expr12 ::= LETOP LetopBindings "in" SeqExpr ;
 LetModule12.    Expr12 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException12. Expr12 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetException12. Expr12 ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
 LetOpen12.      Expr12 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun12.          Expr12 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Fun12.          Expr12 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
 Match12.        Expr12 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try12.          Expr12 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 -- While12.        Expr12 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
@@ -2062,9 +2062,9 @@ Function11.     Expr11 ::= "function" Ext [Attribute] [MatchCase] ;
 Let11.          Expr11 ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding11. Expr11 ::= LETOP LetopBindings "in" SeqExpr ;
 LetModule11.    Expr11 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException11. Expr11 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetException11. Expr11 ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
 LetOpen11.      Expr11 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun11.          Expr11 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Fun11.          Expr11 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
 Match11.        Expr11 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try11.          Expr11 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 -- While11.        Expr11 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
@@ -2077,9 +2077,9 @@ Function10.     Expr10 ::= "function" Ext [Attribute] [MatchCase] ;
 Let10.          Expr10 ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding10. Expr10 ::= LETOP LetopBindings "in" SeqExpr ;
 LetModule10.    Expr10 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException10. Expr10 ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetException10. Expr10 ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
 LetOpen10.      Expr10 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun10.          Expr10 ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Fun10.          Expr10 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
 Match10.        Expr10 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try10.          Expr10 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 IfElse10.       Expr10 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
@@ -2090,9 +2090,9 @@ Function9.      Expr9  ::= "function" Ext [Attribute] [MatchCase] ;
 Let9.           Expr9  ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding9.  Expr9  ::= LETOP LetopBindings "in" SeqExpr ;
 LetModule9.     Expr9  ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException9.  Expr9  ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetException9.  Expr9  ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
 LetOpen9.       Expr9  ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun9.           Expr9  ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Fun9.           Expr9  ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
 Match9.         Expr9  ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try9.           Expr9  ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 IfElse9.        Expr9  ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
@@ -2103,9 +2103,9 @@ Function7.      Expr7  ::= "function" Ext [Attribute] [MatchCase] ;
 Let7.           Expr7  ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding7.  Expr7  ::= LETOP LetopBindings "in" SeqExpr ;
 LetModule7.     Expr7  ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException7.  Expr7  ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetException7.  Expr7  ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
 LetOpen7.       Expr7  ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun7.           Expr7  ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Fun7.           Expr7  ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
 Match7.         Expr7  ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try7.           Expr7  ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 IfElse7.        Expr7  ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
@@ -2116,9 +2116,9 @@ Function6.      Expr6  ::= "function" Ext [Attribute] [MatchCase] ;
 Let6.           Expr6  ::= LetBindingsExt "in" SeqExpr ;
 LetOpBinding6.  Expr6  ::= LETOP LetopBindings "in" SeqExpr ;
 LetModule6.     Expr6  ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException6.  Expr6  ::= "let" "exception" Ext [Attribute] LetExceptionDeclaration "in" SeqExpr ;
+LetException6.  Expr6  ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
 LetOpen6.       Expr6  ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun6.           Expr6  ::= "fun" Ext [Attribute] [FunParamAsList] OptionalAtomicTypeAnnotation "->" FunBody ;
+Fun6.           Expr6  ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
 Match6.         Expr6  ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try6.           Expr6  ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 IfElse6.        Expr6  ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
@@ -2184,10 +2184,10 @@ simple_expr:
 
 -- TODO: Improve names
 
-ParenSeqExpr.              SimpleExpr19 ::= "(" SeqExpr ")" ;
-TypedSeqExpr.              SimpleExpr19 ::= "(" SeqExpr TypeConstraint ")" ;
+SeqExpr.                   SimpleExpr19 ::= "(" SeqExpr ")" ;
+SeqExprWithType.           SimpleExpr19 ::= "(" SeqExpr TypeConstraint ")" ;
 ValLongident_.             SimpleExpr19 ::= ValLongident ;
-Constant_.                 SimpleExpr19 ::= Constant ;
+Constant.                  SimpleExpr19 ::= Constant ;
 ConstrName.                SimpleExpr19 ::= ConstrLongident ;
 NameTag_.                  SimpleExpr19 ::= NameTag ;
 ObjectExpr.                SimpleExpr19 ::= "{<" [ObjectExprField] ">}" ;
@@ -2210,7 +2210,7 @@ BeginEnd.                  SimpleExpr19  ::= "begin" Ext [Attribute] SeqExpr "en
 EmptyBeginEnd.             SimpleExpr19  ::= "begin" Ext [Attribute] "end" ;
 New.                       SimpleExpr19  ::= "new" Ext [Attribute] ClassLongident ;
 Module.                    SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ")" ;
-TypedModule.               SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
+ModuleWithType.            SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
 Object.                    SimpleExpr19  ::= "object" Ext [Attribute] ClassSelfPattern [ClassField] "end" ;
 
 -- prefix-symbol precedence 18
@@ -2303,12 +2303,12 @@ labeled_simple_expr:
 
 separator nonempty LabeledSimpleExpr "" ;
 
-LabeldSimpleExpr16. LabeledSimpleExpr ::= SimpleExpr16 ;
-LabeledExpr16.      LabeledSimpleExpr ::= LABEL SimpleExpr16 ;
-Label16.            LabeledSimpleExpr ::= "~" LIDENT ;
-TypedLabel16.       LabeledSimpleExpr ::= "~" "(" LIDENT TypeConstraint ")" ;
-OptLabel16.         LabeledSimpleExpr ::= "?" LIDENT ;
-OptLabeledExpr16.   LabeledSimpleExpr ::= OPTLABEL SimpleExpr16 ;
+LabeledSimpleExpr16. LabeledSimpleExpr ::= SimpleExpr16 ;
+LabeledExpr16.       LabeledSimpleExpr ::= LABEL SimpleExpr16 ;
+Label16.             LabeledSimpleExpr ::= "~" LIDENT ;
+Label16WithType.     LabeledSimpleExpr ::= "~" "(" LIDENT TypeConstraint ")" ;
+OptLabel16.          LabeledSimpleExpr ::= "?" LIDENT ;
+OptLabeledExpr16.    LabeledSimpleExpr ::= OPTLABEL SimpleExpr16 ;
 
 {-
 %inline let_ident:
@@ -2329,14 +2329,13 @@ let_binding_body_no_punning:
 ;
 -}
 
--- TODO: Improve names
+StrictBinding.                  LetBindingBodyNoPunning ::= ValIdent StrictBinding ;
+BindingWithMonoType.            LetBindingBodyNoPunning ::= ValIdent TypeConstraint "=" SeqExpr ;
+BindingWithPolyType.            LetBindingBodyNoPunning ::= ValIdent ":" [TypeVar] "." CoreType "=" SeqExpr ;
+BindingWithLocallyAbstractType. LetBindingBodyNoPunning ::= ValIdent ":" "type" [LIDENT] "." CoreType "=" SeqExpr ;
+PatternBinding.                 LetBindingBodyNoPunning ::= PatternNoExn "=" SeqExpr ;
+PatternBindingWithType.         LetBindingBodyNoPunning ::= SimplePatternNotIdent ":" CoreType "=" SeqExpr ;
 
-StrictBinding.                LetBindingBodyNoPunning ::= ValIdent StrictBinding ;
-MonoTypedBinding.             LetBindingBodyNoPunning ::= ValIdent TypeConstraint "=" SeqExpr ;
-PolyTypedBinding.             LetBindingBodyNoPunning ::= ValIdent ":" [TypeVar] "." CoreType "=" SeqExpr ;
-TypedBindingTodo.             LetBindingBodyNoPunning ::= ValIdent ":" "type" [LIDENT] "." CoreType "=" SeqExpr ;
-PatternNoExnBindingNoPunning. LetBindingBodyNoPunning ::= PatternNoExn "=" SeqExpr ;
-TypedBinding.                 LetBindingBodyNoPunning ::= SimplePatternNotIdent ":" CoreType "=" SeqExpr ;
 
 {-
 let_binding_body:
@@ -2385,10 +2384,10 @@ letop_binding_body:
 ;
 -}
 
-LetIdent.             LetopBindingBody ::= ValIdent StrictBinding ;
-LetopValIdent.        LetopBindingBody ::= ValIdent ;
-SimplePatternBinding. LetopBindingBody ::= SimplePattern ":" CoreType "=" SeqExpr ;
-PatternNoExnBinding.  LetopBindingBody ::= PatternNoExn "=" SeqExpr ;
+LetopStrictBinding.          LetopBindingBody ::= ValIdent StrictBinding ;
+LetopValIdent.               LetopBindingBody ::= ValIdent ;
+LetopPatternBindingWithType. LetopBindingBody ::= SimplePattern ":" CoreType "=" SeqExpr ;
+LetopPatternBinding.         LetopBindingBody ::= PatternNoExn "=" SeqExpr ;
 
 {-
 letop_bindings:
@@ -2408,7 +2407,7 @@ strict_binding:
 -}
 
 Binding.   StrictBinding ::= "=" SeqExpr ;
-FunParams. StrictBinding ::= [FunParamAsList] OptionalTypeConstraint "=" FunBody ;
+FunParams. StrictBinding ::= [FunParam] OptionalTypeConstraint "=" FunBody ;
 
 {-
 fun_body:
@@ -2455,8 +2454,8 @@ fun_param_as_list:
 ;
 -}
 
-FunParam1. FunParamAsList ::= "(" "type" [LIDENT] ")" ;
-FunParam2. FunParamAsList ::= LabeledSimplePattern ;
+LocallyAbstractTypeParam. FunParam ::= "(" "type" [LIDENT] ")" ;
+Param.                    FunParam ::= LabeledSimplePattern ;
 
 {-
 fun_params:
@@ -2464,7 +2463,7 @@ fun_params:
 ;
 -}
 
-separator nonempty FunParamAsList "" ;
+separator nonempty FunParam "" ;
 
 {-
 %inline expr_comma_list:
@@ -2539,9 +2538,9 @@ type_constraint:
 ;
 -}
 
-TypeConstraint.         TypeConstraint ::= ":" CoreType ;
-TypeConstraintCoercion. TypeConstraint ::= ":" CoreType ":>" CoreType ;
-TypeCoercion.           TypeConstraint ::= ":>" CoreType ;
+TypeConstraint.  TypeConstraint ::= ":" CoreType ;
+CoercionFromTo.  TypeConstraint ::= ":" CoreType ":>" CoreType ;
+CoercionTo.      TypeConstraint ::= ":>" CoreType ;
 
 {-
 /* Patterns */
@@ -2621,11 +2620,11 @@ pattern_gen:
 
 separator nonempty LIDENT "" ;
 
-SimplePatternGen.  PatternGen ::= SimplePattern ;
-ConstrPattern.     PatternGen ::= ConstrLongident Pattern ;
-ConstrTypePattern. PatternGen ::= ConstrLongident "(" "type" [LIDENT] ")" SimplePattern ;
-TagPatternGen.     PatternGen ::= NameTag Pattern ;
-LazyPattern.       PatternGen ::= "lazy" Ext [Attribute] SimplePattern ;
+SimplePatternGen.                     PatternGen ::= SimplePattern ;
+ConstrPattern.                        PatternGen ::= ConstrLongident Pattern ;
+ConstrPatternWithLocallyAbstractType. PatternGen ::= ConstrLongident "(" "type" [LIDENT] ")" SimplePattern ;
+TagPatternGen.                        PatternGen ::= NameTag Pattern ;
+LazyPattern.                          PatternGen ::= "lazy" Ext [Attribute] SimplePattern ;
 
 {-
 simple_pattern:
@@ -2647,10 +2646,10 @@ simple_pattern_not_ident:
 ;
 -}
 
-ParenPattern.           SimplePatternNotIdent ::= "(" Pattern ")" ;
+Pattern.                SimplePatternNotIdent ::= "(" Pattern ")" ;
 SimpleDelimitedPattern. SimplePatternNotIdent ::= SimpleDelimitedPattern ;
-ParenModule.            SimplePatternNotIdent ::= "(" "module" Ext [Attribute] ModuleName ")" ;
-TypedParenModule.       SimplePatternNotIdent ::= "(" "module" Ext [Attribute] ModuleName ":" PackageType ")" ;
+ModulePattern.          SimplePatternNotIdent ::= "(" "module" Ext [Attribute] ModuleName ")" ;
+ModulePatternWithType.  SimplePatternNotIdent ::= "(" "module" Ext [Attribute] ModuleName ":" PackageType ")" ;
 UnderscorePattern.      SimplePatternNotIdent ::= "_" ;
 ConstantPattern.        SimplePatternNotIdent ::= SignedConstant ;
 RangePattern.           SimplePatternNotIdent ::= SignedConstant ".." SignedConstant ;
@@ -2661,8 +2660,7 @@ DotPattern.             SimplePatternNotIdent ::= ModLongident "." SimpleDelimit
 EmptyStringPattern.     SimplePatternNotIdent ::= ModLongident "." "[" "]" ;
 EmptyArrayPattern_.     SimplePatternNotIdent ::= ModLongident "." "(" ")" ;
 ArrayPattern_.          SimplePatternNotIdent ::= ModLongident "." "(" Pattern ")" ;
-TypedPattern.           SimplePatternNotIdent ::= "(" Pattern ":" CoreType ")" ;
-ModulePattern.          SimplePatternNotIdent ::= "(" "module" Ext [Attribute] ModuleName ":" PackageType ")" ;
+PatternWithType.        SimplePatternNotIdent ::= "(" Pattern ":" CoreType ")" ;
 ExtensionPattern.       SimplePatternNotIdent ::= Extension ;
 
 {-
@@ -2678,7 +2676,6 @@ ExtensionPattern.       SimplePatternNotIdent ::= Extension ;
   | mod_longident DOT LPAREN RPAREN
   | mod_longident DOT LPAREN pattern RPAREN
   | LPAREN pattern COLON core_type RPAREN
-  | LPAREN MODULE ext_attributes module_name COLON package_type
   | extension
 ;
 -}
@@ -3039,7 +3036,7 @@ SigExceptionDeclaration. SigExceptionDeclaration ::= "exception" Ext [Attribute]
 ;
 -}
 
-LetExceptionDeclaration. LetExceptionDeclaration ::= ConstrIdent GeneralizedConstructorArguments [Attribute] ;
+-- This definition is inlined manually
 
 {-
 generalized_constructor_arguments:
@@ -3113,7 +3110,7 @@ LabelDeclarationSemiPolyType. LabelDeclarationSemi ::= MutableFlag LIDENT ":" [T
 ;
 -}
 
-StrTypeExtension. StrTypeExtension ::= "type" Ext [Attribute] TypeParameters TypeLongident "+=" PrivateFlag BarLlistExtensionConstructor [PostItemAttribute] ;
+-- This definition is inlined manually
 
 NoExtensionConstructors.  BarLlistExtensionConstructor ::= "|" ;
 BarExtensionConstructors. BarLlistExtensionConstructor ::= "|" [ExtensionConstructor] ;
@@ -3131,7 +3128,7 @@ separator ExtensionConstructor "|" ;
 ;
 -}
 
-SigTypeExtension. SigTypeExtension ::= "type" Ext [Attribute] TypeParameters TypeLongident "+=" PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute] ;
+-- This definition is inlined manually
 
 NoConstructor. BarLlistExtensionConstructorDeclaration ::= "|" ;
 Constructor.   BarLlistExtensionConstructorDeclaration ::= "|" [ExtensionConstructorDeclaration] ;
@@ -3612,11 +3609,11 @@ signed_constant:
 ;
 -}
 
-Constant. SignedConstant ::= Constant ;
-NegInt.   SignedConstant ::= "-" INT ;
-NegFloat. SignedConstant ::= "-" FLOAT ;
-PosInt.   SignedConstant ::= "+" INT ;
-PosFloat. SignedConstant ::= "+" FLOAT ;
+UnsignedConstant. SignedConstant ::= Constant ;
+NegInt.           SignedConstant ::= "-" INT ;
+NegFloat.         SignedConstant ::= "-" FLOAT ;
+PosInt.           SignedConstant ::= "+" INT ;
+PosFloat.         SignedConstant ::= "+" FLOAT ;
 
 {-
 /* Identifiers and long identifiers */
@@ -3795,8 +3792,8 @@ val_longident:
 ;
 -}
 
-ValLongident.          ValLongident ::= ValIdent ;
-QualifiedValLongident. ValLongident ::= ModLongident "." ValIdent ;
+UnqualifiedValLongIdent. ValLongident ::= ValIdent ;
+QualifiedValIdent.       ValLongident ::= ModLongident "." ValIdent ;
 
 {-
 label_longident:
