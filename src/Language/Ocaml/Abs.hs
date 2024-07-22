@@ -168,24 +168,16 @@ data SignatureItem
     | SigTypeSubstDeclarations TypeSubstDeclarations
     | SigTypeExtension Ext [Attribute] TypeParameters TypeLongident PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute]
     | SigSigExceptionDeclaration SigExceptionDeclaration
-    | SigModuleDeclaration ModuleDeclaration
-    | SigModuleAlias ModuleAlias
+    | SigModuleDeclaration Ext [Attribute] ModuleName ModuleDeclarationBody [PostItemAttribute]
+    | SigModuleAlias Ext [Attribute] ModuleName ModLongident [PostItemAttribute]
     | SigModuleSubst ModuleSubst
-    | SigRecModuleDeclarations RecModuleDeclaration [AndModuleDeclaration]
+    | SigRecModuleDeclarations Ext [Attribute] ModuleName ModuleType [PostItemAttribute] [AndModuleDeclaration]
     | SigModuleTypeDeclaration ModuleTypeDeclaration
     | SigModuleTypeSubst ModuleTypeSubst
     | SigOpenDescription OpenDescription
-    | SigIncludeStatement ModuleTypeIncludeStatement
+    | SigIncludeStatement Ext [Attribute] ModuleType [PostItemAttribute]
     | SigClassDescription Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ClassType [PostItemAttribute] [AndClassDescription]
     | SigClassTypeDeclarations ClassTypeDeclarations
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data ModuleTypeIncludeStatement
-    = ModuleTypeIncludeStatement Ext [Attribute] ModuleType [PostItemAttribute]
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data ModuleDeclaration
-    = ModuleDeclaration Ext [Attribute] ModuleName ModuleDeclarationBody [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ModuleDeclarationBody
@@ -193,19 +185,8 @@ data ModuleDeclarationBody
     | FunctorBody FunctorArg ModuleDeclarationBody
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data ModuleAlias
-    = ModuleAlias Ext [Attribute] ModuleName ModuleExprAlias [PostItemAttribute]
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data ModuleExprAlias = ModuleExprAlias ModLongident
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
 data ModuleSubst
     = ModuleSubst Ext [Attribute] UIDENT ModExtLongident [PostItemAttribute]
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data RecModuleDeclaration
-    = RecModuleDeclaration Ext [Attribute] ModuleName ModuleType [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AndModuleDeclaration
@@ -309,12 +290,12 @@ data ClassSigField
     = ClassSigFieldInherit [Attribute] ClassSignature [PostItemAttribute]
     | ClassSigFieldVal [Attribute] MutableVirtualFlags LIDENT CoreType [PostItemAttribute]
     | ClassSigFieldMethod [Attribute] PrivateVirtualFlags LIDENT PolyType [PostItemAttribute]
-    | ClassSigFieldConstraint [Attribute] CoreType CoreType [PostItemAttribute]
+    | ClassSigFieldConstraint [Attribute] ConstrainField [PostItemAttribute]
     | ClassSigFieldItemExtension ItemExtension [PostItemAttribute]
     | ClassSigFieldFloatingAttribute FloatingAttribute
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data Constrain = Constrain CoreType CoreType
+data ConstrainField = ConstrainField CoreType CoreType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AndClassDescription
@@ -322,11 +303,7 @@ data AndClassDescription
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ClassTypeDeclarations
-    = ClassTypeDeclarations ClassTypeDeclaration [AndClassTypeDeclaration]
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data ClassTypeDeclaration
-    = ClassTypeDeclaration Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ClassSignature [PostItemAttribute]
+    = ClassTypeDeclarations Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ClassSignature [PostItemAttribute] [AndClassTypeDeclaration]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AndClassTypeDeclaration
@@ -342,9 +319,11 @@ data SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LabeledSimplePattern
-    = OptPattern LabelLetPattern OptDefault
+    = OptPattern LabelLetPattern
+    | OptPatternWithDefault LabelLetPattern SeqExpr
     | OptLabel LIDENT
-    | OptLabeledPattern OPTLABEL LetPattern OptDefault
+    | OptLabeledPattern OPTLABEL LetPattern
+    | OptLabeledPatternWithDefault OPTLABEL LetPattern SeqExpr
     | OptLabeledVar OPTLABEL PatternVar
     | LabeledPattern LabelLetPattern
     | Label LIDENT
@@ -353,9 +332,6 @@ data LabeledSimplePattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data PatternVar = PatternVar LIDENT | UnderscorePatternVar
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data OptDefault = NoDefault | Default SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LabelLetPattern
@@ -407,11 +383,11 @@ data FunExpr
     | AssignInfix FunExpr Expr
     | QualifiedDot SimpleExpr LabelLongident Expr
     | ArrayUpdateExpr SimpleExpr SeqExpr Expr
-    | RecordUpdateExpr SimpleExpr SeqExpr Expr
     | StringUpdateExpr SimpleExpr SeqExpr Expr
-    | ArrayUpdateDotopExpr SimpleExpr QualifiedDotop [Expr] Expr
-    | RecordUpdateDotopExpr SimpleExpr QualifiedDotop [Expr] Expr
-    | StringUpdateDotopExpr SimpleExpr QualifiedDotop [Expr] Expr
+    | BigArrayUpdateExpr SimpleExpr SeqExpr Expr
+    | ParenDotopUpdateExpr SimpleExpr QualifiedDotop [Expr] Expr
+    | BracketDotopUpdateExpr SimpleExpr QualifiedDotop [Expr] Expr
+    | BraceDotopUpdateExpr SimpleExpr QualifiedDotop [Expr] Expr
     | IfElse Ext [Attribute] SeqExpr Expr Expr
     | If Ext [Attribute] SeqExpr Expr
     | Let LetBindingsExt SeqExpr
@@ -531,52 +507,52 @@ data Expr
 data SimpleExpr
     = SeqExpr SeqExpr
     | SeqExprWithType SeqExpr TypeConstraint
-    | ValLongident_ ValLongident
+    | ValLongident ValLongident
     | Constant Constant
     | ConstrName ConstrLongident
-    | NameTag_ NameTag
-    | ObjectExpr [ObjectExprField]
-    | EmptyObjectExpr
-    | QualifiedArrayExpr_ ModLongident SeqExpr
-    | QualifiedObjectExpr ModLongident [ObjectExprField]
-    | Extension Extension
-    | EmptyQualifiedArrayAccess ModLongident
-    | RecordExpr_ RecordExprContent
-    | RecordAccess ModLongident RecordExprContent
-    | ArrayExpr_ [Expr]
+    | NameTagExpr NameTag
+    | ListExpr [Expr]
+    | RecordExpr RecordExprContent
     | EmptyArrayExpr
-    | ArrayAccesss ModLongident [Expr]
-    | ArrayAccesssTodo ModLongident
-    | StringExpr_ [Expr]
-    | StringAccess ModLongident [Expr]
-    | StringAccessTodo ModLongident
-    | QualifiedModule ModLongident Ext [Attribute] ModuleExpr ModuleType
+    | ArrayExpr [Expr]
+    | EmptyObjectExpr
+    | ObjectExpr [ObjectExprField]
+    | LocalOpenUnit ModLongident
+    | LocalOpenExpr ModLongident SeqExpr
+    | LocalOpenEmptyListExpr ModLongident
+    | LocalOpenListExpr ModLongident [Expr]
+    | LocalOpenRecordExpr ModLongident RecordExprContent
+    | LocalOpenEmptyArrayExpr ModLongident
+    | LocalOpenArrayExpr ModLongident [Expr]
+    | LocalOpenObjectExpr ModLongident [ObjectExprField]
+    | LocalOpenModule ModLongident Ext [Attribute] ModuleExpr ModuleType
     | BeginEnd Ext [Attribute] SeqExpr
     | EmptyBeginEnd Ext [Attribute]
     | New Ext [Attribute] ClassLongident
     | Module Ext [Attribute] ModuleExpr
     | ModuleWithType Ext [Attribute] ModuleExpr ModuleType
     | Object Ext [Attribute] ClassSelfPattern [ClassField]
+    | Extension Extension
     | PrefixApp PREFIXOP SimpleExpr
     | BangApp SimpleExpr
-    | ArrayExpr SimpleExpr SeqExpr
-    | RecordExpr SimpleExpr SeqExpr
-    | StringExpr SimpleExpr SeqExpr
-    | QualifiedArrayExpr SimpleExpr QualifiedDotop [Expr]
-    | QualifiedRecordExpr SimpleExpr QualifiedDotop [Expr]
-    | QualifiedStringExpr SimpleExpr QualifiedDotop [Expr]
-    | RecordAccessTodo SimpleExpr LabelLongident
+    | RecordAccessExpr SimpleExpr LabelLongident
+    | ArrayAccessExpr SimpleExpr SeqExpr
+    | StringAccessExpr SimpleExpr SeqExpr
+    | BigArrayAccessExpr SimpleExpr SeqExpr
+    | ParenDotopAccessExpr SimpleExpr QualifiedDotop [Expr]
+    | BracketDotopAccessExpr SimpleExpr QualifiedDotop [Expr]
+    | BraceDotopAccessExpr SimpleExpr QualifiedDotop [Expr]
     | MethodInvocation SimpleExpr LIDENT
     | HashOp SimpleExpr HASHOP SimpleExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LabeledSimpleExpr
-    = LabeledSimpleExpr16 SimpleExpr
-    | LabeledExpr16 LABEL SimpleExpr
-    | Label16 LIDENT
-    | Label16WithType LIDENT TypeConstraint
-    | OptLabel16 LIDENT
-    | OptLabeledExpr16 OPTLABEL SimpleExpr
+    = ExprWithoutLabel SimpleExpr
+    | LabeledExpr LABEL SimpleExpr
+    | LabeExpr LIDENT
+    | LabelWithTypExpr LIDENT TypeConstraint
+    | OptLabelExpr LIDENT
+    | OptLabeledExpr OPTLABEL SimpleExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LetBindingBodyNoPunning
@@ -791,7 +767,7 @@ data TypeSubstDeclaration
     = TypeSubstDeclaration Ext [Attribute] TypeParameters LIDENT TypeSubstKind [Constraint] [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data Constraint = Constraint Constrain
+data Constraint = Constraint CoreType CoreType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data NonemptyTypeKind
@@ -944,10 +920,9 @@ data AliasType
 
 data FunctionType
     = TupleType TupleType
-    | FunTypeWithOptLabel OPTLABEL TupleType FunctionType
-    | FunTypeWithOptionalLabel LIDENT TupleType FunctionType
-    | FunTypeWithtLabel LIDENT TupleType FunctionType
-    | FunTypeWithoutLabel TupleType FunctionType
+    | ArgTypeWithOptLabel OPTLABEL TupleType FunctionType
+    | ArgTypeWithLabel LIDENT TupleType FunctionType
+    | ArgTypeWithoutLabel TupleType FunctionType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data TupleType
@@ -1043,19 +1018,13 @@ data Operator
     = PrefixOp PREFIXOP
     | LetOp LETOP
     | AndOp ANDOP
-    | ArrayAccessOp DOTOP IndexMod
-    | ArrayUpdateOp DOTOP IndexMod
-    | StringAccessOp DOTOP IndexMod
-    | StringUpdateOp DOTOP IndexMod
-    | RecordAccessOp DOTOP IndexMod
-    | RecordUpdateOp DOTOP IndexMod
+    | ParenAccessDotop DOTOP IndexMod
+    | ParenUpdateDotop DOTOP IndexMod
+    | BraceAccessDotop DOTOP IndexMod
+    | BraceUpdateDotop DOTOP IndexMod
     | HashSymbolOp HASHOP
     | BangOp
-    | InfixOp InfixOperator
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-data InfixOperator
-    = RelOp RELOP
+    | RelOp RELOP
     | InfixEqual
     | InfixLess
     | InfixGreater
@@ -1357,8 +1326,8 @@ newtype LABEL = LABEL ((C.Int, C.Int), String)
 newtype LIDENT = LIDENT ((C.Int, C.Int), String)
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype OPTLABEL = OPTLABEL String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype OPTLABEL = OPTLABEL ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 newtype PREFIXOP = PREFIXOP String
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
@@ -1398,4 +1367,7 @@ instance HasPosition LABEL where
 
 instance HasPosition LIDENT where
   hasPosition (LIDENT (p, _)) = C.Just p
+
+instance HasPosition OPTLABEL where
+  hasPosition (OPTLABEL (p, _)) = C.Just p
 

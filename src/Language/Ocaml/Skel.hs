@@ -284,45 +284,25 @@ transSignatureItem x = case x of
   Language.Ocaml.Abs.SigTypeSubstDeclarations typesubstdeclarations -> failure x
   Language.Ocaml.Abs.SigTypeExtension ext attributes typeparameters typelongident privateflag barllistextensionconstructordeclaration postitemattributes -> failure x
   Language.Ocaml.Abs.SigSigExceptionDeclaration sigexceptiondeclaration -> failure x
-  Language.Ocaml.Abs.SigModuleDeclaration moduledeclaration -> failure x
-  Language.Ocaml.Abs.SigModuleAlias modulealias -> failure x
+  Language.Ocaml.Abs.SigModuleDeclaration ext attributes modulename moduledeclarationbody postitemattributes -> failure x
+  Language.Ocaml.Abs.SigModuleAlias ext attributes modulename modlongident postitemattributes -> failure x
   Language.Ocaml.Abs.SigModuleSubst modulesubst -> failure x
-  Language.Ocaml.Abs.SigRecModuleDeclarations recmoduledeclaration andmoduledeclarations -> failure x
+  Language.Ocaml.Abs.SigRecModuleDeclarations ext attributes modulename moduletype postitemattributes andmoduledeclarations -> failure x
   Language.Ocaml.Abs.SigModuleTypeDeclaration moduletypedeclaration -> failure x
   Language.Ocaml.Abs.SigModuleTypeSubst moduletypesubst -> failure x
   Language.Ocaml.Abs.SigOpenDescription opendescription -> failure x
-  Language.Ocaml.Abs.SigIncludeStatement moduletypeincludestatement -> failure x
+  Language.Ocaml.Abs.SigIncludeStatement ext attributes moduletype postitemattributes -> failure x
   Language.Ocaml.Abs.SigClassDescription ext attributes virtualflag formalclassparameters lident classtype postitemattributes andclassdescriptions -> failure x
   Language.Ocaml.Abs.SigClassTypeDeclarations classtypedeclarations -> failure x
-
-transModuleTypeIncludeStatement :: Language.Ocaml.Abs.ModuleTypeIncludeStatement -> Result
-transModuleTypeIncludeStatement x = case x of
-  Language.Ocaml.Abs.ModuleTypeIncludeStatement ext attributes moduletype postitemattributes -> failure x
-
-transModuleDeclaration :: Language.Ocaml.Abs.ModuleDeclaration -> Result
-transModuleDeclaration x = case x of
-  Language.Ocaml.Abs.ModuleDeclaration ext attributes modulename moduledeclarationbody postitemattributes -> failure x
 
 transModuleDeclarationBody :: Language.Ocaml.Abs.ModuleDeclarationBody -> Result
 transModuleDeclarationBody x = case x of
   Language.Ocaml.Abs.ModuleBody moduletype -> failure x
   Language.Ocaml.Abs.FunctorBody functorarg moduledeclarationbody -> failure x
 
-transModuleAlias :: Language.Ocaml.Abs.ModuleAlias -> Result
-transModuleAlias x = case x of
-  Language.Ocaml.Abs.ModuleAlias ext attributes modulename moduleexpralias postitemattributes -> failure x
-
-transModuleExprAlias :: Language.Ocaml.Abs.ModuleExprAlias -> Result
-transModuleExprAlias x = case x of
-  Language.Ocaml.Abs.ModuleExprAlias modlongident -> failure x
-
 transModuleSubst :: Language.Ocaml.Abs.ModuleSubst -> Result
 transModuleSubst x = case x of
   Language.Ocaml.Abs.ModuleSubst ext attributes uident modextlongident postitemattributes -> failure x
-
-transRecModuleDeclaration :: Language.Ocaml.Abs.RecModuleDeclaration -> Result
-transRecModuleDeclaration x = case x of
-  Language.Ocaml.Abs.RecModuleDeclaration ext attributes modulename moduletype postitemattributes -> failure x
 
 transAndModuleDeclaration :: Language.Ocaml.Abs.AndModuleDeclaration -> Result
 transAndModuleDeclaration x = case x of
@@ -431,13 +411,13 @@ transClassSigField x = case x of
   Language.Ocaml.Abs.ClassSigFieldInherit attributes classsignature postitemattributes -> failure x
   Language.Ocaml.Abs.ClassSigFieldVal attributes mutablevirtualflags lident coretype postitemattributes -> failure x
   Language.Ocaml.Abs.ClassSigFieldMethod attributes privatevirtualflags lident polytype postitemattributes -> failure x
-  Language.Ocaml.Abs.ClassSigFieldConstraint attributes coretype1 coretype2 postitemattributes -> failure x
+  Language.Ocaml.Abs.ClassSigFieldConstraint attributes constrainfield postitemattributes -> failure x
   Language.Ocaml.Abs.ClassSigFieldItemExtension itemextension postitemattributes -> failure x
   Language.Ocaml.Abs.ClassSigFieldFloatingAttribute floatingattribute -> failure x
 
-transConstrain :: Language.Ocaml.Abs.Constrain -> Result
-transConstrain x = case x of
-  Language.Ocaml.Abs.Constrain coretype1 coretype2 -> failure x
+transConstrainField :: Language.Ocaml.Abs.ConstrainField -> Result
+transConstrainField x = case x of
+  Language.Ocaml.Abs.ConstrainField coretype1 coretype2 -> failure x
 
 transAndClassDescription :: Language.Ocaml.Abs.AndClassDescription -> Result
 transAndClassDescription x = case x of
@@ -445,11 +425,7 @@ transAndClassDescription x = case x of
 
 transClassTypeDeclarations :: Language.Ocaml.Abs.ClassTypeDeclarations -> Result
 transClassTypeDeclarations x = case x of
-  Language.Ocaml.Abs.ClassTypeDeclarations classtypedeclaration andclasstypedeclarations -> failure x
-
-transClassTypeDeclaration :: Language.Ocaml.Abs.ClassTypeDeclaration -> Result
-transClassTypeDeclaration x = case x of
-  Language.Ocaml.Abs.ClassTypeDeclaration ext attributes virtualflag formalclassparameters lident classsignature postitemattributes -> failure x
+  Language.Ocaml.Abs.ClassTypeDeclarations ext attributes virtualflag formalclassparameters lident classsignature postitemattributes andclasstypedeclarations -> failure x
 
 transAndClassTypeDeclaration :: Language.Ocaml.Abs.AndClassTypeDeclaration -> Result
 transAndClassTypeDeclaration x = case x of
@@ -465,9 +441,11 @@ transSeqExpr x = case x of
 
 transLabeledSimplePattern :: Language.Ocaml.Abs.LabeledSimplePattern -> Result
 transLabeledSimplePattern x = case x of
-  Language.Ocaml.Abs.OptPattern labelletpattern optdefault -> failure x
+  Language.Ocaml.Abs.OptPattern labelletpattern -> failure x
+  Language.Ocaml.Abs.OptPatternWithDefault labelletpattern seqexpr -> failure x
   Language.Ocaml.Abs.OptLabel lident -> failure x
-  Language.Ocaml.Abs.OptLabeledPattern optlabel letpattern optdefault -> failure x
+  Language.Ocaml.Abs.OptLabeledPattern optlabel letpattern -> failure x
+  Language.Ocaml.Abs.OptLabeledPatternWithDefault optlabel letpattern seqexpr -> failure x
   Language.Ocaml.Abs.OptLabeledVar optlabel patternvar -> failure x
   Language.Ocaml.Abs.LabeledPattern labelletpattern -> failure x
   Language.Ocaml.Abs.Label lident -> failure x
@@ -478,11 +456,6 @@ transPatternVar :: Language.Ocaml.Abs.PatternVar -> Result
 transPatternVar x = case x of
   Language.Ocaml.Abs.PatternVar lident -> failure x
   Language.Ocaml.Abs.UnderscorePatternVar -> failure x
-
-transOptDefault :: Language.Ocaml.Abs.OptDefault -> Result
-transOptDefault x = case x of
-  Language.Ocaml.Abs.NoDefault -> failure x
-  Language.Ocaml.Abs.Default seqexpr -> failure x
 
 transLabelLetPattern :: Language.Ocaml.Abs.LabelLetPattern -> Result
 transLabelLetPattern x = case x of
@@ -538,11 +511,11 @@ transFunExpr x = case x of
   Language.Ocaml.Abs.AssignInfix funexpr expr -> failure x
   Language.Ocaml.Abs.QualifiedDot simpleexpr labellongident expr -> failure x
   Language.Ocaml.Abs.ArrayUpdateExpr simpleexpr seqexpr expr -> failure x
-  Language.Ocaml.Abs.RecordUpdateExpr simpleexpr seqexpr expr -> failure x
   Language.Ocaml.Abs.StringUpdateExpr simpleexpr seqexpr expr -> failure x
-  Language.Ocaml.Abs.ArrayUpdateDotopExpr simpleexpr qualifieddotop exprs expr -> failure x
-  Language.Ocaml.Abs.RecordUpdateDotopExpr simpleexpr qualifieddotop exprs expr -> failure x
-  Language.Ocaml.Abs.StringUpdateDotopExpr simpleexpr qualifieddotop exprs expr -> failure x
+  Language.Ocaml.Abs.BigArrayUpdateExpr simpleexpr seqexpr expr -> failure x
+  Language.Ocaml.Abs.ParenDotopUpdateExpr simpleexpr qualifieddotop exprs expr -> failure x
+  Language.Ocaml.Abs.BracketDotopUpdateExpr simpleexpr qualifieddotop exprs expr -> failure x
+  Language.Ocaml.Abs.BraceDotopUpdateExpr simpleexpr qualifieddotop exprs expr -> failure x
   Language.Ocaml.Abs.IfElse ext attributes seqexpr expr1 expr2 -> failure x
   Language.Ocaml.Abs.If ext attributes seqexpr expr -> failure x
   Language.Ocaml.Abs.Let letbindingsext seqexpr -> failure x
@@ -662,52 +635,52 @@ transSimpleExpr :: Language.Ocaml.Abs.SimpleExpr -> Result
 transSimpleExpr x = case x of
   Language.Ocaml.Abs.SeqExpr seqexpr -> failure x
   Language.Ocaml.Abs.SeqExprWithType seqexpr typeconstraint -> failure x
-  Language.Ocaml.Abs.ValLongident_ vallongident -> failure x
+  Language.Ocaml.Abs.ValLongident vallongident -> failure x
   Language.Ocaml.Abs.Constant constant -> failure x
   Language.Ocaml.Abs.ConstrName constrlongident -> failure x
-  Language.Ocaml.Abs.NameTag_ nametag -> failure x
-  Language.Ocaml.Abs.ObjectExpr objectexprfields -> failure x
-  Language.Ocaml.Abs.EmptyObjectExpr -> failure x
-  Language.Ocaml.Abs.QualifiedArrayExpr_ modlongident seqexpr -> failure x
-  Language.Ocaml.Abs.QualifiedObjectExpr modlongident objectexprfields -> failure x
-  Language.Ocaml.Abs.Extension extension -> failure x
-  Language.Ocaml.Abs.EmptyQualifiedArrayAccess modlongident -> failure x
-  Language.Ocaml.Abs.RecordExpr_ recordexprcontent -> failure x
-  Language.Ocaml.Abs.RecordAccess modlongident recordexprcontent -> failure x
-  Language.Ocaml.Abs.ArrayExpr_ exprs -> failure x
+  Language.Ocaml.Abs.NameTagExpr nametag -> failure x
+  Language.Ocaml.Abs.ListExpr exprs -> failure x
+  Language.Ocaml.Abs.RecordExpr recordexprcontent -> failure x
   Language.Ocaml.Abs.EmptyArrayExpr -> failure x
-  Language.Ocaml.Abs.ArrayAccesss modlongident exprs -> failure x
-  Language.Ocaml.Abs.ArrayAccesssTodo modlongident -> failure x
-  Language.Ocaml.Abs.StringExpr_ exprs -> failure x
-  Language.Ocaml.Abs.StringAccess modlongident exprs -> failure x
-  Language.Ocaml.Abs.StringAccessTodo modlongident -> failure x
-  Language.Ocaml.Abs.QualifiedModule modlongident ext attributes moduleexpr moduletype -> failure x
+  Language.Ocaml.Abs.ArrayExpr exprs -> failure x
+  Language.Ocaml.Abs.EmptyObjectExpr -> failure x
+  Language.Ocaml.Abs.ObjectExpr objectexprfields -> failure x
+  Language.Ocaml.Abs.LocalOpenUnit modlongident -> failure x
+  Language.Ocaml.Abs.LocalOpenExpr modlongident seqexpr -> failure x
+  Language.Ocaml.Abs.LocalOpenEmptyListExpr modlongident -> failure x
+  Language.Ocaml.Abs.LocalOpenListExpr modlongident exprs -> failure x
+  Language.Ocaml.Abs.LocalOpenRecordExpr modlongident recordexprcontent -> failure x
+  Language.Ocaml.Abs.LocalOpenEmptyArrayExpr modlongident -> failure x
+  Language.Ocaml.Abs.LocalOpenArrayExpr modlongident exprs -> failure x
+  Language.Ocaml.Abs.LocalOpenObjectExpr modlongident objectexprfields -> failure x
+  Language.Ocaml.Abs.LocalOpenModule modlongident ext attributes moduleexpr moduletype -> failure x
   Language.Ocaml.Abs.BeginEnd ext attributes seqexpr -> failure x
   Language.Ocaml.Abs.EmptyBeginEnd ext attributes -> failure x
   Language.Ocaml.Abs.New ext attributes classlongident -> failure x
   Language.Ocaml.Abs.Module ext attributes moduleexpr -> failure x
   Language.Ocaml.Abs.ModuleWithType ext attributes moduleexpr moduletype -> failure x
   Language.Ocaml.Abs.Object ext attributes classselfpattern classfields -> failure x
+  Language.Ocaml.Abs.Extension extension -> failure x
   Language.Ocaml.Abs.PrefixApp prefixop simpleexpr -> failure x
   Language.Ocaml.Abs.BangApp simpleexpr -> failure x
-  Language.Ocaml.Abs.ArrayExpr simpleexpr seqexpr -> failure x
-  Language.Ocaml.Abs.RecordExpr simpleexpr seqexpr -> failure x
-  Language.Ocaml.Abs.StringExpr simpleexpr seqexpr -> failure x
-  Language.Ocaml.Abs.QualifiedArrayExpr simpleexpr qualifieddotop exprs -> failure x
-  Language.Ocaml.Abs.QualifiedRecordExpr simpleexpr qualifieddotop exprs -> failure x
-  Language.Ocaml.Abs.QualifiedStringExpr simpleexpr qualifieddotop exprs -> failure x
-  Language.Ocaml.Abs.RecordAccessTodo simpleexpr labellongident -> failure x
+  Language.Ocaml.Abs.RecordAccessExpr simpleexpr labellongident -> failure x
+  Language.Ocaml.Abs.ArrayAccessExpr simpleexpr seqexpr -> failure x
+  Language.Ocaml.Abs.StringAccessExpr simpleexpr seqexpr -> failure x
+  Language.Ocaml.Abs.BigArrayAccessExpr simpleexpr seqexpr -> failure x
+  Language.Ocaml.Abs.ParenDotopAccessExpr simpleexpr qualifieddotop exprs -> failure x
+  Language.Ocaml.Abs.BracketDotopAccessExpr simpleexpr qualifieddotop exprs -> failure x
+  Language.Ocaml.Abs.BraceDotopAccessExpr simpleexpr qualifieddotop exprs -> failure x
   Language.Ocaml.Abs.MethodInvocation simpleexpr lident -> failure x
   Language.Ocaml.Abs.HashOp simpleexpr1 hashop simpleexpr2 -> failure x
 
 transLabeledSimpleExpr :: Language.Ocaml.Abs.LabeledSimpleExpr -> Result
 transLabeledSimpleExpr x = case x of
-  Language.Ocaml.Abs.LabeledSimpleExpr16 simpleexpr -> failure x
-  Language.Ocaml.Abs.LabeledExpr16 label simpleexpr -> failure x
-  Language.Ocaml.Abs.Label16 lident -> failure x
-  Language.Ocaml.Abs.Label16WithType lident typeconstraint -> failure x
-  Language.Ocaml.Abs.OptLabel16 lident -> failure x
-  Language.Ocaml.Abs.OptLabeledExpr16 optlabel simpleexpr -> failure x
+  Language.Ocaml.Abs.ExprWithoutLabel simpleexpr -> failure x
+  Language.Ocaml.Abs.LabeledExpr label simpleexpr -> failure x
+  Language.Ocaml.Abs.LabeExpr lident -> failure x
+  Language.Ocaml.Abs.LabelWithTypExpr lident typeconstraint -> failure x
+  Language.Ocaml.Abs.OptLabelExpr lident -> failure x
+  Language.Ocaml.Abs.OptLabeledExpr optlabel simpleexpr -> failure x
 
 transLetBindingBodyNoPunning :: Language.Ocaml.Abs.LetBindingBodyNoPunning -> Result
 transLetBindingBodyNoPunning x = case x of
@@ -935,7 +908,7 @@ transTypeSubstDeclaration x = case x of
 
 transConstraint :: Language.Ocaml.Abs.Constraint -> Result
 transConstraint x = case x of
-  Language.Ocaml.Abs.Constraint constrain -> failure x
+  Language.Ocaml.Abs.Constraint coretype1 coretype2 -> failure x
 
 transNonemptyTypeKind :: Language.Ocaml.Abs.NonemptyTypeKind -> Result
 transNonemptyTypeKind x = case x of
@@ -1100,10 +1073,9 @@ transAliasType x = case x of
 transFunctionType :: Language.Ocaml.Abs.FunctionType -> Result
 transFunctionType x = case x of
   Language.Ocaml.Abs.TupleType tupletype -> failure x
-  Language.Ocaml.Abs.FunTypeWithOptLabel optlabel tupletype functiontype -> failure x
-  Language.Ocaml.Abs.FunTypeWithOptionalLabel lident tupletype functiontype -> failure x
-  Language.Ocaml.Abs.FunTypeWithtLabel lident tupletype functiontype -> failure x
-  Language.Ocaml.Abs.FunTypeWithoutLabel tupletype functiontype -> failure x
+  Language.Ocaml.Abs.ArgTypeWithOptLabel optlabel tupletype functiontype -> failure x
+  Language.Ocaml.Abs.ArgTypeWithLabel lident tupletype functiontype -> failure x
+  Language.Ocaml.Abs.ArgTypeWithoutLabel tupletype functiontype -> failure x
 
 transTupleType :: Language.Ocaml.Abs.TupleType -> Result
 transTupleType x = case x of
@@ -1217,18 +1189,12 @@ transOperator x = case x of
   Language.Ocaml.Abs.PrefixOp prefixop -> failure x
   Language.Ocaml.Abs.LetOp letop -> failure x
   Language.Ocaml.Abs.AndOp andop -> failure x
-  Language.Ocaml.Abs.ArrayAccessOp dotop indexmod -> failure x
-  Language.Ocaml.Abs.ArrayUpdateOp dotop indexmod -> failure x
-  Language.Ocaml.Abs.StringAccessOp dotop indexmod -> failure x
-  Language.Ocaml.Abs.StringUpdateOp dotop indexmod -> failure x
-  Language.Ocaml.Abs.RecordAccessOp dotop indexmod -> failure x
-  Language.Ocaml.Abs.RecordUpdateOp dotop indexmod -> failure x
+  Language.Ocaml.Abs.ParenAccessDotop dotop indexmod -> failure x
+  Language.Ocaml.Abs.ParenUpdateDotop dotop indexmod -> failure x
+  Language.Ocaml.Abs.BraceAccessDotop dotop indexmod -> failure x
+  Language.Ocaml.Abs.BraceUpdateDotop dotop indexmod -> failure x
   Language.Ocaml.Abs.HashSymbolOp hashop -> failure x
   Language.Ocaml.Abs.BangOp -> failure x
-  Language.Ocaml.Abs.InfixOp infixoperator -> failure x
-
-transInfixOperator :: Language.Ocaml.Abs.InfixOperator -> Result
-transInfixOperator x = case x of
   Language.Ocaml.Abs.RelOp relop -> failure x
   Language.Ocaml.Abs.InfixEqual -> failure x
   Language.Ocaml.Abs.InfixLess -> failure x

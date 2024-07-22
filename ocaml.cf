@@ -298,7 +298,7 @@ let identchar_latin1 =
 
 -- TODO: Implement OPTLABEL correctly
 
-token OPTLABEL '?' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
+position token OPTLABEL '?' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
 
 {-
 %token OR                     "or"
@@ -904,7 +904,7 @@ separator UseFileElement "" ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 (* An element in a #used file is one of the following:
@@ -1056,7 +1056,7 @@ StructureElements.                        Structure ::= [StructureElement] ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 (* An expression with attributes, wrapped as a structure item. *)
@@ -1065,7 +1065,7 @@ StructureElements.                        Structure ::= [StructureElement] ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 (* A structure element is one of the following:
@@ -1124,7 +1124,7 @@ StrIncludeStatement.      StructureItem ::= "include" Ext [Attribute] ModuleExpr
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 (* A floating attribute is an attribute that appears at the top level of
@@ -1136,7 +1136,7 @@ StrIncludeStatement.      StructureItem ::= "include" Ext [Attribute] ModuleExpr
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 (* The body (right-hand side) of a module binding. *)
@@ -1158,7 +1158,7 @@ FunctorBinding.        ModuleBindingBody ::= FunctorArg ModuleBindingBody ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 [].  [AndModuleBinding] ::= ;
 (:). [AndModuleBinding] ::= "and" AndModuleBinding [AndModuleBinding] ;
@@ -1170,7 +1170,7 @@ FunctorBinding.        ModuleBindingBody ::= FunctorArg ModuleBindingBody ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 (* The following bindings in a group of recursive module bindings. *)
@@ -1218,7 +1218,7 @@ OpenDescription. OpenDescription ::= "open" OverrideFlag Ext [Attribute] ModExtL
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 (* -------------------------------------------------------------------------- *)
@@ -1312,14 +1312,14 @@ SigTypeDeclarations.        SignatureItem ::= TypeDeclaration [AndTypeDeclaratio
 SigTypeSubstDeclarations.   SignatureItem ::= TypeSubstDeclarations ;
 SigTypeExtension.           SignatureItem ::= "type" Ext [Attribute] TypeParameters TypeLongident "+=" PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute] ;
 SigSigExceptionDeclaration. SignatureItem ::= SigExceptionDeclaration ;
-SigModuleDeclaration.       SignatureItem ::= ModuleDeclaration ;
-SigModuleAlias.             SignatureItem ::= ModuleAlias ;
+SigModuleDeclaration.       SignatureItem ::= "module" Ext [Attribute] ModuleName ModuleDeclarationBody [PostItemAttribute] ;
+SigModuleAlias.             SignatureItem ::= "module" Ext [Attribute] ModuleName "=" ModLongident [PostItemAttribute] ;
 SigModuleSubst.             SignatureItem ::= ModuleSubst ;
-SigRecModuleDeclarations.   SignatureItem ::= RecModuleDeclaration [AndModuleDeclaration] ; ;
+SigRecModuleDeclarations.   SignatureItem ::= "module" Ext [Attribute] "rec" ModuleName ":" ModuleType [PostItemAttribute] [AndModuleDeclaration] ;
 SigModuleTypeDeclaration.   SignatureItem ::= ModuleTypeDeclaration ;
 SigModuleTypeSubst.         SignatureItem ::= ModuleTypeSubst ;
 SigOpenDescription.         SignatureItem ::= OpenDescription ;
-SigIncludeStatement.        SignatureItem ::= ModuleTypeIncludeStatement ;
+SigIncludeStatement.        SignatureItem ::= "include" Ext [Attribute] ModuleType [PostItemAttribute] ;
 SigClassDescription.        SignatureItem ::= "class" Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ":" ClassType [PostItemAttribute] [AndClassDescription] ;
 SigClassTypeDeclarations.   SignatureItem ::= ClassTypeDeclarations ;
 
@@ -1329,7 +1329,7 @@ SigClassTypeDeclarations.   SignatureItem ::= ClassTypeDeclarations ;
 ;
 -}
 
-ModuleTypeIncludeStatement. ModuleTypeIncludeStatement ::= "include" Ext [Attribute] ModuleType [PostItemAttribute] ;
+-- inlined
 
 {-
 (* A module declaration. *)
@@ -1338,7 +1338,7 @@ ModuleTypeIncludeStatement. ModuleTypeIncludeStatement ::= "include" Ext [Attrib
 ;
 -}
 
-ModuleDeclaration. ModuleDeclaration ::= "module" Ext [Attribute] ModuleName ModuleDeclarationBody [PostItemAttribute] ;
+-- inlined
 
 {-
 (* The body (right-hand side) of a module declaration. *)
@@ -1358,7 +1358,7 @@ FunctorBody. ModuleDeclarationBody ::= FunctorArg ModuleDeclarationBody ;
 ;
 -}
 
-ModuleAlias. ModuleAlias ::= "module" Ext [Attribute] ModuleName "=" ModuleExprAlias [PostItemAttribute] ;
+-- inlined
 
 {-
 %inline module_expr_alias:
@@ -1366,7 +1366,7 @@ ModuleAlias. ModuleAlias ::= "module" Ext [Attribute] ModuleName "=" ModuleExprA
 ;
 -}
 
-ModuleExprAlias. ModuleExprAlias ::= ModLongident ;
+-- inlined
 
 {-
 (* A module substitution (in a signature). *)
@@ -1384,7 +1384,7 @@ ModuleSubst. ModuleSubst ::= "module" Ext [Attribute] UIDENT ":=" ModExtLongiden
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline rec_module_declaration:
@@ -1392,7 +1392,7 @@ ModuleSubst. ModuleSubst ::= "module" Ext [Attribute] UIDENT ":=" ModExtLongiden
 ;
 -}
 
-RecModuleDeclaration. RecModuleDeclaration ::= "module" Ext [Attribute] "rec" ModuleName ":" ModuleType [PostItemAttribute] ;
+-- inlined
 
 {-
 %inline and_module_declaration:
@@ -1422,7 +1422,7 @@ ModuleTypeSubst. ModuleTypeSubst ::= "module" "type" Ext [Attribute] OCamlIdent 
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline class_declaration:
@@ -1430,7 +1430,7 @@ ModuleTypeSubst. ModuleTypeSubst ::= "module" "type" Ext [Attribute] OCamlIdent 
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline and_class_declaration:
@@ -1468,6 +1468,8 @@ FormalClassParameters.  FormalClassParameters ::= "[" [TypeParameter] "]" ;
   | /* empty */
   | LBRACKET separated_nonempty_llist(COMMA, parameter) RBRACKET
 -}
+
+-- inlined
 
 {-
 (* -------------------------------------------------------------------------- *)
@@ -1524,7 +1526,7 @@ LabeledClassFunDef. ClassFunDef ::= LabeledSimplePattern ClassFunDef ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 class_self_pattern:
@@ -1623,14 +1625,6 @@ class_signature:
   | class_signature attribute
   | LET OPEN override_flag attributes mod_longident IN class_signature
 ;
-
-%inline class_sig_body:
-    class_self_type class_sig_fields
-;
-
-%inline class_sig_fields:
-  class_sig_field*
-;
 -}
 
 ClassSignatureName.              ClassSignature ::= CltyLongident ;
@@ -1639,6 +1633,22 @@ ClassSignatureExtension.         ClassSignature ::= Extension ;
 ClassSignatureObject.            ClassSignature ::= "object" [Attribute] ClassSelfType [ClassSigField] "end" ;
 WithAttribute.                   ClassSignature ::= ClassSignature Attribute ;
 ClassSignatureLetOpen.           ClassSignature ::= "let" "open" OverrideFlag [Attribute] ModLongident "in" ClassSignature ;
+
+{-
+%inline class_sig_body:
+    class_self_type class_sig_fields
+;
+-}
+
+-- inlined
+
+{-
+%inline class_sig_fields:
+  class_sig_field*
+;
+-}
+
+-- inlined
 
 {-
 class_self_type:
@@ -1660,7 +1670,7 @@ NoClassSelfType. ClassSelfType ::= ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 class_sig_field:
@@ -1671,22 +1681,30 @@ class_sig_field:
   | item_extension post_item_attributes
   | floating_attribute
 ;
-
-%inline value_type:
-  mutable_virtual_flags label COLON core_type
-;
-
-constrain_field:
-  core_type EQUAL core_type
-;
 -}
 
 ClassSigFieldInherit.           ClassSigField ::= "inherit" [Attribute] ClassSignature [PostItemAttribute] ;
 ClassSigFieldVal.               ClassSigField ::= "val" [Attribute] MutableVirtualFlags LIDENT ":" CoreType [PostItemAttribute] ;
 ClassSigFieldMethod.            ClassSigField ::= "method" [Attribute] PrivateVirtualFlags LIDENT ":" PolyType [PostItemAttribute] ;
-ClassSigFieldConstraint.        ClassSigField ::= "constraint" [Attribute] CoreType "=" CoreType [PostItemAttribute] ;
+ClassSigFieldConstraint.        ClassSigField ::= "constraint" [Attribute] ConstrainField [PostItemAttribute] ;
 ClassSigFieldItemExtension.     ClassSigField ::= ItemExtension [PostItemAttribute] ;
 ClassSigFieldFloatingAttribute. ClassSigField ::= FloatingAttribute ;
+
+{-
+%inline value_type:
+  mutable_virtual_flags label COLON core_type
+;
+-}
+
+-- inlined
+
+{-
+constrain_field:
+  core_type EQUAL core_type
+;
+-}
+
+ConstrainField. ConstrainField ::= CoreType "=" CoreType ;
 
 separator ClassSigField "" ;
 
@@ -1696,20 +1714,19 @@ separator ClassSigField "" ;
 ;
 -}
 
-Constrain. Constrain ::= CoreType "=" CoreType ;
+-- inlined
 
 {-
 (* A group of class descriptions. *)
 %inline class_descriptions:
   xlist(class_description, and_class_description)
-    { $1 }
 ;
 %inline class_description:
   CLASS ext attributes virtual_flag formal_class_parameters LIDENT COLON class_type post_item_attributes
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline and_class_description:
@@ -1727,7 +1744,7 @@ class_type_declarations:
 ;
 -}
 
-ClassTypeDeclarations. ClassTypeDeclarations ::= ClassTypeDeclaration [AndClassTypeDeclaration] ;
+ClassTypeDeclarations. ClassTypeDeclarations ::= "class" "type" Ext [Attribute] VirtualFlag FormalClassParameters LIDENT "=" ClassSignature [PostItemAttribute] [AndClassTypeDeclaration] ;
 
 {-
 %inline class_type_declaration:
@@ -1735,7 +1752,7 @@ ClassTypeDeclarations. ClassTypeDeclarations ::= ClassTypeDeclaration [AndClassT
 ;
 -}
 
-ClassTypeDeclaration. ClassTypeDeclaration ::= "class" "type" Ext [Attribute] VirtualFlag FormalClassParameters LIDENT "=" ClassSignature [PostItemAttribute] ;
+-- inlined
 
 {-
 %inline and_class_type_declaration:
@@ -1776,7 +1793,7 @@ fun_seq_expr:
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 seq_expr:
@@ -1809,14 +1826,16 @@ labeled_simple_pattern:
 ;
 -}
 
-OptPattern.           LabeledSimplePattern ::= "?" "(" LabelLetPattern OptDefault ")" ;
-OptLabel.             LabeledSimplePattern ::= "?" LIDENT ;
-OptLabeledPattern.    LabeledSimplePattern ::= OPTLABEL "(" LetPattern OptDefault ")" ;
-OptLabeledVar.        LabeledSimplePattern ::= OPTLABEL PatternVar ;
-LabeledPattern.       LabeledSimplePattern ::= "~" "(" LabelLetPattern ")" ;
-Label.                LabeledSimplePattern ::= "~" LIDENT ;
-LabeledSimplePattern. LabeledSimplePattern ::= LABEL SimplePattern ;
-SimplePattern.        LabeledSimplePattern ::= SimplePattern ;
+OptPattern.                   LabeledSimplePattern ::= "?" "(" LabelLetPattern ")" ;
+OptPatternWithDefault.        LabeledSimplePattern ::= "?" "(" LabelLetPattern "=" SeqExpr ")" ;
+OptLabel.                     LabeledSimplePattern ::= "?" LIDENT ;
+OptLabeledPattern.            LabeledSimplePattern ::= OPTLABEL "(" LetPattern ")" ;
+OptLabeledPatternWithDefault. LabeledSimplePattern ::= OPTLABEL "(" LetPattern "=" SeqExpr ")" ;
+OptLabeledVar.                LabeledSimplePattern ::= OPTLABEL PatternVar ;
+LabeledPattern.               LabeledSimplePattern ::= "~" "(" LabelLetPattern ")" ;
+Label.                        LabeledSimplePattern ::= "~" LIDENT ;
+LabeledSimplePattern.         LabeledSimplePattern ::= LABEL SimplePattern ;
+SimplePattern.                LabeledSimplePattern ::= SimplePattern ;
 
 {-
 pattern_var:
@@ -1834,8 +1853,7 @@ UnderscorePatternVar. PatternVar ::= "_" ;
 ;
 -}
 
-NoDefault. OptDefault ::= ;
-Default.   OptDefault ::= "=" SeqExpr ;
+-- inlined
 
 {-
 label_let_pattern:
@@ -1853,7 +1871,7 @@ LabelVarWithType. LabelLetPattern ::= LIDENT ":" CoreType ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 let_pattern:
@@ -1866,7 +1884,7 @@ LetPattern.         LetPattern ::= Pattern ;
 LetPatternWithType. LetPattern ::= Pattern ":" CoreType ;
 
 {-
-%inline qualified_dotop: ioption(DOT mod_longident {$2}) DOTOP ;
+%inline qualified_dotop: ioption(DOT mod_longident) DOTOP ;
 -}
 
 Unqualified. QualifiedDotop ::= DOTOP ;
@@ -1890,107 +1908,107 @@ fun_expr:
 NoAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ;
 AnAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ":" AtomicType ;
 
-ConstrName_.           FunExpr16 ::= ConstrLongident ;
+ConstrName_.            FunExpr16 ::= ConstrLongident ;
 -- TODO
 
 -- function application, constructor application, tag application, assert, lazy precedence 15, associativity left
-NameTagApp.            FunExpr15 ::= NameTag SimpleExpr16 ;
-SimpleExprApp.         FunExpr15 ::= SimpleExpr16 [LabeledSimpleExpr] ;
-Assert.                FunExpr15 ::= "assert" Ext [Attribute] SimpleExpr16 ;
-Lazy.                  FunExpr15 ::= "lazy" Ext [Attribute] SimpleExpr16 ;
-SimpleExpr.            FunExpr15 ::= SimpleExpr16 ;
+NameTagApp.             FunExpr15 ::= NameTag SimpleExpr16 ;
+SimpleExprApp.          FunExpr15 ::= SimpleExpr16 [LabeledSimpleExpr] ;
+Assert.                 FunExpr15 ::= "assert" Ext [Attribute] SimpleExpr16 ;
+Lazy.                   FunExpr15 ::= "lazy" Ext [Attribute] SimpleExpr16 ;
+SimpleExpr.             FunExpr15 ::= SimpleExpr16 ;
 
 -- - -. (prefix) precedence 14
-Subtractive.           FunExpr14 ::= Subtractive Expr15 ;
-Additive.              FunExpr14 ::= Additive Expr15 ;
+Subtractive.            FunExpr14 ::= Subtractive Expr15 ;
+Additive.               FunExpr14 ::= Additive Expr15 ;
 
 -- **… lsl lsr asr precedence 13, associativity right
-PowInfix.              FunExpr13 ::= FunExpr14 POWOP Expr13 ;
+PowInfix.               FunExpr13 ::= FunExpr14 POWOP Expr13 ;
 
 -- *... /... %... mod land lor lxor precedence 12, associativity left
-MultDivInfix.          FunExpr12 ::= FunExpr12 MULTDIVOP Expr13 ;
-MultInfix.             FunExpr12 ::= FunExpr12 "*" Expr13 ;
-DivInfix.              FunExpr12 ::= FunExpr12 "/" Expr13 ;
-ModInfix.              FunExpr12 ::= FunExpr12 "%" Expr13 ;
+MultDivInfix.           FunExpr12 ::= FunExpr12 MULTDIVOP Expr13 ;
+MultInfix.              FunExpr12 ::= FunExpr12 "*" Expr13 ;
+DivInfix.               FunExpr12 ::= FunExpr12 "/" Expr13 ;
+ModInfix.               FunExpr12 ::= FunExpr12 "%" Expr13 ;
 
 -- +... -... precedence 11, associativity left
-PlusMinusInfix.        FunExpr11 ::= FunExpr11 PLUSMINUSOP Expr12 ;
-PlusInfix.             FunExpr11 ::= FunExpr11 "+" Expr12 ;
-PlusDotInfix.          FunExpr11 ::= FunExpr11 "+." Expr12 ;
-MinusInfix.            FunExpr11 ::= FunExpr11 "-" Expr12 ;
-MinusDotInfix.         FunExpr11 ::= FunExpr11 "-." Expr12 ;
+PlusMinusInfix.         FunExpr11 ::= FunExpr11 PLUSMINUSOP Expr12 ;
+PlusInfix.              FunExpr11 ::= FunExpr11 "+" Expr12 ;
+PlusDotInfix.           FunExpr11 ::= FunExpr11 "+." Expr12 ;
+MinusInfix.             FunExpr11 ::= FunExpr11 "-" Expr12 ;
+MinusDotInfix.          FunExpr11 ::= FunExpr11 "-." Expr12 ;
 
 -- :: precedence 10, associativity right
-Cons.                  FunExpr10 ::= FunExpr11 "::" Expr10 ;
+Cons.                   FunExpr10 ::= FunExpr11 "::" Expr10 ;
 
 -- @... ^... precedence 9, associativity right
-ConcatInfix.           FunExpr9  ::= FunExpr10 CONCATOP Expr9 ;
+ConcatInfix.            FunExpr9  ::= FunExpr10 CONCATOP Expr9 ;
 
 -- =... <... >... |... &... $... != precedence 8, associativity left
-RelInfix.              FunExpr8  ::= FunExpr8 RELOP Expr9 ;
-EqualInfix.            FunExpr8  ::= FunExpr8 "=" Expr9 ;
-LessInfix.             FunExpr8  ::= FunExpr8 "<" Expr9 ;
-GreaterInfix.          FunExpr8  ::= FunExpr8 ">" Expr9 ;
+RelInfix.               FunExpr8  ::= FunExpr8 RELOP Expr9 ;
+EqualInfix.             FunExpr8  ::= FunExpr8 "=" Expr9 ;
+LessInfix.              FunExpr8  ::= FunExpr8 "<" Expr9 ;
+GreaterInfix.           FunExpr8  ::= FunExpr8 ">" Expr9 ;
 
 -- & && precedence 7, associativity right
-Infix.                 FunExpr7  ::= FunExpr8 "&" Expr7 ;
-Infix.                 FunExpr7  ::= FunExpr8 "&&" Expr7 ;
+Infix.                  FunExpr7  ::= FunExpr8 "&" Expr7 ;
+Infix.                  FunExpr7  ::= FunExpr8 "&&" Expr7 ;
 
 -- or || precedence 6, associativity right
-OrInfix.               FunExpr6  ::= FunExpr7 "or" Expr6 ;
-BarBarInfix.           FunExpr6  ::= FunExpr7 "||" Expr6 ;
+OrInfix.                FunExpr6  ::= FunExpr7 "or" Expr6 ;
+BarBarInfix.            FunExpr6  ::= FunExpr7 "||" Expr6 ;
 
 -- , precedence 5
-Comma.                 FunExpr5  ::= Expr6 "," [ExprComma] ;
+Comma.                  FunExpr5  ::= Expr6 "," [ExprComma] ;
 
 -- <- := precedence 4, associativity right
-UpdateExpr.            FunExpr4  ::= LIDENT "<-" Expr ;
-AssignInfix.           FunExpr4  ::= FunExpr5 ":=" Expr ;
-QualifiedDot.          FunExpr4  ::= SimpleExpr17 "." LabelLongident "<-" Expr ;
-ArrayUpdateExpr.       FunExpr4  ::= SimpleExpr17 "." "(" SeqExpr ")" "<-" Expr ;
-RecordUpdateExpr.      FunExpr4  ::= SimpleExpr17 "." "{" SeqExpr "}" "<-" Expr ;
-StringUpdateExpr.      FunExpr4  ::= SimpleExpr17 "." "[" SeqExpr "]" "<-" Expr ;
-ArrayUpdateDotopExpr.  FunExpr4  ::= SimpleExpr17 QualifiedDotop "(" [Expr] ")" "<-" Expr ;
-RecordUpdateDotopExpr. FunExpr4  ::= SimpleExpr17 QualifiedDotop "{" [Expr] "}" "<-" Expr ;
-StringUpdateDotopExpr. FunExpr4  ::= SimpleExpr17 QualifiedDotop "[" [Expr] "]" "<-" Expr ;
+UpdateExpr.             FunExpr4  ::= LIDENT "<-" Expr ;
+AssignInfix.            FunExpr4  ::= FunExpr5 ":=" Expr ;
+QualifiedDot.           FunExpr4  ::= SimpleExpr17 "." LabelLongident "<-" Expr ;
+ArrayUpdateExpr.        FunExpr4  ::= SimpleExpr17 "." "(" SeqExpr ")" "<-" Expr ;
+StringUpdateExpr.       FunExpr4  ::= SimpleExpr17 "." "[" SeqExpr "]" "<-" Expr ;
+BigArrayUpdateExpr.     FunExpr4  ::= SimpleExpr17 "." "{" SeqExpr "}" "<-" Expr ;
+ParenDotopUpdateExpr.   FunExpr4  ::= SimpleExpr17 QualifiedDotop "(" [Expr] ")" "<-" Expr ;
+BracketDotopUpdateExpr. FunExpr4  ::= SimpleExpr17 QualifiedDotop "[" [Expr] "]" "<-" Expr ;
+BraceDotopUpdateExpr.   FunExpr4  ::= SimpleExpr17 QualifiedDotop "{" [Expr] "}" "<-" Expr ;
 
 -- if precedence 3
-IfElse.                FunExpr3  ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
-If.                    FunExpr3  ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
+IfElse.                 FunExpr3  ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
+If.                     FunExpr3  ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
 
 -- ; precedence 2, associativity right
 -- see SeqExpr
 
 -- let match fun function try precedence 1
-Let.                   FunExpr1 ::= LetBindingsExt "in" SeqExpr ;
-LetOpBinding.          FunExpr1 ::= LETOP LetopBindings "in" SeqExpr ;
-LetModule.             FunExpr1 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
-LetException.          FunExpr1 ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
-LetOpen.               FunExpr1 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
-Fun.                   FunExpr1 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
-Match.                 FunExpr1 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
-Try.                   FunExpr1 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
-While.                 FunExpr1 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
-For.                   FunExpr1 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+Let.                    FunExpr1 ::= LetBindingsExt "in" SeqExpr ;
+LetOpBinding.           FunExpr1 ::= LETOP LetopBindings "in" SeqExpr ;
+LetModule.              FunExpr1 ::= "let" "module" Ext [Attribute] ModuleName ModuleBindingBody "in" SeqExpr ;
+LetException.           FunExpr1 ::= "let" "exception" Ext [Attribute] ConstrIdent GeneralizedConstructorArguments [Attribute] "in" SeqExpr ;
+LetOpen.                FunExpr1 ::= "let" "open" OverrideFlag Ext [Attribute] ModuleExpr "in" SeqExpr ;
+Fun.                    FunExpr1 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAnnotation "->" FunBody ;
+Match.                  FunExpr1 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+Try.                    FunExpr1 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
+While.                  FunExpr1 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
+For.                    FunExpr1 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
 
 -- TODO: What is the precedence of this rule?
-FunExprWithAttribute.  FunExpr1   ::= FunExpr2 Attribute ;
+FunExprWithAttribute.   FunExpr1   ::= FunExpr2 Attribute ;
 
-_.                     FunExpr15 ::= FunExpr16 ;
-_.                     FunExpr14 ::= FunExpr15 ;
-_.                     FunExpr13 ::= FunExpr14 ;
-_.                     FunExpr12 ::= FunExpr13 ;
-_.                     FunExpr11 ::= FunExpr12 ;
-_.                     FunExpr10 ::= FunExpr11 ;
-_.                     FunExpr9  ::= FunExpr10 ;
-_.                     FunExpr8  ::= FunExpr9 ;
-_.                     FunExpr7  ::= FunExpr8 ;
-_.                     FunExpr6  ::= FunExpr7 ;
-_.                     FunExpr5  ::= FunExpr6 ;
-_.                     FunExpr4  ::= FunExpr5 ;
-_.                     FunExpr3  ::= FunExpr4 ;
-_.                     FunExpr2  ::= FunExpr3 ;
-_.                     FunExpr1  ::= FunExpr2 ;
+_.                      FunExpr15 ::= FunExpr16 ;
+_.                      FunExpr14 ::= FunExpr15 ;
+_.                      FunExpr13 ::= FunExpr14 ;
+_.                      FunExpr12 ::= FunExpr13 ;
+_.                      FunExpr11 ::= FunExpr12 ;
+_.                      FunExpr10 ::= FunExpr11 ;
+_.                      FunExpr9  ::= FunExpr10 ;
+_.                      FunExpr8  ::= FunExpr9 ;
+_.                      FunExpr7  ::= FunExpr8 ;
+_.                      FunExpr6  ::= FunExpr7 ;
+_.                      FunExpr5  ::= FunExpr6 ;
+_.                      FunExpr4  ::= FunExpr5 ;
+_.                      FunExpr3  ::= FunExpr4 ;
+_.                      FunExpr2  ::= FunExpr3 ;
+_.                      FunExpr1  ::= FunExpr2 ;
 
 {-
 %inline indexop_expr(dot, index, right):
@@ -2000,7 +2018,7 @@ _.                     FunExpr1  ::= FunExpr2 ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline expr:
@@ -2147,7 +2165,7 @@ FunExpr1.       Expr   ::= FunExpr1 ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline do_done_expr:s
@@ -2155,7 +2173,7 @@ FunExpr1.       Expr   ::= FunExpr1 ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline expr_:
@@ -2169,7 +2187,7 @@ FunExpr1.       Expr   ::= FunExpr1 ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 simple_expr:
@@ -2182,49 +2200,47 @@ simple_expr:
 ;
 -}
 
--- TODO: Improve names
-
 SeqExpr.                   SimpleExpr19 ::= "(" SeqExpr ")" ;
 SeqExprWithType.           SimpleExpr19 ::= "(" SeqExpr TypeConstraint ")" ;
-ValLongident_.             SimpleExpr19 ::= ValLongident ;
+ValLongident.              SimpleExpr19 ::= ValLongident ;
 Constant.                  SimpleExpr19 ::= Constant ;
 ConstrName.                SimpleExpr19 ::= ConstrLongident ;
-NameTag_.                  SimpleExpr19 ::= NameTag ;
-ObjectExpr.                SimpleExpr19 ::= "{<" [ObjectExprField] ">}" ;
-EmptyObjectExpr.           SimpleExpr19 ::= "{<" ">}" ;
-QualifiedArrayExpr_.       SimpleExpr19 ::= ModLongident "." "(" SeqExpr ")" ;
-QualifiedObjectExpr.       SimpleExpr19 ::= ModLongident "." "{" [ObjectExprField] "}" ;
-Extension.                 SimpleExpr19 ::= Extension ;
-EmptyQualifiedArrayAccess. SimpleExpr19 ::= ModLongident "." "(" ")" ;
-RecordExpr_.               SimpleExpr19 ::= "{" RecordExprContent "}" ;
-RecordAccess.              SimpleExpr19 ::= ModLongident "." "{" RecordExprContent "}" ;
-ArrayExpr_.                SimpleExpr19 ::= "[|" [Expr] "|]" ;
+NameTagExpr.               SimpleExpr19 ::= NameTag ;
+ListExpr.                  SimpleExpr19 ::= "[" [Expr] "]" ;
+RecordExpr.                SimpleExpr19 ::= "{" RecordExprContent "}" ;
 EmptyArrayExpr.            SimpleExpr19 ::= "[|" "|]" ;
-ArrayAccesss.              SimpleExpr19 ::= ModLongident "." "[|" [Expr] "|]" ;
-ArrayAccesssTodo.          SimpleExpr19 ::= ModLongident "." "[|" "|]" ;
-StringExpr_.               SimpleExpr19 ::= "[" [Expr] "]" ;
-StringAccess.              SimpleExpr19 ::= ModLongident "." "[" [Expr] "]" ;
-StringAccessTodo.          SimpleExpr19 ::= ModLongident "." "[" "]" ;
-QualifiedModule.           SimpleExpr19 ::= ModLongident "." "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
+ArrayExpr.                 SimpleExpr19 ::= "[|" [Expr] "|]" ;
+EmptyObjectExpr.           SimpleExpr19 ::= "{<" ">}" ;
+ObjectExpr.                SimpleExpr19 ::= "{<" [ObjectExprField] ">}" ;
+LocalOpenUnit.             SimpleExpr19 ::= ModLongident "." "(" ")" ;
+LocalOpenExpr.             SimpleExpr19 ::= ModLongident "." "(" SeqExpr ")" ;
+LocalOpenEmptyListExpr.    SimpleExpr19 ::= ModLongident "." "[" "]" ;
+LocalOpenListExpr.         SimpleExpr19 ::= ModLongident "." "[" [Expr] "]" ;
+LocalOpenRecordExpr.       SimpleExpr19 ::= ModLongident "." "{" RecordExprContent "}" ;
+LocalOpenEmptyArrayExpr.   SimpleExpr19 ::= ModLongident "." "[|" "|]" ;
+LocalOpenArrayExpr.        SimpleExpr19 ::= ModLongident "." "[|" [Expr] "|]" ;
+LocalOpenObjectExpr.       SimpleExpr19 ::= ModLongident "." "{<" [ObjectExprField] ">}" ;
+LocalOpenModule.           SimpleExpr19 ::= ModLongident "." "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
 BeginEnd.                  SimpleExpr19  ::= "begin" Ext [Attribute] SeqExpr "end" ;
 EmptyBeginEnd.             SimpleExpr19  ::= "begin" Ext [Attribute] "end" ;
 New.                       SimpleExpr19  ::= "new" Ext [Attribute] ClassLongident ;
 Module.                    SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ")" ;
 ModuleWithType.            SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
 Object.                    SimpleExpr19  ::= "object" Ext [Attribute] ClassSelfPattern [ClassField] "end" ;
+Extension.                 SimpleExpr19 ::= Extension ;
 
 -- prefix-symbol precedence 18
 PrefixApp.                 SimpleExpr18 ::= PREFIXOP SimpleExpr19 ;
 BangApp.                   SimpleExpr18 ::= "!" SimpleExpr19 ;
 
 -- . .( .[ .{ precedence 17
-ArrayExpr.                 SimpleExpr17 ::= SimpleExpr17 "." "(" SeqExpr ")" ;
-RecordExpr.                SimpleExpr17 ::= SimpleExpr17 "." "{" SeqExpr "}" ;
-StringExpr.                SimpleExpr17 ::= SimpleExpr17 "." "[" SeqExpr "]" ;
-QualifiedArrayExpr.        SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "(" [Expr] ")" ;
-QualifiedRecordExpr.       SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "{" [Expr] "}" ;
-QualifiedStringExpr.       SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "[" [Expr] "]" ;
-RecordAccessTodo.          SimpleExpr17 ::= SimpleExpr17 "." LabelLongident ;
+RecordAccessExpr.          SimpleExpr17 ::= SimpleExpr17 "." LabelLongident ;
+ArrayAccessExpr.           SimpleExpr17 ::= SimpleExpr17 "." "(" SeqExpr ")" ;
+StringAccessExpr.          SimpleExpr17 ::= SimpleExpr17 "." "[" SeqExpr "]" ;
+BigArrayAccessExpr.        SimpleExpr17 ::= SimpleExpr17 "." "{" SeqExpr "}" ;
+ParenDotopAccessExpr.      SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "(" [Expr] ")" ;
+BracketDotopAccessExpr.    SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "[" [Expr] "]" ;
+BraceDotopAccessExpr.      SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "{" [Expr] "}" ;
 
 -- #... precedence 16, associativity left
 MethodInvocation.          SimpleExpr16 ::= SimpleExpr17 "#" LIDENT ;
@@ -2243,7 +2259,7 @@ _.                         SimpleExpr   ::= SimpleExpr16 ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline simple_expr_attrs:
@@ -2256,7 +2272,7 @@ _.                         SimpleExpr   ::= SimpleExpr16 ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline simple_expr_:
@@ -2288,7 +2304,7 @@ _.                         SimpleExpr   ::= SimpleExpr16 ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 labeled_simple_expr:
@@ -2303,12 +2319,12 @@ labeled_simple_expr:
 
 separator nonempty LabeledSimpleExpr "" ;
 
-LabeledSimpleExpr16. LabeledSimpleExpr ::= SimpleExpr16 ;
-LabeledExpr16.       LabeledSimpleExpr ::= LABEL SimpleExpr16 ;
-Label16.             LabeledSimpleExpr ::= "~" LIDENT ;
-Label16WithType.     LabeledSimpleExpr ::= "~" "(" LIDENT TypeConstraint ")" ;
-OptLabel16.          LabeledSimpleExpr ::= "?" LIDENT ;
-OptLabeledExpr16.    LabeledSimpleExpr ::= OPTLABEL SimpleExpr16 ;
+ExprWithoutLabel. LabeledSimpleExpr ::= SimpleExpr16 ;
+LabeledExpr.      LabeledSimpleExpr ::= LABEL SimpleExpr16 ;
+LabeExpr.         LabeledSimpleExpr ::= "~" LIDENT ;
+LabelWithTypExpr. LabeledSimpleExpr ::= "~" "(" LIDENT TypeConstraint ")" ;
+OptLabelExpr.     LabeledSimpleExpr ::= "?" LIDENT ;
+OptLabeledExpr.   LabeledSimpleExpr ::= OPTLABEL SimpleExpr16 ;
 
 {-
 %inline let_ident:
@@ -2316,7 +2332,7 @@ OptLabeledExpr16.    LabeledSimpleExpr ::= OPTLABEL SimpleExpr16 ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 let_binding_body_no_punning:
@@ -2366,7 +2382,7 @@ MultipleLetBindingExt. LetBindingsExt ::= LetBindingsExt AndLetBinding ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 and_let_binding: AND attributes let_binding_body post_item_attributes
@@ -2602,7 +2618,7 @@ OrPatternNoExn.            PatternNoExn ::= PatternNoExn "|" Pattern ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 pattern_gen:
@@ -2680,7 +2696,7 @@ ExtensionPattern.       SimplePatternNotIdent ::= Extension ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 simple_delimited_pattern:
@@ -2790,7 +2806,7 @@ PrimitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIde
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline generic_and_type_declaration(kind):
@@ -2853,7 +2869,7 @@ TypeSubstDeclaration. TypeSubstDeclaration ::= "type" Ext [Attribute] TypeParame
 ;
 -}
 
-Constraint. Constraint ::= "constraint" Constrain ;
+Constraint. Constraint ::= "constraint" CoreType "=" CoreType ;
 
 separator Constraint "" ;
 
@@ -2891,7 +2907,7 @@ TypeSynonymPrivateRecordType.  NonemptyTypeKind ::= CoreType "=" "private" "{" L
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 type_kind:
@@ -3036,7 +3052,7 @@ SigExceptionDeclaration. SigExceptionDeclaration ::= "exception" Ext [Attribute]
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 generalized_constructor_arguments:
@@ -3110,7 +3126,7 @@ LabelDeclarationSemiPolyType. LabelDeclarationSemi ::= MutableFlag LIDENT ":" [T
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 NoExtensionConstructors.  BarLlistExtensionConstructor ::= "|" ;
 BarExtensionConstructors. BarLlistExtensionConstructor ::= "|" [ExtensionConstructor] ;
@@ -3128,7 +3144,7 @@ separator ExtensionConstructor "|" ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 NoConstructor. BarLlistExtensionConstructorDeclaration ::= "|" ;
 Constructor.   BarLlistExtensionConstructorDeclaration ::= "|" [ExtensionConstructorDeclaration] ;
@@ -3242,7 +3258,7 @@ PolyCoreType. PolyType ::= [TypeVar] "." CoreType ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 
@@ -3272,7 +3288,7 @@ separator nonempty CoreType "," ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 
@@ -3302,11 +3318,10 @@ function_type:
 ;
 -}
 
-TupleType.                FunctionType ::= TupleType ;
-FunTypeWithOptLabel.      FunctionType ::= OPTLABEL TupleType "->" FunctionType ;
-FunTypeWithOptionalLabel. FunctionType ::= "?" LIDENT ":" TupleType "->" FunctionType ;
-FunTypeWithtLabel.        FunctionType ::= LIDENT ":" TupleType "->" FunctionType ;
-FunTypeWithoutLabel.      FunctionType ::= TupleType "->" FunctionType ;
+TupleType.           FunctionType ::= TupleType ;
+ArgTypeWithOptLabel. FunctionType ::= OPTLABEL TupleType "->" FunctionType ;
+ArgTypeWithLabel.    FunctionType ::= LIDENT ":" TupleType "->" FunctionType ;
+ArgTypeWithoutLabel. FunctionType ::= TupleType "->" FunctionType ;
 
 {-
 (* Tuple types include:
@@ -3324,7 +3339,7 @@ FunTypeWithoutLabel.      FunctionType ::= TupleType "->" FunctionType ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 (* Tuple types include:
@@ -3465,7 +3480,7 @@ UnderscoreType.          AtomicType ::= "_" ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline package_type: module_type;
@@ -3557,7 +3572,7 @@ DotDot.                    MethList ::= ".." ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline field_semi:
@@ -3565,7 +3580,7 @@ DotDot.                    MethList ::= ".." ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline inherit_field:
@@ -3573,7 +3588,7 @@ DotDot.                    MethList ::= ".." ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline label:
@@ -3581,7 +3596,7 @@ DotDot.                    MethList ::= ".." ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 /* Constants */
@@ -3662,18 +3677,35 @@ operator:
 ;
 -}
 
-PrefixOp.       Operator ::= PREFIXOP ;
-LetOp.          Operator ::= LETOP ;
-AndOp.          Operator ::= ANDOP ;
-ArrayAccessOp.  Operator ::= DOTOP "(" IndexMod ")" ;
-ArrayUpdateOp.  Operator ::= DOTOP "(" IndexMod ")" "<-" ;
-StringAccessOp. Operator ::= DOTOP "[" IndexMod "]" ;
-StringUpdateOp. Operator ::= DOTOP "[" IndexMod "]" "<-" ;
-RecordAccessOp. Operator ::= DOTOP "{" IndexMod "}" ;
-RecordUpdateOp. Operator ::= DOTOP "{" IndexMod "}" "<-" ;
-HashSymbolOp.   Operator ::= HASHOP ;
-BangOp.         Operator ::= "!" ;
-InfixOp.        Operator ::= InfixOperator ;
+PrefixOp.                Operator ::= PREFIXOP ;
+LetOp.                   Operator ::= LETOP ;
+AndOp.                   Operator ::= ANDOP ;
+ParenAccessDotop.        Operator ::= DOTOP "(" IndexMod ")" ;
+ParenUpdateDotop.        Operator ::= DOTOP "(" IndexMod ")" "<-" ;
+BraceAccessDotop.        Operator ::= DOTOP "[" IndexMod "]" ;
+BraceUpdateDotop.        Operator ::= DOTOP "[" IndexMod "]" "<-" ;
+BraceAccessDotop.        Operator ::= DOTOP "{" IndexMod "}" ;
+BraceUpdateDotop.        Operator ::= DOTOP "{" IndexMod "}" "<-" ;
+HashSymbolOp.            Operator ::= HASHOP ;
+BangOp.                  Operator ::= "!" ;
+RelOp.                   Operator ::= RELOP ;
+InfixEqual.              Operator ::= "=" ;
+InfixLess.               Operator ::= "<" ;
+InfixGreater.            Operator ::= ">" ;
+InfixBarBar.             Operator ::= "||" ;
+InfixAmpersand.          Operator ::= "&" ;
+InfixAmpersandAmpersand. Operator ::= "&&" ;
+ConcatOp.                Operator ::= CONCATOP ;
+PlusMinusOp.             Operator ::= PLUSMINUSOP ;
+InfixPlus.               Operator ::= "+" ;
+InfixMinus.              Operator ::= "-" ;
+MultDivOp.               Operator ::= MULTDIVOP ;
+InfixStar.               Operator ::= "*" ;
+InfixSlash.              Operator ::= "/" ;
+InfixPercent.            Operator ::= "%" ;
+PowOp.                   Operator ::= POWOP ;
+InfixOr.                 Operator ::= "or" ;
+InfixColonEqual.         Operator ::= ":=" ;
 
 {-
 %inline infix_operator:
@@ -3700,24 +3732,7 @@ InfixOp.        Operator ::= InfixOperator ;
 ;
 -}
 
-RelOp.                   InfixOperator ::= RELOP ;
-InfixEqual.              InfixOperator ::= "=" ;
-InfixLess.               InfixOperator ::= "<" ;
-InfixGreater.            InfixOperator ::= ">" ;
-InfixBarBar.             InfixOperator ::= "||" ;
-InfixAmpersand.          InfixOperator ::= "&" ;
-InfixAmpersandAmpersand. InfixOperator ::= "&&" ;
-ConcatOp.                InfixOperator ::= CONCATOP ;
-PlusMinusOp.             InfixOperator ::= PLUSMINUSOP ;
-InfixPlus.               InfixOperator ::= "+" ;
-InfixMinus.              InfixOperator ::= "-" ;
-MultDivOp.               InfixOperator ::= MULTDIVOP ;
-InfixStar.               InfixOperator ::= "*" ;
-InfixSlash.              InfixOperator ::= "/" ;
-InfixPercent.            InfixOperator ::= "%" ;
-PowOp.                   InfixOperator ::= POWOP ;
-InfixOr.                 InfixOperator ::= "or" ;
-InfixColonEqual.         InfixOperator ::= ":=" ;
+-- inlined
 
 {-
 index_mod:
@@ -3903,13 +3918,17 @@ ToplevelTrue.        ToplevelDirectiveArgument ::= "true" ;
 %inline epsilon:
   /* empty */
 ;
+-}
 
+-- inlined
+
+{-
 %inline raw_string:
   STRING
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 name_tag:
@@ -3936,7 +3955,7 @@ Recursive.    RecFlag ::= "rec" ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline no_nonrec_flag:
@@ -3944,7 +3963,7 @@ Recursive.    RecFlag ::= "rec" ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 direction_flag:
@@ -3972,7 +3991,7 @@ Private. PrivateFlag ::= "private" ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 mutable_flag:
@@ -4060,7 +4079,7 @@ VirtualWithPrivate. VirtualWithPrivateFlag ::= "virtual" "private" ;
 
 {-
 %inline no_override_flag:
-    /* empty */                                 { Fresh }
+    /* empty */
 ;
 -}
 
@@ -4068,8 +4087,8 @@ NoFlag. NoOverrideFlag ::= ;
 
 {-
 %inline override_flag:
-    /* empty */                                 { Fresh }
-  | BANG                                        { Override }
+    /* empty */
+  | BANG
 ;
 -}
 
@@ -4103,7 +4122,7 @@ optlabel:
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 /* Attributes and extensions */
@@ -4281,7 +4300,7 @@ Ext.   Ext ::= "%" [AttrId] ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 %inline ext_attributes:
@@ -4289,7 +4308,7 @@ Ext.   Ext ::= "%" [AttrId] ;
 ;
 -}
 
--- This definition is inlined manually
+-- inlined
 
 {-
 extension:
