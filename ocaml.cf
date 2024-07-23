@@ -2271,8 +2271,8 @@ BracketDotopAccessExpr.    SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "[" [Exp
 BraceDotopAccessExpr.      SimpleExpr17 ::= SimpleExpr17 QualifiedDotop "{" [Expr] "}" ;
 
 -- #... precedence 16, associativity left
-MethodInvocation.          SimpleExpr16 ::= SimpleExpr17 "#" LIDENT ;
-HashOp.                    SimpleExpr16 ::= SimpleExpr17 HASHOP SimpleExpr16 ;
+MethodInvocation.          SimpleExpr16 ::= SimpleExpr16 "#" LIDENT ;
+HashOp.                    SimpleExpr16 ::= SimpleExpr16 HASHOP SimpleExpr17 ;
 
 _.                         SimpleExpr18 ::= SimpleExpr19 ;
 _.                         SimpleExpr17 ::= SimpleExpr18 ;

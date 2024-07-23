@@ -821,8 +821,8 @@ instance Print Language.Ocaml.Abs.SimpleExpr where
     Language.Ocaml.Abs.ParenDotopAccessExpr simpleexpr qualifieddotop exprs -> prPrec i 17 (concatD [prt 17 simpleexpr, prt 0 qualifieddotop, doc (showString "("), prt 0 exprs, doc (showString ")")])
     Language.Ocaml.Abs.BracketDotopAccessExpr simpleexpr qualifieddotop exprs -> prPrec i 17 (concatD [prt 17 simpleexpr, prt 0 qualifieddotop, doc (showString "["), prt 0 exprs, doc (showString "]")])
     Language.Ocaml.Abs.BraceDotopAccessExpr simpleexpr qualifieddotop exprs -> prPrec i 17 (concatD [prt 17 simpleexpr, prt 0 qualifieddotop, doc (showString "{"), prt 0 exprs, doc (showString "}")])
-    Language.Ocaml.Abs.MethodInvocation simpleexpr lident -> prPrec i 16 (concatD [prt 17 simpleexpr, doc (showString "#"), prt 0 lident])
-    Language.Ocaml.Abs.HashOp simpleexpr1 hashop simpleexpr2 -> prPrec i 16 (concatD [prt 17 simpleexpr1, prt 0 hashop, prt 16 simpleexpr2])
+    Language.Ocaml.Abs.MethodInvocation simpleexpr lident -> prPrec i 16 (concatD [prt 16 simpleexpr, doc (showString "#"), prt 0 lident])
+    Language.Ocaml.Abs.HashOp simpleexpr1 hashop simpleexpr2 -> prPrec i 16 (concatD [prt 16 simpleexpr1, prt 0 hashop, prt 17 simpleexpr2])
 
 instance Print [Language.Ocaml.Abs.LabeledSimpleExpr] where
   prt _ [] = concatD []
