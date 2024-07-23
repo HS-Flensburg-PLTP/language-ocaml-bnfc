@@ -214,7 +214,7 @@ position token DOTOP '.' ["!$%&*+-/:=>?@^|"] ["!$%&*+-./:<=>?@^|~"]* ;
             { LETOP op }
 -}
 
-position token LETOP {"let"} ["$&*+-/<=>@^|"] ["$&*+-/<=>@^|"]* ;
+position token LETOP {"let"} ["$&*+-/<=>@^|"] ["!$%&*+-/:=>?@^|"]* ;
 
 {-
 %token <string> ANDOP         "and*" (* just an example *)
