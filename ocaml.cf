@@ -1216,14 +1216,14 @@ AndModuleBinding. AndModuleBinding ::= [Attribute] ModuleName ModuleBindingBody 
 {-
 (* A module type declaration. *)
 module_type_declaration:
-  MODULE TYPE ext attributes mkrhs(ident) preceded(EQUAL, module_type)? post_item_attributes
+  MODULE TYPE ext attributes ident preceded(EQUAL, module_type)? post_item_attributes
 ;
 -}
 
 NoModuleType. OptionalModuleType ::= ;
 AModuleType.  OptionalModuleType ::= EQUAL ModuleType ;
 
-ModuleTypeDeclaration. ModuleTypeDeclaration ::= "module" "type" [Attribute] OCamlIdent OptionalModuleType [PostItemAttribute] ;
+ModuleTypeDeclaration. ModuleTypeDeclaration ::= "module" "type" Ext [Attribute] OCamlIdent OptionalModuleType [PostItemAttribute] ;
 
 {-
 (* -------------------------------------------------------------------------- *)

@@ -130,7 +130,7 @@ data OptionalModuleType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ModuleTypeDeclaration
-    = ModuleTypeDeclaration [Attribute] OCamlIdent OptionalModuleType [PostItemAttribute]
+    = ModuleTypeDeclaration Ext [Attribute] OCamlIdent OptionalModuleType [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data OpenDeclaration

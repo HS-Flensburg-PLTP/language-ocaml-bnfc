@@ -358,7 +358,7 @@ instance Print Language.Ocaml.Abs.OptionalModuleType where
 
 instance Print Language.Ocaml.Abs.ModuleTypeDeclaration where
   prt i = \case
-    Language.Ocaml.Abs.ModuleTypeDeclaration attributes ocamlident optionalmoduletype postitemattributes -> prPrec i 0 (concatD [doc (showString "module"), doc (showString "type"), prt 0 attributes, prt 0 ocamlident, prt 0 optionalmoduletype, prt 0 postitemattributes])
+    Language.Ocaml.Abs.ModuleTypeDeclaration ext attributes ocamlident optionalmoduletype postitemattributes -> prPrec i 0 (concatD [doc (showString "module"), doc (showString "type"), prt 0 ext, prt 0 attributes, prt 0 ocamlident, prt 0 optionalmoduletype, prt 0 postitemattributes])
 
 instance Print Language.Ocaml.Abs.OpenDeclaration where
   prt i = \case

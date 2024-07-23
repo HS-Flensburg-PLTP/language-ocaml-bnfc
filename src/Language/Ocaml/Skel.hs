@@ -294,7 +294,7 @@ transOptionalModuleType x = case x of
 
 transModuleTypeDeclaration :: Language.Ocaml.Abs.ModuleTypeDeclaration -> Result
 transModuleTypeDeclaration x = case x of
-  Language.Ocaml.Abs.ModuleTypeDeclaration attributes ocamlident optionalmoduletype postitemattributes -> failure x
+  Language.Ocaml.Abs.ModuleTypeDeclaration ext attributes ocamlident optionalmoduletype postitemattributes -> failure x
 
 transOpenDeclaration :: Language.Ocaml.Abs.OpenDeclaration -> Result
 transOpenDeclaration x = case x of
