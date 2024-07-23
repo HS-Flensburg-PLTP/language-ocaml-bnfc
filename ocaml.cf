@@ -177,27 +177,37 @@ position token CONCATOP ["@^"] ["!$%&*+-./:<=>?@^|~"]* ;
 
   | ['+' '-'] symbolchar * as op
             { INFIXOP2 op }
+
+  "lor", INFIXOP3("lor"); (* Should be INFIXOP2 *)
+  "lxor", INFIXOP3("lxor"); (* Should be INFIXOP2 *)
 -}
 
-position token PLUSMINUSOP ["+-"] ["!$%&*+-./:<=>?@^|~"]* ;
+position token PLUSMINUSOP ["+-"] ["!$%&*+-./:<=>?@^|~"]* | {"lor"} | {"lxor"} ;
 
 {-
 %token <string> INFIXOP3      "land" (* just an example *)
 
   | ['*' '/' '%'] symbolchar * as op
             { INFIXOP3 op }
+
+  "mod", INFIXOP3("mod");
+  "land", INFIXOP3("land");
 -}
 
-position token MULTDIVOP ["*/%"] ["!$%&*+-./:<=>?@^|~"]* ;
+position token MULTDIVOP ["*/%"] ["!$%&*+-./:<=>?@^|~"]* | {"mod"} | {"land"} ;
 
 {-
 %token <string> INFIXOP4      "**"   (* just an example *)
 
   | "**" symbolchar * as op
             { INFIXOP4 op }
+
+  "lsl", INFIXOP4("lsl");
+  "lsr", INFIXOP4("lsr");
+  "asr", INFIXOP4("asr")
 -}
 
-position token POWOP {"**"} ["!$%&*+-./:<=>?@^|~"]* ;
+position token POWOP {"**"} ["!$%&*+-./:<=>?@^|~"]* | {"lsl"} | {"lsr"} | {"asr"} ;
 
 {-
 %token <string> DOTOP         ".+"
