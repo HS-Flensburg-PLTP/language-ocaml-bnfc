@@ -10,40 +10,16 @@
    string that will not trigger a syntax error; see how [not_expecting]
    is used in the definition of [type_variance]. */
 
-let lowercase = ['a'-'z' '_']
-let symbolchar =
-  ['!' '$' '%' '&' '*' '+' '-' '.' '/' ':' '<' '=' '>' '?' '@' '^' '|' '~']
-let dotsymbolchar =
-  ['!' '$' '%' '&' '*' '+' '-' '/' ':' '=' '>' '?' '@' '^' '|']
-let kwdopchar =
-  ['$' '&' '*' '+' '-' '/' '<' '=' '>' '@' '^' '|']
-
-%token AMPERAMPER             "&&"
-%token AMPERSAND              "&"
 %token AND                    "and"
 %token AS                     "as"
 %token ASSERT                 "assert"
 %token BACKQUOTE              "`"
-%token BANG                   "!"
 %token BAR                    "|"
-%token BARBAR                 "||"
 %token BARRBRACKET            "|]"
 %token BEGIN                  "begin"
-%token <char> CHAR            "'a'" (* just an example *)
--}
-
-token CHAR '\'' ( (char - ["'\\"])
-                | ('\\' ( ["\\\"'nrtb "]
-                        | digit digit digit
-                        | 'x' (letter | digit) (letter | digit)
-                        | 'o' ["0123"] ["01234567"] ["01234567"]
-                ))) '\'' ;
-
-{-
 %token CLASS                  "class"
 %token COLON                  ":"
 %token COLONCOLON             "::"
-%token COLONEQUAL             ":="
 %token COLONGREATER           ":>"
 %token COMMA                  ","
 %token CONSTRAINT             "constraint"
@@ -55,49 +31,137 @@ token CHAR '\'' ( (char - ["'\\"])
 %token ELSE                   "else"
 %token END                    "end"
 %token EOF                    ""
-%token EQUAL                  "="
 %token EXCEPTION              "exception"
 %token EXTERNAL               "external"
 %token FALSE                  "false"
-%token <string * char option> FLOAT "42.0" (* just an example *)
-
-  | float_literal | hex_float_literal as lit
-      { FLOAT (lit, None) }
-  | (float_literal | hex_float_literal as lit) (literal_modifier as modif)
-      { FLOAT (lit, Some modif) }
-
-let float_literal =
-  ['0'-'9'] ['0'-'9' '_']*
-  ('.' ['0'-'9' '_']* )?
-  (['e' 'E'] ['+' '-']? ['0'-'9'] ['0'-'9' '_']* )?
-let hex_float_literal =
-  '0' ['x' 'X']
-  ['0'-'9' 'A'-'F' 'a'-'f'] ['0'-'9' 'A'-'F' 'a'-'f' '_']*
-  ('.' ['0'-'9' 'A'-'F' 'a'-'f' '_']* )?
-  (['p' 'P'] ['+' '-']? ['0'-'9'] ['0'-'9' '_']* )?
--}
-
-token FLOAT (digit (digit | '_')* ('.' (digit | '_')*)? (["eE"] ["+-"]? digit (digit | '_')* )? )
-          | ('0' ["xX"] (digit | letter) (digit | letter | '_')* ('.' (digit | letter | '_')* )? (["pP"] ["+-"] digit (digit | '_')* )?) ;
-
-{-
 %token FOR                    "for"
 %token FUN                    "fun"
 %token FUNCTION               "function"
 %token FUNCTOR                "functor"
-%token GREATER                ">"
 %token GREATERRBRACE          ">}"
 %token GREATERRBRACKET        ">]"
-%gIF                     "if"
+%token IF                     "if"
 %token IN                     "in"
 %token INCLUDE                "include"
+%token INHERIT                "inherit"
+%token INITIALIZER            "initializer"
+%token LAZY                   "lazy"
+%token LBRACE                 "{"
+%token LBRACELESS             "{<"
+%token LBRACKET               "["
+%token LBRACKETBAR            "[|"
+%token LBRACKETLESS           "[<"
+%token LBRACKETGREATER        "[>"
+%token LBRACKETPERCENT        "[%"
+%token LBRACKETPERCENTPERCENT "[%%"
+%token LESSMINUS              "<-"
+%token LET                    "let"
+%token LPAREN                 "("
+%token LBRACKETAT             "[@"
+%token LBRACKETATAT           "[@@"
+%token LBRACKETATATAT         "[@@@"
+%token MATCH                  "match"
+%token METHOD                 "method"
+%token MINUSDOT               "-."
+%token MINUSGREATER           "->"
+%token MODULE                 "module"
+%token MUTABLE                "mutable"
+%token NEW                    "new"
+%token NONREC                 "nonrec"
+%token OBJECT                 "object"
+%token OF                     "of"
+%token OPEN                   "open"
+/* %token PARSER              "parser" */
+%token PLUSDOT                "+."
+%token PLUSEQ                 "+="
+%token PRIVATE                "private"
+%token QUESTION               "?"
+%token QUOTE                  "'"
+%token RBRACE                 "}"
+%token RBRACKET               "]"
+%token REC                    "rec"
+%token RPAREN                 ")"
+%token SEMI                   ";"
+%token SEMISEMI               ";;"
+%token HASH                   "#"
+%token SIG                    "sig"
+%token STRUCT                 "struct"
+%token THEN                   "then"
+%token TILDE                  "~"
+%token TO                     "to"
+%token TRUE                   "true"
+%token TRY                    "try"
+%token TYPE                   "type"
+%token UNDERSCORE             "_"
+%token VAL                    "val"
+%token VIRTUAL                "virtual"
+%token WHEN                   "when"
+%token WHILE                  "while"
+%token WITH                   "with"
+%token <string * Location.t> COMMENT    "(* comment *)"
+%token <Docstrings.docstring> DOCSTRING "(** documentation *)"
+
+%token EOL                    "\\n"      (* not great, but EOL is unused *)
+-}
+{-
+let lowercase = ['a'-'z' '_']
+let symbolchar =
+  ['!' '$' '%' '&' '*' '+' '-' '.' '/' ':' '<' '=' '>' '?' '@' '^' '|' '~']
+let dotsymbolchar =
+  ['!' '$' '%' '&' '*' '+' '-' '/' ':' '=' '>' '?' '@' '^' '|']
+let kwdopchar =
+  ['$' '&' '*' '+' '-' '/' '<' '=' '>' '@' '^' '|']
+-}
+{-
+%token AMPERAMPER             "&&"
+%token AMPERSAND              "&"
+%token BANG                   "!"
+%token BARBAR                 "||"
+%token COLONEQUAL             ":="
+%token EQUAL                  "="
+%token GREATER                ">"
+%token LESS                   "<"
+%token MINUS                  "-"
+%token OR                     "or"
+%token PERCENT                "%"
+%token PLUS                   "+"
+%token STAR                   "*"
+-}
+
+position token AMPERAMPER {"&&"} ;
+
+position token AMPERSAND '&' ;
+
+position token BANG '!' ;
+
+position token BARBAR {"||"} ;
+
+position token COLONEQUAL {":="} ;
+
+position token EQUAL '=' ;
+
+position token GREATER '>' ;
+
+position token LESS '<' ;
+
+position token MINUS '-' ;
+
+position token OR {"or"} ;
+
+position token PERCENT '%' ;
+
+position token PLUS '+' ;
+
+position token STAR '*' ;
+
+{-
 %token <string> INFIXOP0      "!="   (* just an example *)
 
-  | ['=' '<' '>' '|' '&' '$'] symbolchar * as op
+  | ['=' '<' '>' '|' '&' '$'] symbolchar * asop
             { INFIXOP0 op }
 -}
 
-token RELOP ["=<>|&$"] ["!$%&*+-./:<=>?@^|~"]* ;
+position token RELOP ["=<>|&$"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> INFIXOP1      "@"    (* just an example *)
@@ -106,7 +170,7 @@ token RELOP ["=<>|&$"] ["!$%&*+-./:<=>?@^|~"]* ;
             { INFIXOP1 op }
 -}
 
-token CONCATOP ["@^"] ["!$%&*+-./:<=>?@^|~"]* ;
+position token CONCATOP ["@^"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> INFIXOP2      "+!"   (* chosen with care; see above *)
@@ -115,7 +179,7 @@ token CONCATOP ["@^"] ["!$%&*+-./:<=>?@^|~"]* ;
             { INFIXOP2 op }
 -}
 
-token PLUSMINUSOP ["+-"] ["!$%&*+-./:<=>?@^|~"]* ;
+position token PLUSMINUSOP ["+-"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> INFIXOP3      "land" (* just an example *)
@@ -124,7 +188,7 @@ token PLUSMINUSOP ["+-"] ["!$%&*+-./:<=>?@^|~"]* ;
             { INFIXOP3 op }
 -}
 
-token MULTDIVOP ["*/%"] ["!$%&*+-./:<=>?@^|~"]* ;
+position token MULTDIVOP ["*/%"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> INFIXOP4      "**"   (* just an example *)
@@ -133,7 +197,7 @@ token MULTDIVOP ["*/%"] ["!$%&*+-./:<=>?@^|~"]* ;
             { INFIXOP4 op }
 -}
 
-token POWOP {"**"} ["!$%&*+-./:<=>?@^|~"]* ;
+position token POWOP {"**"} ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> DOTOP         ".+"
@@ -141,7 +205,7 @@ token POWOP {"**"} ["!$%&*+-./:<=>?@^|~"]* ;
   | "." (dotsymbolchar symbolchar* as op) { DOTOP op }
 -}
 
-token DOTOP '.' ["!$%&*+-/:=>?@^|"] ["!$%&*+-./:<=>?@^|~"]* ;
+position token DOTOP '.' ["!$%&*+-/:=>?@^|"] ["!$%&*+-./:<=>?@^|~"]* ;
 
 {-
 %token <string> LETOP         "let*" (* just an example *)
@@ -150,7 +214,7 @@ token DOTOP '.' ["!$%&*+-/:=>?@^|"] ["!$%&*+-./:<=>?@^|~"]* ;
             { LETOP op }
 -}
 
-token LETOP {"let"} ["$&*+-/<=>@^|"] ["$&*+-/<=>@^|"]* ;
+position token LETOP {"let"} ["$&*+-/<=>@^|"] ["$&*+-/<=>@^|"]* ;
 
 {-
 %token <string> ANDOP         "and*" (* just an example *)
@@ -159,11 +223,32 @@ token LETOP {"let"} ["$&*+-/<=>@^|"] ["$&*+-/<=>@^|"]* ;
             { ANDOP op }
 -}
 
-token ANDOP {"and"} ["$&*+-/<=>@^|"] ["$&*+-/<=>@^|"]*  ;
+position token ANDOP {"and"} ["$&*+-/<=>@^|"] ["$&*+-/<=>@^|"]*  ;
 
 {-
-%token INHERIT                "inherit"
-%token INITIALIZER            "initializer"
+%token <string> HASHOP        "##" (* just an example *)
+
+  | '#' symbolchar_or_hash + as op
+            { HASHOP op }
+-}
+
+position token HASHOP '#' ["~!?%<:.$&*+-/=>@^|"]+ ;
+
+{-
+
+%token <string> PREFIXOP      "!+" (* chosen with care; see above *)
+
+  | "!" symbolchar_or_hash + as op
+            { PREFIXOP op }
+  | ['~' '?'] symbolchar_or_hash + as op
+            { PREFIXOP op }
+-}
+
+position token PREFIXOP '!' ["~!?%<:.$&*+-/=>@^|"] | ('?' | '~') ["~!?%<:.$&*+-/=>@^|"]+ ;
+
+-- Primitive Data Types
+
+{-
 %token <string * char option> INT "42"  (* just an example *)
 
   | int_literal as lit { INT (lit, None) }
@@ -209,136 +294,39 @@ ModifiedBin.     INT ::= BinLiteralModifier ;
 Bin.             INT ::= BinLiteral ;
 
 {-
-%token <string> LABEL         "~label:" (* just an example *)
+%token <string * char option> FLOAT "42.0" (* just an example *)
 
-  | "~" raw_ident_escape (lowercase identchar * as name) ':'
-      { LABEL name }
-  | "~" (lowercase identchar * as name) ':'
-      { check_label_name lexbuf name;
-        LABEL name }
-  | "~" (lowercase_latin1 identchar_latin1 * as name) ':'
-      { warn_latin1 lexbuf;
-        LABEL name }
+  | float_literal | hex_float_literal as lit
+      { FLOAT (lit, None) }
+  | (float_literal | hex_float_literal as lit) (literal_modifier as modif)
+      { FLOAT (lit, Some modif) }
+
+let float_literal =
+  ['0'-'9'] ['0'-'9' '_']*
+  ('.' ['0'-'9' '_']* )?
+  (['e' 'E'] ['+' '-']? ['0'-'9'] ['0'-'9' '_']* )?
+let hex_float_literal =
+  '0' ['x' 'X']
+  ['0'-'9' 'A'-'F' 'a'-'f'] ['0'-'9' 'A'-'F' 'a'-'f' '_']*
+  ('.' ['0'-'9' 'A'-'F' 'a'-'f' '_']* )?
+  (['p' 'P'] ['+' '-']? ['0'-'9'] ['0'-'9' '_']* )?
 -}
 
--- token LABEL '~' {"\\#"} (lower | '_') (letter | digit | '_' | '\'')* ':' ;
-
--- token LABEL '~' (lower | '_') (letter | digit | '_' | '\'')* ;
-
--- token LABEL '~' (letter | digit | '_' )
-
--- TODO: Implement LABEL correctly
-
-position token LABEL '~' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
+token FLOAT (digit (digit | '_')* ('.' (digit | '_')*)? (["eE"] ["+-"]? digit (digit | '_')* )? )
+          | ('0' ["xX"] (digit | letter) (digit | letter | '_')* ('.' (digit | letter | '_')* )? (["pP"] ["+-"] digit (digit | '_')* )?) ;
 
 {-
-%token LAZY                   "lazy"
-%token LBRACE                 "{"
-%token LBRACELESS             "{<"
-%token LBRACKET               "["
-%token LBRACKETBAR            "[|"
-%token LBRACKETLESS           "[<"
-%token LBRACKETGREATER        "[>"
-%token LBRACKETPERCENT        "[%"
-%token LBRACKETPERCENTPERCENT "[%%"
-%token LESS                   "<"
-%token LESSMINUS              "<-"
-%token LET                    "let"
-%token <string> LIDENT        "lident" (* just an example *)
-
-  | lowercase identchar * as name
-      { try Hashtbl.find keyword_table name
-        with Not_found -> LIDENT name }
-  | lowercase_latin1 identchar_latin1 * as name
-      { warn_latin1 lexbuf; LIDENT name }
+%token <char> CHAR            "'a'" (* just an example *)
 -}
 
-position token LIDENT (lower | '_') (letter | digit | '_' | '\'')* ;
+token CHAR '\'' ( (char - ["'\\"])
+                | ('\\' ( ["\\\"'nrtb "]
+                        | digit digit digit
+                        | 'x' (letter | digit) (letter | digit)
+                        | 'o' ["0123"] ["01234567"] ["01234567"]
+                ))) '\'' ;
 
 {-
-%token LPAREN                 "("
-%token LBRACKETAT             "[@"
-%token LBRACKETATAT           "[@@"
-%token LBRACKETATATAT         "[@@@"
-%token MATCH                  "match"
-%token METHOD                 "method"
-%token MINUS                  "-"
-%token MINUSDOT               "-."
-%token MINUSGREATER           "->"
-%token MODULE                 "module"
-%token MUTABLE                "mutable"
-%token NEW                    "new"
-%token NONREC                 "nonrec"
-%token OBJECT                 "object"
-%token OF                     "of"
-%token OPEN                   "open"
-%token <string> OPTLABEL      "?label:" (* just an example *)
-
-  | "?" raw_ident_escape (lowercase identchar * as name) ':'
-      { OPTLABEL name }
-  | "?" (lowercase identchar * as name) ':'
-      { check_label_name lexbuf name;
-        OPTLABEL name }
-  | "?" (lowercase_latin1 identchar_latin1 * as name) ':'
-      { warn_latin1 lexbuf;
-        OPTLABEL name }
-
-let raw_ident_escape = "\\#"
-let uppercase = ['A'-'Z']
-let identchar = ['A'-'Z' 'a'-'z' '_' '\'' '0'-'9']
-let identchar_latin1 =
-  ['A'-'Z' 'a'-'z' '_' '\192'-'\214' '\216'-'\246' '\248'-'\255' '\'' '0'-'9']
--}
-
--- token OPTLABEL '?' {"\\#"} (lower | '_') (letter | digit | '_' | '\'')* ':' ;
-
--- token OPTLABEL '?' (lower | '_') (letter | digit | '_' | '\'')* ;
-
--- token OPTLABEL '?' (letter | digit | '_' )
-
--- TODO: Implement OPTLABEL correctly
-
-position token OPTLABEL '?' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
-
-{-
-%token OR                     "or"
-/* %token PARSER              "parser" */
-%token PERCENT                "%"
-%token PLUS                   "+"
-%token PLUSDOT                "+."
-%token PLUSEQ                 "+="
-%token <string> PREFIXOP      "!+" (* chosen with care; see above *)
-
-  | "!" symbolchar_or_hash + as op
-            { PREFIXOP op }
-  | ['~' '?'] symbolchar_or_hash + as op
-            { PREFIXOP op }
--}
-
-token PREFIXOP '!' ["~!?%<:.$&*+-/=>@^|"] | ('?' | '~') ["~!?%<:.$&*+-/=>@^|"]+ ;
-
-{-
-%token PRIVATE                "private"
-%token QUESTION               "?"
-%token QUOTE                  "'"
-%token RBRACE                 "}"
-%token RBRACKET               "]"
-%token REC                    "rec"
-%token RPAREN                 ")"
-%token SEMI                   ";"
-%token SEMISEMI               ";;"
-%token HASH                   "#"
-%token <string> HASHOP        "##" (* just an example *)
-
-  | '#' symbolchar_or_hash + as op
-            { HASHOP op }
--}
-
-token HASHOP '#' ["~!?%<:.$&*+-/=>@^|"]+ ;
-
-{-
-%token SIG                    "sig"
-%token STAR                   "*"
 %token <string * Location.t * string option>
        STRING                 "\"hello\"" (* just an example *)
 -}
@@ -411,14 +399,22 @@ token QUOTED_STRING_EXPR {"{%"} letter (letter | digit | '_')* ('.' letter (lett
 
 token QUOTED_STRING_ITEM {"{%%"} letter (letter | digit | '_')* ('.' letter (letter | digit | '_')*)* '|' ;
 
+
+-- Identifiers
+
 {-
-%token STRUCT                 "struct"
-%token THEN                   "then"
-%token TILDE                  "~"
-%token TO                     "to"
-%token TRUE                   "true"
-%token TRY                    "try"
-%token TYPE                   "type"
+%token <string> LIDENT        "lident" (* just an example *)
+
+  | lowercase identchar * as name
+      { try Hashtbl.find keyword_table name
+        with Not_found -> LIDENT name }
+  | lowercase_latin1 identchar_latin1 * as name
+      { warn_latin1 lexbuf; LIDENT name }
+-}
+
+position token LIDENT (lower | '_') (letter | digit | '_' | '\'')* ;
+
+{-
 %token <string> UIDENT        "UIdent" (* just an example *)
 
   | uppercase identchar * as name
@@ -430,20 +426,56 @@ token QUOTED_STRING_ITEM {"{%%"} letter (letter | digit | '_')* ('.' letter (let
 token UIDENT upper (letter | digit | '_' | '\'')* ;
 
 {-
-%token UNDERSCORE             "_"
-%token VAL                    "val"
-%token VIRTUAL                "virtual"
-%token WHEN                   "when"
-%token WHILE                  "while"
-%token WITH                   "with"
-%token <string * Location.t> COMMENT    "(* comment *)"
+%token <string> LABEL         "~label:" (* just an example *)
+
+  | "~" raw_ident_escape (lowercase identchar * as name) ':'
+      { LABEL name }
+  | "~" (lowercase identchar * as name) ':'
+      { check_label_name lexbuf name;
+        LABEL name }
+  | "~" (lowercase_latin1 identchar_latin1 * as name) ':'
+      { warn_latin1 lexbuf;
+        LABEL name }
 -}
+
+-- token LABEL '~' {"\\#"} (lower | '_') (letter | digit | '_' | '\'')* ':' ;
+
+-- token LABEL '~' (lower | '_') (letter | digit | '_' | '\'')* ;
+
+-- token LABEL '~' (letter | digit | '_' )
+
+-- TODO: Implement LABEL correctly
+
+position token LABEL '~' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
 
 {-
-%token <Docstrings.docstring> DOCSTRING "(** documentation *)"
+%token <string> OPTLABEL      "?label:" (* just an example *)
 
-%token EOL                    "\\n"      (* not great, but EOL is unused *)
+  | "?" raw_ident_escape (lowercase identchar * as name) ':'
+      { OPTLABEL name }
+  | "?" (lowercase identchar * as name) ':'
+      { check_label_name lexbuf name;
+        OPTLABEL name }
+  | "?" (lowercase_latin1 identchar_latin1 * as name) ':'
+      { warn_latin1 lexbuf;
+        OPTLABEL name }
+
+let raw_ident_escape = "\\#"
+let uppercase = ['A'-'Z']
+let identchar = ['A'-'Z' 'a'-'z' '_' '\'' '0'-'9']
+let identchar_latin1 =
+  ['A'-'Z' 'a'-'z' '_' '\192'-'\214' '\216'-'\246' '\248'-'\255' '\'' '0'-'9']
 -}
+
+-- token OPTLABEL '?' {"\\#"} (lower | '_') (letter | digit | '_' | '\'')* ':' ;
+
+-- token OPTLABEL '?' (lower | '_') (letter | digit | '_' | '\'')* ;
+
+-- token OPTLABEL '?' (letter | digit | '_' )
+
+-- TODO: Implement OPTLABEL correctly
+
+position token OPTLABEL '?' (letter | digit | '_' ) (letter | digit | '_' )* ':' ;
 
 {-
 /* Precedences and associativities.
@@ -514,7 +546,7 @@ The precedences must be listed from low to high.
 /* Entry points */
 -}
 
-entrypoints Implementation, UseFile;
+entrypoints Implementation, Interface, UseFile;
 
 {-
 /* Several start symbols are marked with AVOID so that they are not used by
@@ -1147,8 +1179,8 @@ module_binding_body:
 ;
 -}
 
-ModuleBinding.         ModuleBindingBody ::= "=" ModuleExpr ;
-ModuleBindingWitgType. ModuleBindingBody ::= ":" ModuleType "=" ModuleExpr ;
+ModuleBinding.         ModuleBindingBody ::= EQUAL ModuleExpr ;
+ModuleBindingWitgType. ModuleBindingBody ::= ":" ModuleType EQUAL ModuleExpr ;
 FunctorBinding.        ModuleBindingBody ::= FunctorArg ModuleBindingBody ;
 
 {-
@@ -1189,7 +1221,7 @@ module_type_declaration:
 -}
 
 NoModuleType. OptionalModuleType ::= ;
-AModuleType.  OptionalModuleType ::= "=" ModuleType ;
+AModuleType.  OptionalModuleType ::= EQUAL ModuleType ;
 
 ModuleTypeDeclaration. ModuleTypeDeclaration ::= "module" "type" [Attribute] OCamlIdent OptionalModuleType [PostItemAttribute] ;
 
@@ -1313,7 +1345,7 @@ SigTypeSubstDeclarations.   SignatureItem ::= TypeSubstDeclarations ;
 SigTypeExtension.           SignatureItem ::= "type" Ext [Attribute] TypeParameters TypeLongident "+=" PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute] ;
 SigSigExceptionDeclaration. SignatureItem ::= SigExceptionDeclaration ;
 SigModuleDeclaration.       SignatureItem ::= "module" Ext [Attribute] ModuleName ModuleDeclarationBody [PostItemAttribute] ;
-SigModuleAlias.             SignatureItem ::= "module" Ext [Attribute] ModuleName "=" ModLongident [PostItemAttribute] ;
+SigModuleAlias.             SignatureItem ::= "module" Ext [Attribute] ModuleName EQUAL ModLongident [PostItemAttribute] ;
 SigModuleSubst.             SignatureItem ::= ModuleSubst ;
 SigRecModuleDeclarations.   SignatureItem ::= "module" Ext [Attribute] "rec" ModuleName ":" ModuleType [PostItemAttribute] [AndModuleDeclaration] ;
 SigModuleTypeDeclaration.   SignatureItem ::= ModuleTypeDeclaration ;
@@ -1375,7 +1407,7 @@ module_subst:
 ;
 -}
 
-ModuleSubst. ModuleSubst ::= "module" Ext [Attribute] UIDENT ":=" ModExtLongident [PostItemAttribute] ;
+ModuleSubst. ModuleSubst ::= "module" Ext [Attribute] UIDENT COLONEQUAL ModExtLongident [PostItemAttribute] ;
 
 {-
 (* A group of recursive module declarations. *)
@@ -1410,7 +1442,7 @@ module_type_subst:
   MODULE TYPE ext attributes ident COLONEQUAL module_type post_item_attributes
 -}
 
-ModuleTypeSubst. ModuleTypeSubst ::= "module" "type" Ext [Attribute] OCamlIdent ":=" ModuleType [PostItemAttribute] ;
+ModuleTypeSubst. ModuleTypeSubst ::= "module" "type" Ext [Attribute] OCamlIdent COLONEQUAL ModuleType [PostItemAttribute] ;
 
 {-
 (* -------------------------------------------------------------------------- *)
@@ -1450,8 +1482,8 @@ class_fun_binding:
 ;
 -}
 
-ClassFunBinding.         ClassFunBinding ::= "=" ClassExpr ;
-ClassFunBindingWithType. ClassFunBinding ::= ":" ClassType "=" ClassExpr ;
+ClassFunBinding.         ClassFunBinding ::= EQUAL ClassExpr ;
+ClassFunBindingWithType. ClassFunBinding ::= ":" ClassType EQUAL ClassExpr ;
 LabeledClassFunBinding.  ClassFunBinding ::= LabeledSimplePattern ClassFunBinding ;
 
 {-
@@ -1570,7 +1602,7 @@ AAs.  OptionalAs ::= "as" LIDENT ;
 ClassFieldInherit.           ClassField ::= "inherit" OverrideFlag [Attribute] ClassExpr OptionalAs [PostItemAttribute] ;
 ClassFieldVal.               ClassField ::= "val" Value [PostItemAttribute] ;
 ClassFieldMethod.            ClassField ::= "method" Method_ [PostItemAttribute] ;
-ClassFieldConstraint.        ClassField ::= "constraint" [Attribute] CoreType "=" CoreType [PostItemAttribute] ;
+ClassFieldConstraint.        ClassField ::= "constraint" [Attribute] CoreType EQUAL CoreType [PostItemAttribute] ;
 ClassFieldInitializer.       ClassField ::= "initializer" [Attribute] SeqExpr [PostItemAttribute] ;
 ClassFieldItemExtension.     ClassField ::= ItemExtension [PostItemAttribute] ;
 ClassFieldFloatingAttribute. ClassField ::= FloatingAttribute ;
@@ -1584,8 +1616,8 @@ value:
 -}
 
 Value1. Value ::= NoOverrideFlag [Attribute] VirtualWithMutableFlag LIDENT ":" CoreType ;
-Value2. Value ::= OverrideFlag [Attribute] MutableFlag LIDENT "=" SeqExpr ;
-Value3. Value ::= OverrideFlag [Attribute] MutableFlag LIDENT TypeConstraint "=" SeqExpr ;
+Value2. Value ::= OverrideFlag [Attribute] MutableFlag LIDENT EQUAL SeqExpr ;
+Value3. Value ::= OverrideFlag [Attribute] MutableFlag LIDENT TypeConstraint EQUAL SeqExpr ;
 
 {-
 method_:
@@ -1599,8 +1631,8 @@ method_:
 
 VirtualMethod.                 Method_ ::= NoOverrideFlag [Attribute] VirtualWithPrivateFlag LIDENT ":" PolyType ;
 Method.                        Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT StrictBinding ;
-MethodWithType.                Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" PolyType "=" SeqExpr ;
-MethodWithLocallyAbstractType. Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" "type" [LIDENT] "." CoreType "=" SeqExpr ;
+MethodWithType.                Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" PolyType EQUAL SeqExpr ;
+MethodWithLocallyAbstractType. Method_ ::= OverrideFlag [Attribute] PrivateFlag LIDENT ":" "type" [LIDENT] "." CoreType EQUAL SeqExpr ;
 
 {-
 /* Class types */
@@ -1704,7 +1736,7 @@ constrain_field:
 ;
 -}
 
-ConstrainField. ConstrainField ::= CoreType "=" CoreType ;
+ConstrainField. ConstrainField ::= CoreType EQUAL CoreType ;
 
 separator ClassSigField "" ;
 
@@ -1744,7 +1776,7 @@ class_type_declarations:
 ;
 -}
 
-ClassTypeDeclarations. ClassTypeDeclarations ::= "class" "type" Ext [Attribute] VirtualFlag FormalClassParameters LIDENT "=" ClassSignature [PostItemAttribute] [AndClassTypeDeclaration] ;
+ClassTypeDeclarations. ClassTypeDeclarations ::= "class" "type" Ext [Attribute] VirtualFlag FormalClassParameters LIDENT EQUAL ClassSignature [PostItemAttribute] [AndClassTypeDeclaration] ;
 
 {-
 %inline class_type_declaration:
@@ -1760,7 +1792,7 @@ ClassTypeDeclarations. ClassTypeDeclarations ::= "class" "type" Ext [Attribute] 
 ;
 -}
 
-AndClassTypeDeclaration. AndClassTypeDeclaration ::= [Attribute] VirtualFlag FormalClassParameters LIDENT "=" ClassSignature [PostItemAttribute] ;
+AndClassTypeDeclaration. AndClassTypeDeclaration ::= [Attribute] VirtualFlag FormalClassParameters LIDENT EQUAL ClassSignature [PostItemAttribute] ;
 
 separator AndClassTypeDeclaration "and" ;
 
@@ -1810,7 +1842,7 @@ seq_expr:
 FinalFunExpr.     SeqExpr ::= FunExpr1 ;
 FinalFunExprSemi. SeqExpr ::= FunExpr1 ";" ;
 MoreFunExprs.     SeqExpr ::= FunExpr1 ";" SeqExpr ;
-MoreFunExprsAttr. SeqExpr ::= FunExpr1 ";" "%" [AttrId] SeqExpr ;
+MoreFunExprsAttr. SeqExpr ::= FunExpr1 ";" PERCENT [AttrId] SeqExpr ;
 SeqExprFunction.  SeqExpr ::= "function" Ext [Attribute] [MatchCase] ;
 
 {-
@@ -1827,10 +1859,10 @@ labeled_simple_pattern:
 -}
 
 OptPattern.                   LabeledSimplePattern ::= "?" "(" LabelLetPattern ")" ;
-OptPatternWithDefault.        LabeledSimplePattern ::= "?" "(" LabelLetPattern "=" SeqExpr ")" ;
+OptPatternWithDefault.        LabeledSimplePattern ::= "?" "(" LabelLetPattern EQUAL SeqExpr ")" ;
 OptLabel.                     LabeledSimplePattern ::= "?" LIDENT ;
 OptLabeledPattern.            LabeledSimplePattern ::= OPTLABEL "(" LetPattern ")" ;
-OptLabeledPatternWithDefault. LabeledSimplePattern ::= OPTLABEL "(" LetPattern "=" SeqExpr ")" ;
+OptLabeledPatternWithDefault. LabeledSimplePattern ::= OPTLABEL "(" LetPattern EQUAL SeqExpr ")" ;
 OptLabeledVar.                LabeledSimplePattern ::= OPTLABEL PatternVar ;
 LabeledPattern.               LabeledSimplePattern ::= "~" "(" LabelLetPattern ")" ;
 Label.                        LabeledSimplePattern ::= "~" LIDENT ;
@@ -1908,12 +1940,10 @@ fun_expr:
 NoAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ;
 AnAtomicTypeAnnotation. OptionalAtomicTypeAnnotation ::= ":" AtomicType ;
 
-ConstrName_.            FunExpr16 ::= ConstrLongident ;
--- TODO
-
 -- function application, constructor application, tag application, assert, lazy precedence 15, associativity left
-NameTagApp.             FunExpr15 ::= NameTag SimpleExpr16 ;
 SimpleExprApp.          FunExpr15 ::= SimpleExpr16 [LabeledSimpleExpr] ;
+ConstrApp.              FunExpr15 ::= ConstrLongident SimpleExpr16 ;
+NameTagApp.             FunExpr15 ::= NameTag SimpleExpr16 ;
 Assert.                 FunExpr15 ::= "assert" Ext [Attribute] SimpleExpr16 ;
 Lazy.                   FunExpr15 ::= "lazy" Ext [Attribute] SimpleExpr16 ;
 SimpleExpr.             FunExpr15 ::= SimpleExpr16 ;
@@ -1927,15 +1957,14 @@ PowInfix.               FunExpr13 ::= FunExpr14 POWOP Expr13 ;
 
 -- *... /... %... mod land lor lxor precedence 12, associativity left
 MultDivInfix.           FunExpr12 ::= FunExpr12 MULTDIVOP Expr13 ;
-MultInfix.              FunExpr12 ::= FunExpr12 "*" Expr13 ;
-DivInfix.               FunExpr12 ::= FunExpr12 "/" Expr13 ;
-ModInfix.               FunExpr12 ::= FunExpr12 "%" Expr13 ;
+MultInfix.              FunExpr12 ::= FunExpr12 STAR Expr13 ;
+ModInfix.               FunExpr12 ::= FunExpr12 PERCENT Expr13 ;
 
 -- +... -... precedence 11, associativity left
 PlusMinusInfix.         FunExpr11 ::= FunExpr11 PLUSMINUSOP Expr12 ;
-PlusInfix.              FunExpr11 ::= FunExpr11 "+" Expr12 ;
+PlusInfix.              FunExpr11 ::= FunExpr11 PLUS Expr12 ;
 PlusDotInfix.           FunExpr11 ::= FunExpr11 "+." Expr12 ;
-MinusInfix.             FunExpr11 ::= FunExpr11 "-" Expr12 ;
+MinusInfix.             FunExpr11 ::= FunExpr11 MINUS Expr12 ;
 MinusDotInfix.          FunExpr11 ::= FunExpr11 "-." Expr12 ;
 
 -- :: precedence 10, associativity right
@@ -1946,24 +1975,24 @@ ConcatInfix.            FunExpr9  ::= FunExpr10 CONCATOP Expr9 ;
 
 -- =... <... >... |... &... $... != precedence 8, associativity left
 RelInfix.               FunExpr8  ::= FunExpr8 RELOP Expr9 ;
-EqualInfix.             FunExpr8  ::= FunExpr8 "=" Expr9 ;
-LessInfix.              FunExpr8  ::= FunExpr8 "<" Expr9 ;
-GreaterInfix.           FunExpr8  ::= FunExpr8 ">" Expr9 ;
+EqualInfix.             FunExpr8  ::= FunExpr8 EQUAL Expr9 ;
+LessInfix.              FunExpr8  ::= FunExpr8 LESS Expr9 ;
+GreaterInfix.           FunExpr8  ::= FunExpr8 GREATER Expr9 ;
 
 -- & && precedence 7, associativity right
-Infix.                  FunExpr7  ::= FunExpr8 "&" Expr7 ;
-Infix.                  FunExpr7  ::= FunExpr8 "&&" Expr7 ;
+AmpersandInfix.         FunExpr7  ::= FunExpr8 AMPERSAND Expr7 ;
+AmperAmperInfix.        FunExpr7  ::= FunExpr8 AMPERAMPER Expr7 ;
 
 -- or || precedence 6, associativity right
-OrInfix.                FunExpr6  ::= FunExpr7 "or" Expr6 ;
-BarBarInfix.            FunExpr6  ::= FunExpr7 "||" Expr6 ;
+OrInfix.                FunExpr6  ::= FunExpr7 OR Expr6 ;
+BarBarInfix.            FunExpr6  ::= FunExpr7 BARBAR Expr6 ;
 
 -- , precedence 5
 Comma.                  FunExpr5  ::= Expr6 "," [ExprComma] ;
 
 -- <- := precedence 4, associativity right
 UpdateExpr.             FunExpr4  ::= LIDENT "<-" Expr ;
-AssignInfix.            FunExpr4  ::= FunExpr5 ":=" Expr ;
+AssignInfix.            FunExpr4  ::= FunExpr5 COLONEQUAL Expr ;
 QualifiedDot.           FunExpr4  ::= SimpleExpr17 "." LabelLongident "<-" Expr ;
 ArrayUpdateExpr.        FunExpr4  ::= SimpleExpr17 "." "(" SeqExpr ")" "<-" Expr ;
 StringUpdateExpr.       FunExpr4  ::= SimpleExpr17 "." "[" SeqExpr "]" "<-" Expr ;
@@ -1989,12 +2018,11 @@ Fun.                    FunExpr1 ::= "fun" Ext [Attribute] [FunParam] OptionalAt
 Match.                  FunExpr1 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try.                    FunExpr1 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 While.                  FunExpr1 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
-For.                    FunExpr1 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+For.                    FunExpr1 ::= "for" Ext [Attribute] Pattern EQUAL SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
 
 -- TODO: What is the precedence of this rule?
 FunExprWithAttribute.   FunExpr1   ::= FunExpr2 Attribute ;
 
-_.                      FunExpr15 ::= FunExpr16 ;
 _.                      FunExpr14 ::= FunExpr15 ;
 _.                      FunExpr13 ::= FunExpr14 ;
 _.                      FunExpr12 ::= FunExpr13 ;
@@ -2041,7 +2069,7 @@ Fun15.          Expr15 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAn
 Match15.        Expr15 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try15.          Expr15 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 -- While15.        Expr15 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
--- For15.          Expr15 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+-- For15.          Expr15 ::= "for" Ext [Attribute] Pattern EQUAL SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
 IfElse15.       Expr15 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
 If15.           Expr15 ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
 FunExpr15.      Expr15 ::= FunExpr15 ;
@@ -2056,7 +2084,7 @@ Fun13.          Expr13 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAn
 Match13.        Expr13 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try13.          Expr13 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 -- While13.        Expr13 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
--- For13.          Expr13 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+-- For13.          Expr13 ::= "for" Ext [Attribute] Pattern EQUAL SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
 IfElse13.       Expr13 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
 If13.           Expr13 ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
 FunExpr13.      Expr13 ::= FunExpr13 ;
@@ -2071,7 +2099,7 @@ Fun12.          Expr12 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAn
 Match12.        Expr12 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try12.          Expr12 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 -- While12.        Expr12 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
--- For12.          Expr12 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+-- For12.          Expr12 ::= "for" Ext [Attribute] Pattern EQUAL SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
 IfElse12.       Expr12 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
 If12.           Expr12 ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
 FunExpr12.      Expr12 ::= FunExpr12 ;
@@ -2086,7 +2114,7 @@ Fun11.          Expr11 ::= "fun" Ext [Attribute] [FunParam] OptionalAtomicTypeAn
 Match11.        Expr11 ::= "match" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 Try11.          Expr11 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 -- While11.        Expr11 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
--- For11.          Expr11 ::= "for" Ext [Attribute] Pattern "=" SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
+-- For11.          Expr11 ::= "for" Ext [Attribute] Pattern EQUAL SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
 IfElse11.       Expr11 ::= "if" Ext [Attribute] SeqExpr "then" Expr "else" Expr ;
 If11.           Expr11 ::= "if" Ext [Attribute] SeqExpr "then" Expr ;
 FunExpr11.      Expr11 ::= FunExpr11 ;
@@ -2231,7 +2259,7 @@ Extension.                 SimpleExpr19 ::= Extension ;
 
 -- prefix-symbol precedence 18
 PrefixApp.                 SimpleExpr18 ::= PREFIXOP SimpleExpr19 ;
-BangApp.                   SimpleExpr18 ::= "!" SimpleExpr19 ;
+BangApp.                   SimpleExpr18 ::= BANG SimpleExpr19 ;
 
 -- . .( .[ .{ precedence 17
 RecordAccessExpr.          SimpleExpr17 ::= SimpleExpr17 "." LabelLongident ;
@@ -2346,12 +2374,11 @@ let_binding_body_no_punning:
 -}
 
 StrictBinding.                  LetBindingBodyNoPunning ::= ValIdent StrictBinding ;
-BindingWithMonoType.            LetBindingBodyNoPunning ::= ValIdent TypeConstraint "=" SeqExpr ;
-BindingWithPolyType.            LetBindingBodyNoPunning ::= ValIdent ":" [TypeVar] "." CoreType "=" SeqExpr ;
-BindingWithLocallyAbstractType. LetBindingBodyNoPunning ::= ValIdent ":" "type" [LIDENT] "." CoreType "=" SeqExpr ;
-PatternBinding.                 LetBindingBodyNoPunning ::= PatternNoExn "=" SeqExpr ;
-PatternBindingWithType.         LetBindingBodyNoPunning ::= SimplePatternNotIdent ":" CoreType "=" SeqExpr ;
-
+BindingWithMonoType.            LetBindingBodyNoPunning ::= ValIdent TypeConstraint EQUAL SeqExpr ;
+BindingWithPolyType.            LetBindingBodyNoPunning ::= ValIdent ":" [TypeVar] "." CoreType EQUAL SeqExpr ;
+BindingWithLocallyAbstractType. LetBindingBodyNoPunning ::= ValIdent ":" "type" [LIDENT] "." CoreType EQUAL SeqExpr ;
+PatternBinding.                 LetBindingBodyNoPunning ::= PatternNoExn EQUAL SeqExpr ;
+PatternBindingWithType.         LetBindingBodyNoPunning ::= SimplePatternNotIdent ":" CoreType EQUAL SeqExpr ;
 
 {-
 let_binding_body:
@@ -2402,8 +2429,8 @@ letop_binding_body:
 
 LetopStrictBinding.          LetopBindingBody ::= ValIdent StrictBinding ;
 LetopValIdent.               LetopBindingBody ::= ValIdent ;
-LetopPatternBindingWithType. LetopBindingBody ::= SimplePattern ":" CoreType "=" SeqExpr ;
-LetopPatternBinding.         LetopBindingBody ::= PatternNoExn "=" SeqExpr ;
+LetopPatternBindingWithType. LetopBindingBody ::= SimplePattern ":" CoreType EQUAL SeqExpr ;
+LetopPatternBinding.         LetopBindingBody ::= PatternNoExn EQUAL SeqExpr ;
 
 {-
 letop_bindings:
@@ -2422,8 +2449,8 @@ strict_binding:
 ;
 -}
 
-Binding.   StrictBinding ::= "=" SeqExpr ;
-FunParams. StrictBinding ::= [FunParam] OptionalTypeConstraint "=" FunBody ;
+Binding.   StrictBinding ::= EQUAL SeqExpr ;
+FunParams. StrictBinding ::= [FunParam] OptionalTypeConstraint EQUAL FunBody ;
 
 {-
 fun_body:
@@ -2436,7 +2463,7 @@ FunBodyFunction.         FunBody ::= "function" Ext [Attribute] [MatchCase] ;
 FunBodyFinalFunExpr.     FunBody ::= FunExpr1 ;
 FunBodyFinalFunExprSemi. FunBody ::= FunExpr1 ";" ;
 FunBodyMoreFunExprs.     FunBody ::= FunExpr1 ";" SeqExpr ;
-FunBodyMoreFunExprsAttr. FunBody ::= FunExpr1 ";" "%" [AttrId] SeqExpr ;
+FunBodyMoreFunExprsAttr. FunBody ::= FunExpr1 ";" PERCENT [AttrId] SeqExpr ;
 
 {-
 %inline match_cases:
@@ -2532,7 +2559,7 @@ RecordExprField. RecordExprField ::= LabelLongident OptionalTypeConstraint Optio
 -}
 
 NoAssign. OptionalAssignExpr ::= ;
-AnAssign. OptionalAssignExpr ::= "=" Expr ;
+AnAssign. OptionalAssignExpr ::= EQUAL Expr ;
 
 ObjectExprField. ObjectExprField ::= LIDENT OptionalAssignExpr ;
 
@@ -2649,6 +2676,7 @@ simple_pattern:
 ;
 -}
 
+-- We do not need the %prec below_EQUAL because shifting EQUAL is perferred over reducing to SimplePattern
 ValIdent.              SimplePattern ::= ValIdent ;
 SimplePatternNotIdent. SimplePattern ::= SimplePatternNotIdent ;
 
@@ -2764,7 +2792,7 @@ NoCoreType. OptionalCoreType ::= ;
 ACoreType.  OptionalCoreType ::= ":" CoreType ;
 
 NoAssignPattern. OptionalAssignPattern ::= ;
-AnAssignPattern. OptionalAssignPattern ::= "=" Pattern ;
+AnAssignPattern. OptionalAssignPattern ::= EQUAL Pattern ;
 
 RecordPatField. RecordPatField ::= LabelLongident OptionalCoreType OptionalAssignPattern ;
 
@@ -2788,7 +2816,7 @@ primitive_declaration:
 
 separator nonempty STRING "" ;
 
-PrimitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIdent ":" PolyType "=" [STRING] [PostItemAttribute] ;
+PrimitiveDeclaration. PrimitiveDeclaration ::= "external" Ext [Attribute] ValIdent ":" PolyType EQUAL [STRING] [PostItemAttribute] ;
 
 {-
 (* Type declarations and type substitutions. *)
@@ -2869,7 +2897,7 @@ TypeSubstDeclaration. TypeSubstDeclaration ::= "type" Ext [Attribute] TypeParame
 ;
 -}
 
-Constraint. Constraint ::= "constraint" CoreType "=" CoreType ;
+Constraint. Constraint ::= "constraint" CoreType EQUAL CoreType ;
 
 separator Constraint "" ;
 
@@ -2894,12 +2922,12 @@ PrivateAbstractType.           NonemptyTypeKind ::= "private" CoreType ;
 PrivateVariantType.            NonemptyTypeKind ::= "private" ConstructorDeclarations ;
 PrivateOpenType.               NonemptyTypeKind ::= "private" ".." ;
 PrivateRecordType.             NonemptyTypeKind ::= "private" "{" LabelDeclarations "}" ;
-TypeSynonymVariantType.        NonemptyTypeKind ::= CoreType "=" ConstructorDeclarations ;
-TypeSynonymPrivateVariantType. NonemptyTypeKind ::= CoreType "=" "private" ConstructorDeclarations ;
-TypeSynonymOpenType.           NonemptyTypeKind ::= CoreType "=" ".." ;
-TypeSynonymPrivateOpenType.    NonemptyTypeKind ::= CoreType "=" "private" ".." ;
-TypeSynonymRecordType.         NonemptyTypeKind ::= CoreType "=" "{" LabelDeclarations "}" ;
-TypeSynonymPrivateRecordType.  NonemptyTypeKind ::= CoreType "=" "private" "{" LabelDeclarations "}" ;
+TypeSynonymVariantType.        NonemptyTypeKind ::= CoreType EQUAL ConstructorDeclarations ;
+TypeSynonymPrivateVariantType. NonemptyTypeKind ::= CoreType EQUAL "private" ConstructorDeclarations ;
+TypeSynonymOpenType.           NonemptyTypeKind ::= CoreType EQUAL ".." ;
+TypeSynonymPrivateOpenType.    NonemptyTypeKind ::= CoreType EQUAL "private" ".." ;
+TypeSynonymRecordType.         NonemptyTypeKind ::= CoreType EQUAL "{" LabelDeclarations "}" ;
+TypeSynonymPrivateRecordType.  NonemptyTypeKind ::= CoreType EQUAL "private" "{" LabelDeclarations "}" ;
 
 {-
 %inline type_synonym:
@@ -2917,7 +2945,7 @@ type_kind:
 -}
 
 NoTypeKind. TypeKind ::= ;
-TypeKind.   TypeKind ::= "=" NonemptyTypeKind ;
+TypeKind.   TypeKind ::= EQUAL NonemptyTypeKind ;
 
 {-
 %inline type_subst_kind:
@@ -2925,7 +2953,7 @@ TypeKind.   TypeKind ::= "=" NonemptyTypeKind ;
 ;
 -}
 
-TypeSubstKind. TypeSubstKind ::= ":=" NonemptyTypeKind ;
+TypeSubstKind. TypeSubstKind ::= COLONEQUAL NonemptyTypeKind ;
 
 {-
 type_parameters:
@@ -2973,9 +3001,9 @@ type_variance:
 -}
 
 NoVarianceNoInjectivity.    TypeVariance ::= ;
-CovariantNoInjectivity.     TypeVariance ::= "+" ;
-ContravariantNoInjectivity. TypeVariance ::= "-" ;
-NoVarianceInjective.        TypeVariance ::= "!" ;
+CovariantNoInjectivity.     TypeVariance ::= PLUS ;
+ContravariantNoInjectivity. TypeVariance ::= MINUS ;
+NoVarianceInjective.        TypeVariance ::= BANG ;
 CovariantInjective.         TypeVariance ::= "+!" ;
 InjectiveCovariant.         TypeVariance ::= "!+" ;
 ContravariantInjective.     TypeVariance ::= "-!" ;
@@ -3036,7 +3064,7 @@ str_exception_declaration:
 -}
 
 SigStrExceptionDeclaration. StrExceptionDeclaration ::= SigExceptionDeclaration ;
-Exception.                  StrExceptionDeclaration ::= "exception" Ext [Attribute] ConstrIdent "=" ConstrLongident [Attribute] [PostItemAttribute] ;
+Exception.                  StrExceptionDeclaration ::= "exception" Ext [Attribute] ConstrIdent EQUAL ConstrLongident [Attribute] [PostItemAttribute] ;
 
 {-
 sig_exception_declaration:
@@ -3081,7 +3109,7 @@ constructor_arguments:
 ;
 -}
 
-Arg1. ConstructorArguments ::= [AtomicType] ;
+Arg1. ConstructorArguments ::= TupleType ;
 Arg2. ConstructorArguments ::= "{" LabelDeclarations "}" ;
 
 {-
@@ -3180,7 +3208,7 @@ extension_constructor_rebind(opening):
 ;
 -}
 
-ExtensionConstructorRebind. ExtensionConstructorRebind ::= ConstrIdent "=" ConstrLongident [Attribute] ;
+ExtensionConstructorRebind. ExtensionConstructorRebind ::= ConstrIdent EQUAL ConstrLongident [Attribute] ;
 
 {-
 /* "with" constraints (additional type equations over signature components) */
@@ -3198,11 +3226,11 @@ with_constraint:
 -- TODO: Improve names
 
 WithConstraint1. WithConstraint ::= "type" TypeParameters LabelLongident WithTypeBinder AliasType [Constraint] ;
-WithConstraint2. WithConstraint ::= "type" TypeParameters LabelLongident ":=" AliasType ;
-WithConstraint3. WithConstraint ::= "module" ModLongident "=" ModExtLongident ;
-WithConstraint4. WithConstraint ::= "module" ModLongident ":=" ModExtLongident ;
-WithConstraint5. WithConstraint ::= "module" "type" MtyLongident "=" ModuleType ;
-WithConstraint6. WithConstraint ::= "module" "type" MtyLongident ":=" ModuleType ;
+WithConstraint2. WithConstraint ::= "type" TypeParameters LabelLongident COLONEQUAL AliasType ;
+WithConstraint3. WithConstraint ::= "module" ModLongident EQUAL ModExtLongident ;
+WithConstraint4. WithConstraint ::= "module" ModLongident COLONEQUAL ModExtLongident ;
+WithConstraint5. WithConstraint ::= "module" "type" MtyLongident EQUAL ModuleType ;
+WithConstraint6. WithConstraint ::= "module" "type" MtyLongident COLONEQUAL ModuleType ;
 
 {-
 with_type_binder:
@@ -3211,8 +3239,8 @@ with_type_binder:
 ;
 -}
 
-WithTypeBinderEqual.        WithTypeBinder ::= "=" ;
-WithTypeBinderEqualPrivate. WithTypeBinder ::= "= private" ;
+WithTypeBinderEqual.        WithTypeBinder ::= EQUAL ;
+WithTypeBinderEqualPrivate. WithTypeBinder ::= EQUAL "private" ;
 
 {-
 /* Polymorphic types */
@@ -3354,9 +3382,7 @@ tuple_type:
 -}
 
 AtomicType.  TupleType ::= AtomicType ;
-AtomicTypes. TupleType ::= AtomicType "*" [AtomicType] ;
-
-separator nonempty AtomicType "*";
+AtomicTypes. TupleType ::= AtomicType STAR TupleType ;
 
 {-
 (* Atomic types are the most basic level in the syntax of types.
@@ -3415,7 +3441,7 @@ LocalOpen5. DelimitedTypeSupportingLocalOpen ::= "[" RowField "|" [RowField] "]"
 LocalOpen6. DelimitedTypeSupportingLocalOpen ::= "[>" OptionalBar [RowField] "]" ;
 LocalOpen7. DelimitedTypeSupportingLocalOpen ::= "[>" "]" ;
 LocalOpen8. DelimitedTypeSupportingLocalOpen ::= "[<" OptionalBar [RowField] "]" ;
-LocalOpen9. DelimitedTypeSupportingLocalOpen ::= "[<" OptionalBar [RowField] ">" [NameTag] "]" ;
+LocalOpen9. DelimitedTypeSupportingLocalOpen ::= "[<" OptionalBar [RowField] GREATER [NameTag] "]" ;
 
 {-
 object_type:
@@ -3424,8 +3450,8 @@ object_type:
 ;
 -}
 
-MethList. ObjectType ::= "<" MethList ">" ;
-Empty.    ObjectType ::= "<" ">" ;
+MethList. ObjectType ::= LESS MethList GREATER ;
+Empty.    ObjectType ::= LESS GREATER ;
 
 {-
 delimited_type:
@@ -3513,7 +3539,7 @@ tag_field:
 ;
 -}
 
-Of.  TagField ::= NameTag "of" OptAmpersand [AliasType] [Attribute] ;
+Of.  TagField ::= NameTag "of" OptAmpersand AmperTypeList [Attribute] ;
 Tag. TagField ::= NameTag [Attribute] ;
 
 {-
@@ -3523,7 +3549,7 @@ opt_ampersand:
 ;
 -}
 
-Ampersand.   OptAmpersand ::= "&" ;
+Ampersand.   OptAmpersand ::= AMPERSAND ;
 NoAmpersand. OptAmpersand ::= ;
 
 {-
@@ -3532,7 +3558,8 @@ NoAmpersand. OptAmpersand ::= ;
 ;
 -}
 
-separator nonempty AliasType "&" ;
+AmperTypeListNil.  AmperTypeList ::= AliasType ;
+AmperTypeListCons. AmperTypeList ::= AliasType AMPERSAND AmperTypeList ;
 
 {-
 %inline name_tag_list:
@@ -3625,10 +3652,10 @@ signed_constant:
 -}
 
 UnsignedConstant. SignedConstant ::= Constant ;
-NegInt.           SignedConstant ::= "-" INT ;
-NegFloat.         SignedConstant ::= "-" FLOAT ;
-PosInt.           SignedConstant ::= "+" INT ;
-PosFloat.         SignedConstant ::= "+" FLOAT ;
+NegInt.           SignedConstant ::= MINUS INT ;
+NegFloat.         SignedConstant ::= MINUS FLOAT ;
+PosInt.           SignedConstant ::= PLUS INT ;
+PosFloat.         SignedConstant ::= PLUS FLOAT ;
 
 {-
 /* Identifiers and long identifiers */
@@ -3677,35 +3704,34 @@ operator:
 ;
 -}
 
-PrefixOp.                Operator ::= PREFIXOP ;
-LetOp.                   Operator ::= LETOP ;
-AndOp.                   Operator ::= ANDOP ;
-ParenAccessDotop.        Operator ::= DOTOP "(" IndexMod ")" ;
-ParenUpdateDotop.        Operator ::= DOTOP "(" IndexMod ")" "<-" ;
-BraceAccessDotop.        Operator ::= DOTOP "[" IndexMod "]" ;
-BraceUpdateDotop.        Operator ::= DOTOP "[" IndexMod "]" "<-" ;
-BraceAccessDotop.        Operator ::= DOTOP "{" IndexMod "}" ;
-BraceUpdateDotop.        Operator ::= DOTOP "{" IndexMod "}" "<-" ;
-HashSymbolOp.            Operator ::= HASHOP ;
-BangOp.                  Operator ::= "!" ;
-RelOp.                   Operator ::= RELOP ;
-InfixEqual.              Operator ::= "=" ;
-InfixLess.               Operator ::= "<" ;
-InfixGreater.            Operator ::= ">" ;
-InfixBarBar.             Operator ::= "||" ;
-InfixAmpersand.          Operator ::= "&" ;
-InfixAmpersandAmpersand. Operator ::= "&&" ;
-ConcatOp.                Operator ::= CONCATOP ;
-PlusMinusOp.             Operator ::= PLUSMINUSOP ;
-InfixPlus.               Operator ::= "+" ;
-InfixMinus.              Operator ::= "-" ;
-MultDivOp.               Operator ::= MULTDIVOP ;
-InfixStar.               Operator ::= "*" ;
-InfixSlash.              Operator ::= "/" ;
-InfixPercent.            Operator ::= "%" ;
-PowOp.                   Operator ::= POWOP ;
-InfixOr.                 Operator ::= "or" ;
-InfixColonEqual.         Operator ::= ":=" ;
+PrefixOp.         Operator ::= PREFIXOP ;
+LetOp.            Operator ::= LETOP ;
+AndOp.            Operator ::= ANDOP ;
+ParenAccessDotop. Operator ::= DOTOP "(" IndexMod ")" ;
+ParenUpdateDotop. Operator ::= DOTOP "(" IndexMod ")" "<-" ;
+BraceAccessDotop. Operator ::= DOTOP "[" IndexMod "]" ;
+BraceUpdateDotop. Operator ::= DOTOP "[" IndexMod "]" "<-" ;
+BraceAccessDotop. Operator ::= DOTOP "{" IndexMod "}" ;
+BraceUpdateDotop. Operator ::= DOTOP "{" IndexMod "}" "<-" ;
+HashSymbolOp.     Operator ::= HASHOP ;
+BangOp.           Operator ::= BANG ;
+RelOp.            Operator ::= RELOP ;
+InfixEqual.       Operator ::= EQUAL ;
+InfixLess.        Operator ::= LESS ;
+InfixGreater.     Operator ::= GREATER ;
+InfixBarBar.      Operator ::= BARBAR ;
+InfixAmpersand.   Operator ::= AMPERSAND ;
+InfixAmperAmper.  Operator ::= AMPERAMPER ;
+ConcatOp.         Operator ::= CONCATOP ;
+PlusMinusOp.      Operator ::= PLUSMINUSOP ;
+InfixPlus.        Operator ::= PLUS ;
+InfixMinus.       Operator ::= MINUS ;
+MultDivOp.        Operator ::= MULTDIVOP ;
+InfixStar.        Operator ::= STAR ;
+InfixPercent.     Operator ::= PERCENT ;
+PowOp.            Operator ::= POWOP ;
+InfixOr.          Operator ::= OR ;
+InfixColonEqual.  Operator ::= COLONEQUAL ;
 
 {-
 %inline infix_operator:
@@ -3750,7 +3776,7 @@ SemiDotDot. IndexMod ::= ";" ".." ;
 ;
 -}
 
-ConstrIdent. ConstrExtraIdent ::= "(" "::" ")" ;
+-- inlined
 
 {-
 constr_extra_nonprefix_ident:
@@ -3761,10 +3787,10 @@ constr_extra_nonprefix_ident:
 ;
 -}
 
-Brackets.     ConstrExtraNonprefixIdent ::= "[" "]" ;
-Parens.       ConstrExtraNonprefixIdent ::= "(" ")" ;
-FalseLiteral. ConstrExtraNonprefixIdent ::= "false" ;
-TrueLiteral.  ConstrExtraNonprefixIdent ::= "true" ;
+EmptyListConstr. ConstrExtraNonprefixIdent ::= "[" "]" ;
+UnitConstr.      ConstrExtraNonprefixIdent ::= "(" ")" ;
+FalseConstr.     ConstrExtraNonprefixIdent ::= "false" ;
+TrueConstr.      ConstrExtraNonprefixIdent ::= "true" ;
 
 {-
 constr_ident:
@@ -3774,9 +3800,9 @@ constr_ident:
 ;
 -}
 
-ConstrUppercaseIdent.      ConstrIdent ::= UIDENT ;
-ConstrExtraIdent.          ConstrIdent ::= ConstrExtraIdent ;
-ConstrExpraNonprefixIdent. ConstrIdent ::= ConstrExtraNonprefixIdent ;
+ConstrIdent.     ConstrIdent ::= UIDENT ;
+ListConstr.      ConstrIdent ::= "(" "::" ")" ;
+PrimitiveConstr. ConstrIdent ::= ConstrExtraNonprefixIdent ;
 
 {-
 constr_longident:
@@ -3787,12 +3813,12 @@ constr_longident:
 ;
 -}
 
--- TODO: Improve names
+-- TODO: Consider precedence
 
-ModLongidentTodo.              ConstrLongident ::= ModLongident ;
-QualifiedConstrExtraLongident. ConstrLongident ::= ModLongident "." ConstrExtraIdent ;
-ConstrExtraLongdent.           ConstrLongident ::= ConstrExtraIdent ;
-ConstrExtraNonprefixLonident.  ConstrLongident ::= ConstrExtraNonprefixIdent ;
+QualifiedConstrIdent.       ConstrLongident ::= ModLongident ;
+QualifiedListConstr.        ConstrLongident ::= ModLongident "." "(" "::" ")" ;
+UnqualifiedListConstr.      ConstrLongident ::= "(" "::" ")" ;
+UnqualifiedPrimitiveConstr. ConstrLongident ::= ConstrExtraNonprefixIdent ;
 
 {-
 mk_longident(prefix,final):
@@ -4093,26 +4119,26 @@ NoFlag. NoOverrideFlag ::= ;
 -}
 
 Fresh.    OverrideFlag ::= ;
-Override. OverrideFlag ::= "!" ;
+Override. OverrideFlag ::= BANG ;
 
 {-
 subtractive:
-  | MINUS                                       { "-" }
-  | MINUSDOT                                    { "-." }
+  | MINUS
+  | MINUSDOT
 ;
 -}
 
-Minus.    Subtractive ::= "-" ;
+Minus.    Subtractive ::= MINUS ;
 MinusDot. Subtractive ::= "-." ;
 
 {-
 additive:
-  | PLUS                                        { "+" }
-  | PLUSDOT                                     { "+." }
+  | PLUS
+  | PLUSDOT
 ;
 -}
 
-Plus.    Additive ::= "+" ;
+Plus.    Additive ::= PLUS ;
 PlusDot. Additive ::= "+." ;
 
 {-
@@ -4219,7 +4245,7 @@ NonrecAttr.      AttrId ::= "nonrec" ;
 ObjectAttr.      AttrId ::= "object" ;
 OfAttr.          AttrId ::= "of" ;
 OpenAttr.        AttrId ::= "open" ;
-OrAttr.          AttrId ::= "or" ;
+OrAttr.          AttrId ::= OR ;
 PrivateAttr.     AttrId ::= "private" ;
 RecAttr.         AttrId ::= "rec" ;
 SigAttr.         AttrId ::= "sig" ;
@@ -4292,7 +4318,7 @@ ext:
 -}
 
 NoExt. Ext ::= ;
-Ext.   Ext ::= "%" [AttrId] ;
+Ext.   Ext ::= PERCENT [AttrId] ;
 
 {-
 %inline no_ext:

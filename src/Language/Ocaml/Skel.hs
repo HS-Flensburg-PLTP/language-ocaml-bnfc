@@ -15,13 +15,57 @@ type Result = Err String
 failure :: Show a => a -> Result
 failure x = Left $ "Undefined case: " ++ show x
 
-transCHAR :: Language.Ocaml.Abs.CHAR -> Result
-transCHAR x = case x of
-  Language.Ocaml.Abs.CHAR string -> failure x
+transAMPERAMPER :: Language.Ocaml.Abs.AMPERAMPER -> Result
+transAMPERAMPER x = case x of
+  Language.Ocaml.Abs.AMPERAMPER string -> failure x
 
-transFLOAT :: Language.Ocaml.Abs.FLOAT -> Result
-transFLOAT x = case x of
-  Language.Ocaml.Abs.FLOAT string -> failure x
+transAMPERSAND :: Language.Ocaml.Abs.AMPERSAND -> Result
+transAMPERSAND x = case x of
+  Language.Ocaml.Abs.AMPERSAND string -> failure x
+
+transBANG :: Language.Ocaml.Abs.BANG -> Result
+transBANG x = case x of
+  Language.Ocaml.Abs.BANG string -> failure x
+
+transBARBAR :: Language.Ocaml.Abs.BARBAR -> Result
+transBARBAR x = case x of
+  Language.Ocaml.Abs.BARBAR string -> failure x
+
+transCOLONEQUAL :: Language.Ocaml.Abs.COLONEQUAL -> Result
+transCOLONEQUAL x = case x of
+  Language.Ocaml.Abs.COLONEQUAL string -> failure x
+
+transEQUAL :: Language.Ocaml.Abs.EQUAL -> Result
+transEQUAL x = case x of
+  Language.Ocaml.Abs.EQUAL string -> failure x
+
+transGREATER :: Language.Ocaml.Abs.GREATER -> Result
+transGREATER x = case x of
+  Language.Ocaml.Abs.GREATER string -> failure x
+
+transLESS :: Language.Ocaml.Abs.LESS -> Result
+transLESS x = case x of
+  Language.Ocaml.Abs.LESS string -> failure x
+
+transMINUS :: Language.Ocaml.Abs.MINUS -> Result
+transMINUS x = case x of
+  Language.Ocaml.Abs.MINUS string -> failure x
+
+transOR :: Language.Ocaml.Abs.OR -> Result
+transOR x = case x of
+  Language.Ocaml.Abs.OR string -> failure x
+
+transPERCENT :: Language.Ocaml.Abs.PERCENT -> Result
+transPERCENT x = case x of
+  Language.Ocaml.Abs.PERCENT string -> failure x
+
+transPLUS :: Language.Ocaml.Abs.PLUS -> Result
+transPLUS x = case x of
+  Language.Ocaml.Abs.PLUS string -> failure x
+
+transSTAR :: Language.Ocaml.Abs.STAR -> Result
+transSTAR x = case x of
+  Language.Ocaml.Abs.STAR string -> failure x
 
 transRELOP :: Language.Ocaml.Abs.RELOP -> Result
 transRELOP x = case x of
@@ -55,6 +99,14 @@ transANDOP :: Language.Ocaml.Abs.ANDOP -> Result
 transANDOP x = case x of
   Language.Ocaml.Abs.ANDOP string -> failure x
 
+transHASHOP :: Language.Ocaml.Abs.HASHOP -> Result
+transHASHOP x = case x of
+  Language.Ocaml.Abs.HASHOP string -> failure x
+
+transPREFIXOP :: Language.Ocaml.Abs.PREFIXOP -> Result
+transPREFIXOP x = case x of
+  Language.Ocaml.Abs.PREFIXOP string -> failure x
+
 transDecimalLiteral :: Language.Ocaml.Abs.DecimalLiteral -> Result
 transDecimalLiteral x = case x of
   Language.Ocaml.Abs.DecimalLiteral string -> failure x
@@ -87,25 +139,13 @@ transBinLiteralModifier :: Language.Ocaml.Abs.BinLiteralModifier -> Result
 transBinLiteralModifier x = case x of
   Language.Ocaml.Abs.BinLiteralModifier string -> failure x
 
-transLABEL :: Language.Ocaml.Abs.LABEL -> Result
-transLABEL x = case x of
-  Language.Ocaml.Abs.LABEL string -> failure x
+transFLOAT :: Language.Ocaml.Abs.FLOAT -> Result
+transFLOAT x = case x of
+  Language.Ocaml.Abs.FLOAT string -> failure x
 
-transLIDENT :: Language.Ocaml.Abs.LIDENT -> Result
-transLIDENT x = case x of
-  Language.Ocaml.Abs.LIDENT string -> failure x
-
-transOPTLABEL :: Language.Ocaml.Abs.OPTLABEL -> Result
-transOPTLABEL x = case x of
-  Language.Ocaml.Abs.OPTLABEL string -> failure x
-
-transPREFIXOP :: Language.Ocaml.Abs.PREFIXOP -> Result
-transPREFIXOP x = case x of
-  Language.Ocaml.Abs.PREFIXOP string -> failure x
-
-transHASHOP :: Language.Ocaml.Abs.HASHOP -> Result
-transHASHOP x = case x of
-  Language.Ocaml.Abs.HASHOP string -> failure x
+transCHAR :: Language.Ocaml.Abs.CHAR -> Result
+transCHAR x = case x of
+  Language.Ocaml.Abs.CHAR string -> failure x
 
 transSTRING :: Language.Ocaml.Abs.STRING -> Result
 transSTRING x = case x of
@@ -119,9 +159,21 @@ transQUOTED_STRING_ITEM :: Language.Ocaml.Abs.QUOTED_STRING_ITEM -> Result
 transQUOTED_STRING_ITEM x = case x of
   Language.Ocaml.Abs.QUOTED_STRING_ITEM string -> failure x
 
+transLIDENT :: Language.Ocaml.Abs.LIDENT -> Result
+transLIDENT x = case x of
+  Language.Ocaml.Abs.LIDENT string -> failure x
+
 transUIDENT :: Language.Ocaml.Abs.UIDENT -> Result
 transUIDENT x = case x of
   Language.Ocaml.Abs.UIDENT string -> failure x
+
+transLABEL :: Language.Ocaml.Abs.LABEL -> Result
+transLABEL x = case x of
+  Language.Ocaml.Abs.LABEL string -> failure x
+
+transOPTLABEL :: Language.Ocaml.Abs.OPTLABEL -> Result
+transOPTLABEL x = case x of
+  Language.Ocaml.Abs.OPTLABEL string -> failure x
 
 transINT :: Language.Ocaml.Abs.INT -> Result
 transINT x = case x of
@@ -227,8 +279,8 @@ transStructureItem x = case x of
 
 transModuleBindingBody :: Language.Ocaml.Abs.ModuleBindingBody -> Result
 transModuleBindingBody x = case x of
-  Language.Ocaml.Abs.ModuleBinding moduleexpr -> failure x
-  Language.Ocaml.Abs.ModuleBindingWitgType moduletype moduleexpr -> failure x
+  Language.Ocaml.Abs.ModuleBinding equal moduleexpr -> failure x
+  Language.Ocaml.Abs.ModuleBindingWitgType moduletype equal moduleexpr -> failure x
   Language.Ocaml.Abs.FunctorBinding functorarg modulebindingbody -> failure x
 
 transAndModuleBinding :: Language.Ocaml.Abs.AndModuleBinding -> Result
@@ -238,7 +290,7 @@ transAndModuleBinding x = case x of
 transOptionalModuleType :: Language.Ocaml.Abs.OptionalModuleType -> Result
 transOptionalModuleType x = case x of
   Language.Ocaml.Abs.NoModuleType -> failure x
-  Language.Ocaml.Abs.AModuleType moduletype -> failure x
+  Language.Ocaml.Abs.AModuleType equal moduletype -> failure x
 
 transModuleTypeDeclaration :: Language.Ocaml.Abs.ModuleTypeDeclaration -> Result
 transModuleTypeDeclaration x = case x of
@@ -285,7 +337,7 @@ transSignatureItem x = case x of
   Language.Ocaml.Abs.SigTypeExtension ext attributes typeparameters typelongident privateflag barllistextensionconstructordeclaration postitemattributes -> failure x
   Language.Ocaml.Abs.SigSigExceptionDeclaration sigexceptiondeclaration -> failure x
   Language.Ocaml.Abs.SigModuleDeclaration ext attributes modulename moduledeclarationbody postitemattributes -> failure x
-  Language.Ocaml.Abs.SigModuleAlias ext attributes modulename modlongident postitemattributes -> failure x
+  Language.Ocaml.Abs.SigModuleAlias ext attributes modulename equal modlongident postitemattributes -> failure x
   Language.Ocaml.Abs.SigModuleSubst modulesubst -> failure x
   Language.Ocaml.Abs.SigRecModuleDeclarations ext attributes modulename moduletype postitemattributes andmoduledeclarations -> failure x
   Language.Ocaml.Abs.SigModuleTypeDeclaration moduletypedeclaration -> failure x
@@ -302,7 +354,7 @@ transModuleDeclarationBody x = case x of
 
 transModuleSubst :: Language.Ocaml.Abs.ModuleSubst -> Result
 transModuleSubst x = case x of
-  Language.Ocaml.Abs.ModuleSubst ext attributes uident modextlongident postitemattributes -> failure x
+  Language.Ocaml.Abs.ModuleSubst ext attributes uident colonequal modextlongident postitemattributes -> failure x
 
 transAndModuleDeclaration :: Language.Ocaml.Abs.AndModuleDeclaration -> Result
 transAndModuleDeclaration x = case x of
@@ -310,7 +362,7 @@ transAndModuleDeclaration x = case x of
 
 transModuleTypeSubst :: Language.Ocaml.Abs.ModuleTypeSubst -> Result
 transModuleTypeSubst x = case x of
-  Language.Ocaml.Abs.ModuleTypeSubst ext attributes ocamlident moduletype postitemattributes -> failure x
+  Language.Ocaml.Abs.ModuleTypeSubst ext attributes ocamlident colonequal moduletype postitemattributes -> failure x
 
 transAndClassDeclaration :: Language.Ocaml.Abs.AndClassDeclaration -> Result
 transAndClassDeclaration x = case x of
@@ -318,8 +370,8 @@ transAndClassDeclaration x = case x of
 
 transClassFunBinding :: Language.Ocaml.Abs.ClassFunBinding -> Result
 transClassFunBinding x = case x of
-  Language.Ocaml.Abs.ClassFunBinding classexpr -> failure x
-  Language.Ocaml.Abs.ClassFunBindingWithType classtype classexpr -> failure x
+  Language.Ocaml.Abs.ClassFunBinding equal classexpr -> failure x
+  Language.Ocaml.Abs.ClassFunBindingWithType classtype equal classexpr -> failure x
   Language.Ocaml.Abs.LabeledClassFunBinding labeledsimplepattern classfunbinding -> failure x
 
 transFormalClassParameters :: Language.Ocaml.Abs.FormalClassParameters -> Result
@@ -366,7 +418,7 @@ transClassField x = case x of
   Language.Ocaml.Abs.ClassFieldInherit overrideflag attributes classexpr optionalas postitemattributes -> failure x
   Language.Ocaml.Abs.ClassFieldVal value postitemattributes -> failure x
   Language.Ocaml.Abs.ClassFieldMethod method postitemattributes -> failure x
-  Language.Ocaml.Abs.ClassFieldConstraint attributes coretype1 coretype2 postitemattributes -> failure x
+  Language.Ocaml.Abs.ClassFieldConstraint attributes coretype1 equal coretype2 postitemattributes -> failure x
   Language.Ocaml.Abs.ClassFieldInitializer attributes seqexpr postitemattributes -> failure x
   Language.Ocaml.Abs.ClassFieldItemExtension itemextension postitemattributes -> failure x
   Language.Ocaml.Abs.ClassFieldFloatingAttribute floatingattribute -> failure x
@@ -374,15 +426,15 @@ transClassField x = case x of
 transValue :: Language.Ocaml.Abs.Value -> Result
 transValue x = case x of
   Language.Ocaml.Abs.Value1 nooverrideflag attributes virtualwithmutableflag lident coretype -> failure x
-  Language.Ocaml.Abs.Value2 overrideflag attributes mutableflag lident seqexpr -> failure x
-  Language.Ocaml.Abs.Value3 overrideflag attributes mutableflag lident typeconstraint seqexpr -> failure x
+  Language.Ocaml.Abs.Value2 overrideflag attributes mutableflag lident equal seqexpr -> failure x
+  Language.Ocaml.Abs.Value3 overrideflag attributes mutableflag lident typeconstraint equal seqexpr -> failure x
 
 transMethod_ :: Language.Ocaml.Abs.Method_ -> Result
 transMethod_ x = case x of
   Language.Ocaml.Abs.VirtualMethod nooverrideflag attributes virtualwithprivateflag lident polytype -> failure x
   Language.Ocaml.Abs.Method overrideflag attributes privateflag lident strictbinding -> failure x
-  Language.Ocaml.Abs.MethodWithType overrideflag attributes privateflag lident polytype seqexpr -> failure x
-  Language.Ocaml.Abs.MethodWithLocallyAbstractType overrideflag attributes privateflag lident lidents coretype seqexpr -> failure x
+  Language.Ocaml.Abs.MethodWithType overrideflag attributes privateflag lident polytype equal seqexpr -> failure x
+  Language.Ocaml.Abs.MethodWithLocallyAbstractType overrideflag attributes privateflag lident lidents coretype equal seqexpr -> failure x
 
 transClassType :: Language.Ocaml.Abs.ClassType -> Result
 transClassType x = case x of
@@ -417,7 +469,7 @@ transClassSigField x = case x of
 
 transConstrainField :: Language.Ocaml.Abs.ConstrainField -> Result
 transConstrainField x = case x of
-  Language.Ocaml.Abs.ConstrainField coretype1 coretype2 -> failure x
+  Language.Ocaml.Abs.ConstrainField coretype1 equal coretype2 -> failure x
 
 transAndClassDescription :: Language.Ocaml.Abs.AndClassDescription -> Result
 transAndClassDescription x = case x of
@@ -425,27 +477,27 @@ transAndClassDescription x = case x of
 
 transClassTypeDeclarations :: Language.Ocaml.Abs.ClassTypeDeclarations -> Result
 transClassTypeDeclarations x = case x of
-  Language.Ocaml.Abs.ClassTypeDeclarations ext attributes virtualflag formalclassparameters lident classsignature postitemattributes andclasstypedeclarations -> failure x
+  Language.Ocaml.Abs.ClassTypeDeclarations ext attributes virtualflag formalclassparameters lident equal classsignature postitemattributes andclasstypedeclarations -> failure x
 
 transAndClassTypeDeclaration :: Language.Ocaml.Abs.AndClassTypeDeclaration -> Result
 transAndClassTypeDeclaration x = case x of
-  Language.Ocaml.Abs.AndClassTypeDeclaration attributes virtualflag formalclassparameters lident classsignature postitemattributes -> failure x
+  Language.Ocaml.Abs.AndClassTypeDeclaration attributes virtualflag formalclassparameters lident equal classsignature postitemattributes -> failure x
 
 transSeqExpr :: Language.Ocaml.Abs.SeqExpr -> Result
 transSeqExpr x = case x of
   Language.Ocaml.Abs.FinalFunExpr funexpr -> failure x
   Language.Ocaml.Abs.FinalFunExprSemi funexpr -> failure x
   Language.Ocaml.Abs.MoreFunExprs funexpr seqexpr -> failure x
-  Language.Ocaml.Abs.MoreFunExprsAttr funexpr attrids seqexpr -> failure x
+  Language.Ocaml.Abs.MoreFunExprsAttr funexpr percent attrids seqexpr -> failure x
   Language.Ocaml.Abs.SeqExprFunction ext attributes matchcases -> failure x
 
 transLabeledSimplePattern :: Language.Ocaml.Abs.LabeledSimplePattern -> Result
 transLabeledSimplePattern x = case x of
   Language.Ocaml.Abs.OptPattern labelletpattern -> failure x
-  Language.Ocaml.Abs.OptPatternWithDefault labelletpattern seqexpr -> failure x
+  Language.Ocaml.Abs.OptPatternWithDefault labelletpattern equal seqexpr -> failure x
   Language.Ocaml.Abs.OptLabel lident -> failure x
   Language.Ocaml.Abs.OptLabeledPattern optlabel letpattern -> failure x
-  Language.Ocaml.Abs.OptLabeledPatternWithDefault optlabel letpattern seqexpr -> failure x
+  Language.Ocaml.Abs.OptLabeledPatternWithDefault optlabel letpattern equal seqexpr -> failure x
   Language.Ocaml.Abs.OptLabeledVar optlabel patternvar -> failure x
   Language.Ocaml.Abs.LabeledPattern labelletpattern -> failure x
   Language.Ocaml.Abs.Label lident -> failure x
@@ -479,9 +531,9 @@ transOptionalAtomicTypeAnnotation x = case x of
 
 transFunExpr :: Language.Ocaml.Abs.FunExpr -> Result
 transFunExpr x = case x of
-  Language.Ocaml.Abs.ConstrName_ constrlongident -> failure x
-  Language.Ocaml.Abs.NameTagApp nametag simpleexpr -> failure x
   Language.Ocaml.Abs.SimpleExprApp simpleexpr labeledsimpleexprs -> failure x
+  Language.Ocaml.Abs.ConstrApp constrlongident simpleexpr -> failure x
+  Language.Ocaml.Abs.NameTagApp nametag simpleexpr -> failure x
   Language.Ocaml.Abs.Assert ext attributes simpleexpr -> failure x
   Language.Ocaml.Abs.Lazy ext attributes simpleexpr -> failure x
   Language.Ocaml.Abs.SimpleExpr simpleexpr -> failure x
@@ -489,26 +541,26 @@ transFunExpr x = case x of
   Language.Ocaml.Abs.Additive additive expr -> failure x
   Language.Ocaml.Abs.PowInfix funexpr powop expr -> failure x
   Language.Ocaml.Abs.MultDivInfix funexpr multdivop expr -> failure x
-  Language.Ocaml.Abs.MultInfix funexpr expr -> failure x
-  Language.Ocaml.Abs.DivInfix funexpr expr -> failure x
-  Language.Ocaml.Abs.ModInfix funexpr expr -> failure x
+  Language.Ocaml.Abs.MultInfix funexpr star expr -> failure x
+  Language.Ocaml.Abs.ModInfix funexpr percent expr -> failure x
   Language.Ocaml.Abs.PlusMinusInfix funexpr plusminusop expr -> failure x
-  Language.Ocaml.Abs.PlusInfix funexpr expr -> failure x
+  Language.Ocaml.Abs.PlusInfix funexpr plus expr -> failure x
   Language.Ocaml.Abs.PlusDotInfix funexpr expr -> failure x
-  Language.Ocaml.Abs.MinusInfix funexpr expr -> failure x
+  Language.Ocaml.Abs.MinusInfix funexpr minus expr -> failure x
   Language.Ocaml.Abs.MinusDotInfix funexpr expr -> failure x
   Language.Ocaml.Abs.Cons funexpr expr -> failure x
   Language.Ocaml.Abs.ConcatInfix funexpr concatop expr -> failure x
   Language.Ocaml.Abs.RelInfix funexpr relop expr -> failure x
-  Language.Ocaml.Abs.EqualInfix funexpr expr -> failure x
-  Language.Ocaml.Abs.LessInfix funexpr expr -> failure x
-  Language.Ocaml.Abs.GreaterInfix funexpr expr -> failure x
-  Language.Ocaml.Abs.Infix funexpr expr -> failure x
-  Language.Ocaml.Abs.OrInfix funexpr expr -> failure x
-  Language.Ocaml.Abs.BarBarInfix funexpr expr -> failure x
+  Language.Ocaml.Abs.EqualInfix funexpr equal expr -> failure x
+  Language.Ocaml.Abs.LessInfix funexpr less expr -> failure x
+  Language.Ocaml.Abs.GreaterInfix funexpr greater expr -> failure x
+  Language.Ocaml.Abs.AmpersandInfix funexpr ampersand expr -> failure x
+  Language.Ocaml.Abs.AmperAmperInfix funexpr amperamper expr -> failure x
+  Language.Ocaml.Abs.OrInfix funexpr or expr -> failure x
+  Language.Ocaml.Abs.BarBarInfix funexpr barbar expr -> failure x
   Language.Ocaml.Abs.Comma expr exprcommas -> failure x
   Language.Ocaml.Abs.UpdateExpr lident expr -> failure x
-  Language.Ocaml.Abs.AssignInfix funexpr expr -> failure x
+  Language.Ocaml.Abs.AssignInfix funexpr colonequal expr -> failure x
   Language.Ocaml.Abs.QualifiedDot simpleexpr labellongident expr -> failure x
   Language.Ocaml.Abs.ArrayUpdateExpr simpleexpr seqexpr expr -> failure x
   Language.Ocaml.Abs.StringUpdateExpr simpleexpr seqexpr expr -> failure x
@@ -527,7 +579,7 @@ transFunExpr x = case x of
   Language.Ocaml.Abs.Match ext attributes seqexpr matchcases -> failure x
   Language.Ocaml.Abs.Try ext attributes seqexpr matchcases -> failure x
   Language.Ocaml.Abs.While ext attributes seqexpr1 seqexpr2 -> failure x
-  Language.Ocaml.Abs.For ext attributes pattern_ seqexpr1 directionflag seqexpr2 seqexpr3 -> failure x
+  Language.Ocaml.Abs.For ext attributes pattern_ equal seqexpr1 directionflag seqexpr2 seqexpr3 -> failure x
   Language.Ocaml.Abs.FunExprWithAttribute funexpr attribute -> failure x
 
 transExpr :: Language.Ocaml.Abs.Expr -> Result
@@ -662,7 +714,7 @@ transSimpleExpr x = case x of
   Language.Ocaml.Abs.Object ext attributes classselfpattern classfields -> failure x
   Language.Ocaml.Abs.Extension extension -> failure x
   Language.Ocaml.Abs.PrefixApp prefixop simpleexpr -> failure x
-  Language.Ocaml.Abs.BangApp simpleexpr -> failure x
+  Language.Ocaml.Abs.BangApp bang simpleexpr -> failure x
   Language.Ocaml.Abs.RecordAccessExpr simpleexpr labellongident -> failure x
   Language.Ocaml.Abs.ArrayAccessExpr simpleexpr seqexpr -> failure x
   Language.Ocaml.Abs.StringAccessExpr simpleexpr seqexpr -> failure x
@@ -685,11 +737,11 @@ transLabeledSimpleExpr x = case x of
 transLetBindingBodyNoPunning :: Language.Ocaml.Abs.LetBindingBodyNoPunning -> Result
 transLetBindingBodyNoPunning x = case x of
   Language.Ocaml.Abs.StrictBinding valident strictbinding -> failure x
-  Language.Ocaml.Abs.BindingWithMonoType valident typeconstraint seqexpr -> failure x
-  Language.Ocaml.Abs.BindingWithPolyType valident typevars coretype seqexpr -> failure x
-  Language.Ocaml.Abs.BindingWithLocallyAbstractType valident lidents coretype seqexpr -> failure x
-  Language.Ocaml.Abs.PatternBinding patternnoexn seqexpr -> failure x
-  Language.Ocaml.Abs.PatternBindingWithType simplepatternnotident coretype seqexpr -> failure x
+  Language.Ocaml.Abs.BindingWithMonoType valident typeconstraint equal seqexpr -> failure x
+  Language.Ocaml.Abs.BindingWithPolyType valident typevars coretype equal seqexpr -> failure x
+  Language.Ocaml.Abs.BindingWithLocallyAbstractType valident lidents coretype equal seqexpr -> failure x
+  Language.Ocaml.Abs.PatternBinding patternnoexn equal seqexpr -> failure x
+  Language.Ocaml.Abs.PatternBindingWithType simplepatternnotident coretype equal seqexpr -> failure x
 
 transLetBindingBody :: Language.Ocaml.Abs.LetBindingBody -> Result
 transLetBindingBody x = case x of
@@ -713,8 +765,8 @@ transLetopBindingBody :: Language.Ocaml.Abs.LetopBindingBody -> Result
 transLetopBindingBody x = case x of
   Language.Ocaml.Abs.LetopStrictBinding valident strictbinding -> failure x
   Language.Ocaml.Abs.LetopValIdent valident -> failure x
-  Language.Ocaml.Abs.LetopPatternBindingWithType simplepattern coretype seqexpr -> failure x
-  Language.Ocaml.Abs.LetopPatternBinding patternnoexn seqexpr -> failure x
+  Language.Ocaml.Abs.LetopPatternBindingWithType simplepattern coretype equal seqexpr -> failure x
+  Language.Ocaml.Abs.LetopPatternBinding patternnoexn equal seqexpr -> failure x
 
 transLetopBindings :: Language.Ocaml.Abs.LetopBindings -> Result
 transLetopBindings x = case x of
@@ -723,8 +775,8 @@ transLetopBindings x = case x of
 
 transStrictBinding :: Language.Ocaml.Abs.StrictBinding -> Result
 transStrictBinding x = case x of
-  Language.Ocaml.Abs.Binding seqexpr -> failure x
-  Language.Ocaml.Abs.FunParams funparams optionaltypeconstraint funbody -> failure x
+  Language.Ocaml.Abs.Binding equal seqexpr -> failure x
+  Language.Ocaml.Abs.FunParams funparams optionaltypeconstraint equal funbody -> failure x
 
 transFunBody :: Language.Ocaml.Abs.FunBody -> Result
 transFunBody x = case x of
@@ -732,7 +784,7 @@ transFunBody x = case x of
   Language.Ocaml.Abs.FunBodyFinalFunExpr funexpr -> failure x
   Language.Ocaml.Abs.FunBodyFinalFunExprSemi funexpr -> failure x
   Language.Ocaml.Abs.FunBodyMoreFunExprs funexpr seqexpr -> failure x
-  Language.Ocaml.Abs.FunBodyMoreFunExprsAttr funexpr attrids seqexpr -> failure x
+  Language.Ocaml.Abs.FunBodyMoreFunExprsAttr funexpr percent attrids seqexpr -> failure x
 
 transMatchCase :: Language.Ocaml.Abs.MatchCase -> Result
 transMatchCase x = case x of
@@ -772,7 +824,7 @@ transRecordExprField x = case x of
 transOptionalAssignExpr :: Language.Ocaml.Abs.OptionalAssignExpr -> Result
 transOptionalAssignExpr x = case x of
   Language.Ocaml.Abs.NoAssign -> failure x
-  Language.Ocaml.Abs.AnAssign expr -> failure x
+  Language.Ocaml.Abs.AnAssign equal expr -> failure x
 
 transObjectExprField :: Language.Ocaml.Abs.ObjectExprField -> Result
 transObjectExprField x = case x of
@@ -871,7 +923,7 @@ transOptionalCoreType x = case x of
 transOptionalAssignPattern :: Language.Ocaml.Abs.OptionalAssignPattern -> Result
 transOptionalAssignPattern x = case x of
   Language.Ocaml.Abs.NoAssignPattern -> failure x
-  Language.Ocaml.Abs.AnAssignPattern pattern_ -> failure x
+  Language.Ocaml.Abs.AnAssignPattern equal pattern_ -> failure x
 
 transRecordPatField :: Language.Ocaml.Abs.RecordPatField -> Result
 transRecordPatField x = case x of
@@ -883,7 +935,7 @@ transValueDescription x = case x of
 
 transPrimitiveDeclaration :: Language.Ocaml.Abs.PrimitiveDeclaration -> Result
 transPrimitiveDeclaration x = case x of
-  Language.Ocaml.Abs.PrimitiveDeclaration ext attributes valident polytype strings postitemattributes -> failure x
+  Language.Ocaml.Abs.PrimitiveDeclaration ext attributes valident polytype equal strings postitemattributes -> failure x
 
 transAndTypeDeclaration :: Language.Ocaml.Abs.AndTypeDeclaration -> Result
 transAndTypeDeclaration x = case x of
@@ -908,7 +960,7 @@ transTypeSubstDeclaration x = case x of
 
 transConstraint :: Language.Ocaml.Abs.Constraint -> Result
 transConstraint x = case x of
-  Language.Ocaml.Abs.Constraint coretype1 coretype2 -> failure x
+  Language.Ocaml.Abs.Constraint coretype1 equal coretype2 -> failure x
 
 transNonemptyTypeKind :: Language.Ocaml.Abs.NonemptyTypeKind -> Result
 transNonemptyTypeKind x = case x of
@@ -920,21 +972,21 @@ transNonemptyTypeKind x = case x of
   Language.Ocaml.Abs.PrivateVariantType constructordeclarations -> failure x
   Language.Ocaml.Abs.PrivateOpenType -> failure x
   Language.Ocaml.Abs.PrivateRecordType labeldeclarations -> failure x
-  Language.Ocaml.Abs.TypeSynonymVariantType coretype constructordeclarations -> failure x
-  Language.Ocaml.Abs.TypeSynonymPrivateVariantType coretype constructordeclarations -> failure x
-  Language.Ocaml.Abs.TypeSynonymOpenType coretype -> failure x
-  Language.Ocaml.Abs.TypeSynonymPrivateOpenType coretype -> failure x
-  Language.Ocaml.Abs.TypeSynonymRecordType coretype labeldeclarations -> failure x
-  Language.Ocaml.Abs.TypeSynonymPrivateRecordType coretype labeldeclarations -> failure x
+  Language.Ocaml.Abs.TypeSynonymVariantType coretype equal constructordeclarations -> failure x
+  Language.Ocaml.Abs.TypeSynonymPrivateVariantType coretype equal constructordeclarations -> failure x
+  Language.Ocaml.Abs.TypeSynonymOpenType coretype equal -> failure x
+  Language.Ocaml.Abs.TypeSynonymPrivateOpenType coretype equal -> failure x
+  Language.Ocaml.Abs.TypeSynonymRecordType coretype equal labeldeclarations -> failure x
+  Language.Ocaml.Abs.TypeSynonymPrivateRecordType coretype equal labeldeclarations -> failure x
 
 transTypeKind :: Language.Ocaml.Abs.TypeKind -> Result
 transTypeKind x = case x of
   Language.Ocaml.Abs.NoTypeKind -> failure x
-  Language.Ocaml.Abs.TypeKind nonemptytypekind -> failure x
+  Language.Ocaml.Abs.TypeKind equal nonemptytypekind -> failure x
 
 transTypeSubstKind :: Language.Ocaml.Abs.TypeSubstKind -> Result
 transTypeSubstKind x = case x of
-  Language.Ocaml.Abs.TypeSubstKind nonemptytypekind -> failure x
+  Language.Ocaml.Abs.TypeSubstKind colonequal nonemptytypekind -> failure x
 
 transTypeParameters :: Language.Ocaml.Abs.TypeParameters -> Result
 transTypeParameters x = case x of
@@ -954,9 +1006,9 @@ transTypeVariable x = case x of
 transTypeVariance :: Language.Ocaml.Abs.TypeVariance -> Result
 transTypeVariance x = case x of
   Language.Ocaml.Abs.NoVarianceNoInjectivity -> failure x
-  Language.Ocaml.Abs.CovariantNoInjectivity -> failure x
-  Language.Ocaml.Abs.ContravariantNoInjectivity -> failure x
-  Language.Ocaml.Abs.NoVarianceInjective -> failure x
+  Language.Ocaml.Abs.CovariantNoInjectivity plus -> failure x
+  Language.Ocaml.Abs.ContravariantNoInjectivity minus -> failure x
+  Language.Ocaml.Abs.NoVarianceInjective bang -> failure x
   Language.Ocaml.Abs.CovariantInjective -> failure x
   Language.Ocaml.Abs.InjectiveCovariant -> failure x
   Language.Ocaml.Abs.ContravariantInjective -> failure x
@@ -977,7 +1029,7 @@ transConstructorDeclaration x = case x of
 transStrExceptionDeclaration :: Language.Ocaml.Abs.StrExceptionDeclaration -> Result
 transStrExceptionDeclaration x = case x of
   Language.Ocaml.Abs.SigStrExceptionDeclaration sigexceptiondeclaration -> failure x
-  Language.Ocaml.Abs.Exception ext attributes1 constrident constrlongident attributes2 postitemattributes -> failure x
+  Language.Ocaml.Abs.Exception ext attributes1 constrident equal constrlongident attributes2 postitemattributes -> failure x
 
 transSigExceptionDeclaration :: Language.Ocaml.Abs.SigExceptionDeclaration -> Result
 transSigExceptionDeclaration x = case x of
@@ -994,7 +1046,7 @@ transGeneralizedConstructorArguments x = case x of
 
 transConstructorArguments :: Language.Ocaml.Abs.ConstructorArguments -> Result
 transConstructorArguments x = case x of
-  Language.Ocaml.Abs.Arg1 atomictypes -> failure x
+  Language.Ocaml.Abs.Arg1 tupletype -> failure x
   Language.Ocaml.Abs.Arg2 labeldeclarations -> failure x
 
 transLabelDeclarations :: Language.Ocaml.Abs.LabelDeclarations -> Result
@@ -1035,21 +1087,21 @@ transExtensionConstructorDeclaration x = case x of
 
 transExtensionConstructorRebind :: Language.Ocaml.Abs.ExtensionConstructorRebind -> Result
 transExtensionConstructorRebind x = case x of
-  Language.Ocaml.Abs.ExtensionConstructorRebind constrident constrlongident attributes -> failure x
+  Language.Ocaml.Abs.ExtensionConstructorRebind constrident equal constrlongident attributes -> failure x
 
 transWithConstraint :: Language.Ocaml.Abs.WithConstraint -> Result
 transWithConstraint x = case x of
   Language.Ocaml.Abs.WithConstraint1 typeparameters labellongident withtypebinder aliastype constraints -> failure x
-  Language.Ocaml.Abs.WithConstraint2 typeparameters labellongident aliastype -> failure x
-  Language.Ocaml.Abs.WithConstraint3 modlongident modextlongident -> failure x
-  Language.Ocaml.Abs.WithConstraint4 modlongident modextlongident -> failure x
-  Language.Ocaml.Abs.WithConstraint5 mtylongident moduletype -> failure x
-  Language.Ocaml.Abs.WithConstraint6 mtylongident moduletype -> failure x
+  Language.Ocaml.Abs.WithConstraint2 typeparameters labellongident colonequal aliastype -> failure x
+  Language.Ocaml.Abs.WithConstraint3 modlongident equal modextlongident -> failure x
+  Language.Ocaml.Abs.WithConstraint4 modlongident colonequal modextlongident -> failure x
+  Language.Ocaml.Abs.WithConstraint5 mtylongident equal moduletype -> failure x
+  Language.Ocaml.Abs.WithConstraint6 mtylongident colonequal moduletype -> failure x
 
 transWithTypeBinder :: Language.Ocaml.Abs.WithTypeBinder -> Result
 transWithTypeBinder x = case x of
-  Language.Ocaml.Abs.WithTypeBinderEqual -> failure x
-  Language.Ocaml.Abs.WithTypeBinderEqualPrivate -> failure x
+  Language.Ocaml.Abs.WithTypeBinderEqual equal -> failure x
+  Language.Ocaml.Abs.WithTypeBinderEqualPrivate equal -> failure x
 
 transTypeVar :: Language.Ocaml.Abs.TypeVar -> Result
 transTypeVar x = case x of
@@ -1080,7 +1132,7 @@ transFunctionType x = case x of
 transTupleType :: Language.Ocaml.Abs.TupleType -> Result
 transTupleType x = case x of
   Language.Ocaml.Abs.AtomicType atomictype -> failure x
-  Language.Ocaml.Abs.AtomicTypes atomictype atomictypes -> failure x
+  Language.Ocaml.Abs.AtomicTypes atomictype star tupletype -> failure x
 
 transOptionalBar :: Language.Ocaml.Abs.OptionalBar -> Result
 transOptionalBar x = case x of
@@ -1097,12 +1149,12 @@ transDelimitedTypeSupportingLocalOpen x = case x of
   Language.Ocaml.Abs.LocalOpen6 optionalbar rowfields -> failure x
   Language.Ocaml.Abs.LocalOpen7 -> failure x
   Language.Ocaml.Abs.LocalOpen8 optionalbar rowfields -> failure x
-  Language.Ocaml.Abs.LocalOpen9 optionalbar rowfields nametags -> failure x
+  Language.Ocaml.Abs.LocalOpen9 optionalbar rowfields greater nametags -> failure x
 
 transObjectType :: Language.Ocaml.Abs.ObjectType -> Result
 transObjectType x = case x of
-  Language.Ocaml.Abs.MethList methlist -> failure x
-  Language.Ocaml.Abs.Empty -> failure x
+  Language.Ocaml.Abs.MethList less methlist greater -> failure x
+  Language.Ocaml.Abs.Empty less greater -> failure x
 
 transDelimitedType :: Language.Ocaml.Abs.DelimitedType -> Result
 transDelimitedType x = case x of
@@ -1134,13 +1186,18 @@ transRowField x = case x of
 
 transTagField :: Language.Ocaml.Abs.TagField -> Result
 transTagField x = case x of
-  Language.Ocaml.Abs.Of nametag optampersand aliastypes attributes -> failure x
+  Language.Ocaml.Abs.Of nametag optampersand ampertypelist attributes -> failure x
   Language.Ocaml.Abs.Tag nametag attributes -> failure x
 
 transOptAmpersand :: Language.Ocaml.Abs.OptAmpersand -> Result
 transOptAmpersand x = case x of
-  Language.Ocaml.Abs.Ampersand -> failure x
+  Language.Ocaml.Abs.Ampersand ampersand -> failure x
   Language.Ocaml.Abs.NoAmpersand -> failure x
+
+transAmperTypeList :: Language.Ocaml.Abs.AmperTypeList -> Result
+transAmperTypeList x = case x of
+  Language.Ocaml.Abs.AmperTypeListNil aliastype -> failure x
+  Language.Ocaml.Abs.AmperTypeListCons aliastype ampersand ampertypelist -> failure x
 
 transMethList :: Language.Ocaml.Abs.MethList -> Result
 transMethList x = case x of
@@ -1165,10 +1222,10 @@ transConstant x = case x of
 transSignedConstant :: Language.Ocaml.Abs.SignedConstant -> Result
 transSignedConstant x = case x of
   Language.Ocaml.Abs.UnsignedConstant constant -> failure x
-  Language.Ocaml.Abs.NegInt int -> failure x
-  Language.Ocaml.Abs.NegFloat float -> failure x
-  Language.Ocaml.Abs.PosInt int -> failure x
-  Language.Ocaml.Abs.PosFloat float -> failure x
+  Language.Ocaml.Abs.NegInt minus int -> failure x
+  Language.Ocaml.Abs.NegFloat minus float -> failure x
+  Language.Ocaml.Abs.PosInt plus int -> failure x
+  Language.Ocaml.Abs.PosFloat plus float -> failure x
 
 transOCamlIdent :: Language.Ocaml.Abs.OCamlIdent -> Result
 transOCamlIdent x = case x of
@@ -1194,54 +1251,49 @@ transOperator x = case x of
   Language.Ocaml.Abs.BraceAccessDotop dotop indexmod -> failure x
   Language.Ocaml.Abs.BraceUpdateDotop dotop indexmod -> failure x
   Language.Ocaml.Abs.HashSymbolOp hashop -> failure x
-  Language.Ocaml.Abs.BangOp -> failure x
+  Language.Ocaml.Abs.BangOp bang -> failure x
   Language.Ocaml.Abs.RelOp relop -> failure x
-  Language.Ocaml.Abs.InfixEqual -> failure x
-  Language.Ocaml.Abs.InfixLess -> failure x
-  Language.Ocaml.Abs.InfixGreater -> failure x
-  Language.Ocaml.Abs.InfixBarBar -> failure x
-  Language.Ocaml.Abs.InfixAmpersand -> failure x
-  Language.Ocaml.Abs.InfixAmpersandAmpersand -> failure x
+  Language.Ocaml.Abs.InfixEqual equal -> failure x
+  Language.Ocaml.Abs.InfixLess less -> failure x
+  Language.Ocaml.Abs.InfixGreater greater -> failure x
+  Language.Ocaml.Abs.InfixBarBar barbar -> failure x
+  Language.Ocaml.Abs.InfixAmpersand ampersand -> failure x
+  Language.Ocaml.Abs.InfixAmperAmper amperamper -> failure x
   Language.Ocaml.Abs.ConcatOp concatop -> failure x
   Language.Ocaml.Abs.PlusMinusOp plusminusop -> failure x
-  Language.Ocaml.Abs.InfixPlus -> failure x
-  Language.Ocaml.Abs.InfixMinus -> failure x
+  Language.Ocaml.Abs.InfixPlus plus -> failure x
+  Language.Ocaml.Abs.InfixMinus minus -> failure x
   Language.Ocaml.Abs.MultDivOp multdivop -> failure x
-  Language.Ocaml.Abs.InfixStar -> failure x
-  Language.Ocaml.Abs.InfixSlash -> failure x
-  Language.Ocaml.Abs.InfixPercent -> failure x
+  Language.Ocaml.Abs.InfixStar star -> failure x
+  Language.Ocaml.Abs.InfixPercent percent -> failure x
   Language.Ocaml.Abs.PowOp powop -> failure x
-  Language.Ocaml.Abs.InfixOr -> failure x
-  Language.Ocaml.Abs.InfixColonEqual -> failure x
+  Language.Ocaml.Abs.InfixOr or -> failure x
+  Language.Ocaml.Abs.InfixColonEqual colonequal -> failure x
 
 transIndexMod :: Language.Ocaml.Abs.IndexMod -> Result
 transIndexMod x = case x of
   Language.Ocaml.Abs.NoIndexMod -> failure x
   Language.Ocaml.Abs.SemiDotDot -> failure x
 
-transConstrExtraIdent :: Language.Ocaml.Abs.ConstrExtraIdent -> Result
-transConstrExtraIdent x = case x of
-  Language.Ocaml.Abs.ConstrIdent -> failure x
-
 transConstrExtraNonprefixIdent :: Language.Ocaml.Abs.ConstrExtraNonprefixIdent -> Result
 transConstrExtraNonprefixIdent x = case x of
-  Language.Ocaml.Abs.Brackets -> failure x
-  Language.Ocaml.Abs.Parens -> failure x
-  Language.Ocaml.Abs.FalseLiteral -> failure x
-  Language.Ocaml.Abs.TrueLiteral -> failure x
+  Language.Ocaml.Abs.EmptyListConstr -> failure x
+  Language.Ocaml.Abs.UnitConstr -> failure x
+  Language.Ocaml.Abs.FalseConstr -> failure x
+  Language.Ocaml.Abs.TrueConstr -> failure x
 
 transConstrIdent :: Language.Ocaml.Abs.ConstrIdent -> Result
 transConstrIdent x = case x of
-  Language.Ocaml.Abs.ConstrUppercaseIdent uident -> failure x
-  Language.Ocaml.Abs.ConstrExtraIdent constrextraident -> failure x
-  Language.Ocaml.Abs.ConstrExpraNonprefixIdent constrextranonprefixident -> failure x
+  Language.Ocaml.Abs.ConstrIdent uident -> failure x
+  Language.Ocaml.Abs.ListConstr -> failure x
+  Language.Ocaml.Abs.PrimitiveConstr constrextranonprefixident -> failure x
 
 transConstrLongident :: Language.Ocaml.Abs.ConstrLongident -> Result
 transConstrLongident x = case x of
-  Language.Ocaml.Abs.ModLongidentTodo modlongident -> failure x
-  Language.Ocaml.Abs.QualifiedConstrExtraLongident modlongident constrextraident -> failure x
-  Language.Ocaml.Abs.ConstrExtraLongdent constrextraident -> failure x
-  Language.Ocaml.Abs.ConstrExtraNonprefixLonident constrextranonprefixident -> failure x
+  Language.Ocaml.Abs.QualifiedConstrIdent modlongident -> failure x
+  Language.Ocaml.Abs.QualifiedListConstr modlongident -> failure x
+  Language.Ocaml.Abs.UnqualifiedListConstr -> failure x
+  Language.Ocaml.Abs.UnqualifiedPrimitiveConstr constrextranonprefixident -> failure x
 
 transValLongident :: Language.Ocaml.Abs.ValLongident -> Result
 transValLongident x = case x of
@@ -1366,16 +1418,16 @@ transNoOverrideFlag x = case x of
 transOverrideFlag :: Language.Ocaml.Abs.OverrideFlag -> Result
 transOverrideFlag x = case x of
   Language.Ocaml.Abs.Fresh -> failure x
-  Language.Ocaml.Abs.Override -> failure x
+  Language.Ocaml.Abs.Override bang -> failure x
 
 transSubtractive :: Language.Ocaml.Abs.Subtractive -> Result
 transSubtractive x = case x of
-  Language.Ocaml.Abs.Minus -> failure x
+  Language.Ocaml.Abs.Minus minus -> failure x
   Language.Ocaml.Abs.MinusDot -> failure x
 
 transAdditive :: Language.Ocaml.Abs.Additive -> Result
 transAdditive x = case x of
-  Language.Ocaml.Abs.Plus -> failure x
+  Language.Ocaml.Abs.Plus plus -> failure x
   Language.Ocaml.Abs.PlusDot -> failure x
 
 transAttrId :: Language.Ocaml.Abs.AttrId -> Result
@@ -1416,7 +1468,7 @@ transAttrId x = case x of
   Language.Ocaml.Abs.ObjectAttr -> failure x
   Language.Ocaml.Abs.OfAttr -> failure x
   Language.Ocaml.Abs.OpenAttr -> failure x
-  Language.Ocaml.Abs.OrAttr -> failure x
+  Language.Ocaml.Abs.OrAttr or -> failure x
   Language.Ocaml.Abs.PrivateAttr -> failure x
   Language.Ocaml.Abs.RecAttr -> failure x
   Language.Ocaml.Abs.SigAttr -> failure x
@@ -1447,7 +1499,7 @@ transFloatingAttribute x = case x of
 transExt :: Language.Ocaml.Abs.Ext -> Result
 transExt x = case x of
   Language.Ocaml.Abs.NoExt -> failure x
-  Language.Ocaml.Abs.Ext attrids -> failure x
+  Language.Ocaml.Abs.Ext percent attrids -> failure x
 
 transExtension :: Language.Ocaml.Abs.Extension -> Result
 transExtension x = case x of

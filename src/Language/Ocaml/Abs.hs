@@ -116,8 +116,8 @@ data StructureItem
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ModuleBindingBody
-    = ModuleBinding ModuleExpr
-    | ModuleBindingWitgType ModuleType ModuleExpr
+    = ModuleBinding EQUAL ModuleExpr
+    | ModuleBindingWitgType ModuleType EQUAL ModuleExpr
     | FunctorBinding FunctorArg ModuleBindingBody
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -125,7 +125,8 @@ data AndModuleBinding
     = AndModuleBinding [Attribute] ModuleName ModuleBindingBody [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data OptionalModuleType = NoModuleType | AModuleType ModuleType
+data OptionalModuleType
+    = NoModuleType | AModuleType EQUAL ModuleType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ModuleTypeDeclaration
@@ -169,7 +170,7 @@ data SignatureItem
     | SigTypeExtension Ext [Attribute] TypeParameters TypeLongident PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute]
     | SigSigExceptionDeclaration SigExceptionDeclaration
     | SigModuleDeclaration Ext [Attribute] ModuleName ModuleDeclarationBody [PostItemAttribute]
-    | SigModuleAlias Ext [Attribute] ModuleName ModLongident [PostItemAttribute]
+    | SigModuleAlias Ext [Attribute] ModuleName EQUAL ModLongident [PostItemAttribute]
     | SigModuleSubst ModuleSubst
     | SigRecModuleDeclarations Ext [Attribute] ModuleName ModuleType [PostItemAttribute] [AndModuleDeclaration]
     | SigModuleTypeDeclaration ModuleTypeDeclaration
@@ -186,7 +187,7 @@ data ModuleDeclarationBody
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ModuleSubst
-    = ModuleSubst Ext [Attribute] UIDENT ModExtLongident [PostItemAttribute]
+    = ModuleSubst Ext [Attribute] UIDENT COLONEQUAL ModExtLongident [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AndModuleDeclaration
@@ -194,7 +195,7 @@ data AndModuleDeclaration
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ModuleTypeSubst
-    = ModuleTypeSubst Ext [Attribute] OCamlIdent ModuleType [PostItemAttribute]
+    = ModuleTypeSubst Ext [Attribute] OCamlIdent COLONEQUAL ModuleType [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AndClassDeclaration
@@ -202,8 +203,8 @@ data AndClassDeclaration
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ClassFunBinding
-    = ClassFunBinding ClassExpr
-    | ClassFunBindingWithType ClassType ClassExpr
+    = ClassFunBinding EQUAL ClassExpr
+    | ClassFunBindingWithType ClassType EQUAL ClassExpr
     | LabeledClassFunBinding LabeledSimplePattern ClassFunBinding
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -247,7 +248,7 @@ data ClassField
     = ClassFieldInherit OverrideFlag [Attribute] ClassExpr OptionalAs [PostItemAttribute]
     | ClassFieldVal Value [PostItemAttribute]
     | ClassFieldMethod Method_ [PostItemAttribute]
-    | ClassFieldConstraint [Attribute] CoreType CoreType [PostItemAttribute]
+    | ClassFieldConstraint [Attribute] CoreType EQUAL CoreType [PostItemAttribute]
     | ClassFieldInitializer [Attribute] SeqExpr [PostItemAttribute]
     | ClassFieldItemExtension ItemExtension [PostItemAttribute]
     | ClassFieldFloatingAttribute FloatingAttribute
@@ -255,15 +256,15 @@ data ClassField
 
 data Value
     = Value1 NoOverrideFlag [Attribute] VirtualWithMutableFlag LIDENT CoreType
-    | Value2 OverrideFlag [Attribute] MutableFlag LIDENT SeqExpr
-    | Value3 OverrideFlag [Attribute] MutableFlag LIDENT TypeConstraint SeqExpr
+    | Value2 OverrideFlag [Attribute] MutableFlag LIDENT EQUAL SeqExpr
+    | Value3 OverrideFlag [Attribute] MutableFlag LIDENT TypeConstraint EQUAL SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Method_
     = VirtualMethod NoOverrideFlag [Attribute] VirtualWithPrivateFlag LIDENT PolyType
     | Method OverrideFlag [Attribute] PrivateFlag LIDENT StrictBinding
-    | MethodWithType OverrideFlag [Attribute] PrivateFlag LIDENT PolyType SeqExpr
-    | MethodWithLocallyAbstractType OverrideFlag [Attribute] PrivateFlag LIDENT [LIDENT] CoreType SeqExpr
+    | MethodWithType OverrideFlag [Attribute] PrivateFlag LIDENT PolyType EQUAL SeqExpr
+    | MethodWithLocallyAbstractType OverrideFlag [Attribute] PrivateFlag LIDENT [LIDENT] CoreType EQUAL SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ClassType
@@ -295,7 +296,7 @@ data ClassSigField
     | ClassSigFieldFloatingAttribute FloatingAttribute
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data ConstrainField = ConstrainField CoreType CoreType
+data ConstrainField = ConstrainField CoreType EQUAL CoreType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AndClassDescription
@@ -303,27 +304,27 @@ data AndClassDescription
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ClassTypeDeclarations
-    = ClassTypeDeclarations Ext [Attribute] VirtualFlag FormalClassParameters LIDENT ClassSignature [PostItemAttribute] [AndClassTypeDeclaration]
+    = ClassTypeDeclarations Ext [Attribute] VirtualFlag FormalClassParameters LIDENT EQUAL ClassSignature [PostItemAttribute] [AndClassTypeDeclaration]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AndClassTypeDeclaration
-    = AndClassTypeDeclaration [Attribute] VirtualFlag FormalClassParameters LIDENT ClassSignature [PostItemAttribute]
+    = AndClassTypeDeclaration [Attribute] VirtualFlag FormalClassParameters LIDENT EQUAL ClassSignature [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data SeqExpr
     = FinalFunExpr FunExpr
     | FinalFunExprSemi FunExpr
     | MoreFunExprs FunExpr SeqExpr
-    | MoreFunExprsAttr FunExpr [AttrId] SeqExpr
+    | MoreFunExprsAttr FunExpr PERCENT [AttrId] SeqExpr
     | SeqExprFunction Ext [Attribute] [MatchCase]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LabeledSimplePattern
     = OptPattern LabelLetPattern
-    | OptPatternWithDefault LabelLetPattern SeqExpr
+    | OptPatternWithDefault LabelLetPattern EQUAL SeqExpr
     | OptLabel LIDENT
     | OptLabeledPattern OPTLABEL LetPattern
-    | OptLabeledPatternWithDefault OPTLABEL LetPattern SeqExpr
+    | OptLabeledPatternWithDefault OPTLABEL LetPattern EQUAL SeqExpr
     | OptLabeledVar OPTLABEL PatternVar
     | LabeledPattern LabelLetPattern
     | Label LIDENT
@@ -351,9 +352,9 @@ data OptionalAtomicTypeAnnotation
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data FunExpr
-    = ConstrName_ ConstrLongident
+    = SimpleExprApp SimpleExpr [LabeledSimpleExpr]
+    | ConstrApp ConstrLongident SimpleExpr
     | NameTagApp NameTag SimpleExpr
-    | SimpleExprApp SimpleExpr [LabeledSimpleExpr]
     | Assert Ext [Attribute] SimpleExpr
     | Lazy Ext [Attribute] SimpleExpr
     | SimpleExpr SimpleExpr
@@ -361,26 +362,26 @@ data FunExpr
     | Additive Additive Expr
     | PowInfix FunExpr POWOP Expr
     | MultDivInfix FunExpr MULTDIVOP Expr
-    | MultInfix FunExpr Expr
-    | DivInfix FunExpr Expr
-    | ModInfix FunExpr Expr
+    | MultInfix FunExpr STAR Expr
+    | ModInfix FunExpr PERCENT Expr
     | PlusMinusInfix FunExpr PLUSMINUSOP Expr
-    | PlusInfix FunExpr Expr
+    | PlusInfix FunExpr PLUS Expr
     | PlusDotInfix FunExpr Expr
-    | MinusInfix FunExpr Expr
+    | MinusInfix FunExpr MINUS Expr
     | MinusDotInfix FunExpr Expr
     | Cons FunExpr Expr
     | ConcatInfix FunExpr CONCATOP Expr
     | RelInfix FunExpr RELOP Expr
-    | EqualInfix FunExpr Expr
-    | LessInfix FunExpr Expr
-    | GreaterInfix FunExpr Expr
-    | Infix FunExpr Expr
-    | OrInfix FunExpr Expr
-    | BarBarInfix FunExpr Expr
+    | EqualInfix FunExpr EQUAL Expr
+    | LessInfix FunExpr LESS Expr
+    | GreaterInfix FunExpr GREATER Expr
+    | AmpersandInfix FunExpr AMPERSAND Expr
+    | AmperAmperInfix FunExpr AMPERAMPER Expr
+    | OrInfix FunExpr OR Expr
+    | BarBarInfix FunExpr BARBAR Expr
     | Comma Expr [ExprComma]
     | UpdateExpr LIDENT Expr
-    | AssignInfix FunExpr Expr
+    | AssignInfix FunExpr COLONEQUAL Expr
     | QualifiedDot SimpleExpr LabelLongident Expr
     | ArrayUpdateExpr SimpleExpr SeqExpr Expr
     | StringUpdateExpr SimpleExpr SeqExpr Expr
@@ -399,7 +400,7 @@ data FunExpr
     | Match Ext [Attribute] SeqExpr [MatchCase]
     | Try Ext [Attribute] SeqExpr [MatchCase]
     | While Ext [Attribute] SeqExpr SeqExpr
-    | For Ext [Attribute] Pattern SeqExpr DirectionFlag SeqExpr SeqExpr
+    | For Ext [Attribute] Pattern EQUAL SeqExpr DirectionFlag SeqExpr SeqExpr
     | FunExprWithAttribute FunExpr Attribute
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -534,7 +535,7 @@ data SimpleExpr
     | Object Ext [Attribute] ClassSelfPattern [ClassField]
     | Extension Extension
     | PrefixApp PREFIXOP SimpleExpr
-    | BangApp SimpleExpr
+    | BangApp BANG SimpleExpr
     | RecordAccessExpr SimpleExpr LabelLongident
     | ArrayAccessExpr SimpleExpr SeqExpr
     | StringAccessExpr SimpleExpr SeqExpr
@@ -557,11 +558,11 @@ data LabeledSimpleExpr
 
 data LetBindingBodyNoPunning
     = StrictBinding ValIdent StrictBinding
-    | BindingWithMonoType ValIdent TypeConstraint SeqExpr
-    | BindingWithPolyType ValIdent [TypeVar] CoreType SeqExpr
-    | BindingWithLocallyAbstractType ValIdent [LIDENT] CoreType SeqExpr
-    | PatternBinding PatternNoExn SeqExpr
-    | PatternBindingWithType SimplePatternNotIdent CoreType SeqExpr
+    | BindingWithMonoType ValIdent TypeConstraint EQUAL SeqExpr
+    | BindingWithPolyType ValIdent [TypeVar] CoreType EQUAL SeqExpr
+    | BindingWithLocallyAbstractType ValIdent [LIDENT] CoreType EQUAL SeqExpr
+    | PatternBinding PatternNoExn EQUAL SeqExpr
+    | PatternBindingWithType SimplePatternNotIdent CoreType EQUAL SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LetBindingBody
@@ -585,8 +586,8 @@ data AndLetBinding
 data LetopBindingBody
     = LetopStrictBinding ValIdent StrictBinding
     | LetopValIdent ValIdent
-    | LetopPatternBindingWithType SimplePattern CoreType SeqExpr
-    | LetopPatternBinding PatternNoExn SeqExpr
+    | LetopPatternBindingWithType SimplePattern CoreType EQUAL SeqExpr
+    | LetopPatternBinding PatternNoExn EQUAL SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LetopBindings
@@ -595,8 +596,8 @@ data LetopBindings
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data StrictBinding
-    = Binding SeqExpr
-    | FunParams [FunParam] OptionalTypeConstraint FunBody
+    = Binding EQUAL SeqExpr
+    | FunParams [FunParam] OptionalTypeConstraint EQUAL FunBody
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data FunBody
@@ -604,7 +605,7 @@ data FunBody
     | FunBodyFinalFunExpr FunExpr
     | FunBodyFinalFunExprSemi FunExpr
     | FunBodyMoreFunExprs FunExpr SeqExpr
-    | FunBodyMoreFunExprsAttr FunExpr [AttrId] SeqExpr
+    | FunBodyMoreFunExprsAttr FunExpr PERCENT [AttrId] SeqExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data MatchCase
@@ -639,7 +640,7 @@ data RecordExprField
     = RecordExprField LabelLongident OptionalTypeConstraint OptionalAssignExpr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data OptionalAssignExpr = NoAssign | AnAssign Expr
+data OptionalAssignExpr = NoAssign | AnAssign EQUAL Expr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ObjectExprField = ObjectExprField LIDENT OptionalAssignExpr
@@ -731,7 +732,7 @@ data OptionalCoreType = NoCoreType | ACoreType CoreType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data OptionalAssignPattern
-    = NoAssignPattern | AnAssignPattern Pattern
+    = NoAssignPattern | AnAssignPattern EQUAL Pattern
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data RecordPatField
@@ -743,7 +744,7 @@ data ValueDescription
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data PrimitiveDeclaration
-    = PrimitiveDeclaration Ext [Attribute] ValIdent PolyType [STRING] [PostItemAttribute]
+    = PrimitiveDeclaration Ext [Attribute] ValIdent PolyType EQUAL [STRING] [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AndTypeDeclaration
@@ -767,7 +768,7 @@ data TypeSubstDeclaration
     = TypeSubstDeclaration Ext [Attribute] TypeParameters LIDENT TypeSubstKind [Constraint] [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data Constraint = Constraint CoreType CoreType
+data Constraint = Constraint CoreType EQUAL CoreType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data NonemptyTypeKind
@@ -779,18 +780,18 @@ data NonemptyTypeKind
     | PrivateVariantType ConstructorDeclarations
     | PrivateOpenType
     | PrivateRecordType LabelDeclarations
-    | TypeSynonymVariantType CoreType ConstructorDeclarations
-    | TypeSynonymPrivateVariantType CoreType ConstructorDeclarations
-    | TypeSynonymOpenType CoreType
-    | TypeSynonymPrivateOpenType CoreType
-    | TypeSynonymRecordType CoreType LabelDeclarations
-    | TypeSynonymPrivateRecordType CoreType LabelDeclarations
+    | TypeSynonymVariantType CoreType EQUAL ConstructorDeclarations
+    | TypeSynonymPrivateVariantType CoreType EQUAL ConstructorDeclarations
+    | TypeSynonymOpenType CoreType EQUAL
+    | TypeSynonymPrivateOpenType CoreType EQUAL
+    | TypeSynonymRecordType CoreType EQUAL LabelDeclarations
+    | TypeSynonymPrivateRecordType CoreType EQUAL LabelDeclarations
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data TypeKind = NoTypeKind | TypeKind NonemptyTypeKind
+data TypeKind = NoTypeKind | TypeKind EQUAL NonemptyTypeKind
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data TypeSubstKind = TypeSubstKind NonemptyTypeKind
+data TypeSubstKind = TypeSubstKind COLONEQUAL NonemptyTypeKind
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data TypeParameters
@@ -807,9 +808,9 @@ data TypeVariable = TypeVariable OCamlIdent | Underscore
 
 data TypeVariance
     = NoVarianceNoInjectivity
-    | CovariantNoInjectivity
-    | ContravariantNoInjectivity
-    | NoVarianceInjective
+    | CovariantNoInjectivity PLUS
+    | ContravariantNoInjectivity MINUS
+    | NoVarianceInjective BANG
     | CovariantInjective
     | InjectiveCovariant
     | ContravariantInjective
@@ -830,7 +831,7 @@ data ConstructorDeclaration
 
 data StrExceptionDeclaration
     = SigStrExceptionDeclaration SigExceptionDeclaration
-    | Exception Ext [Attribute] ConstrIdent ConstrLongident [Attribute] [PostItemAttribute]
+    | Exception Ext [Attribute] ConstrIdent EQUAL ConstrLongident [Attribute] [PostItemAttribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data SigExceptionDeclaration
@@ -846,8 +847,7 @@ data GeneralizedConstructorArguments
     | GeneralizedConstructorArguments5 [TypeVar] AtomicType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data ConstructorArguments
-    = Arg1 [AtomicType] | Arg2 LabelDeclarations
+data ConstructorArguments = Arg1 TupleType | Arg2 LabelDeclarations
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data LabelDeclarations
@@ -886,20 +886,20 @@ data ExtensionConstructorDeclaration
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ExtensionConstructorRebind
-    = ExtensionConstructorRebind ConstrIdent ConstrLongident [Attribute]
+    = ExtensionConstructorRebind ConstrIdent EQUAL ConstrLongident [Attribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data WithConstraint
     = WithConstraint1 TypeParameters LabelLongident WithTypeBinder AliasType [Constraint]
-    | WithConstraint2 TypeParameters LabelLongident AliasType
-    | WithConstraint3 ModLongident ModExtLongident
-    | WithConstraint4 ModLongident ModExtLongident
-    | WithConstraint5 MtyLongident ModuleType
-    | WithConstraint6 MtyLongident ModuleType
+    | WithConstraint2 TypeParameters LabelLongident COLONEQUAL AliasType
+    | WithConstraint3 ModLongident EQUAL ModExtLongident
+    | WithConstraint4 ModLongident COLONEQUAL ModExtLongident
+    | WithConstraint5 MtyLongident EQUAL ModuleType
+    | WithConstraint6 MtyLongident COLONEQUAL ModuleType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data WithTypeBinder
-    = WithTypeBinderEqual | WithTypeBinderEqualPrivate
+    = WithTypeBinderEqual EQUAL | WithTypeBinderEqualPrivate EQUAL
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data TypeVar = TypeVarIdent OCamlIdent
@@ -926,7 +926,7 @@ data FunctionType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data TupleType
-    = AtomicType AtomicType | AtomicTypes AtomicType [AtomicType]
+    = AtomicType AtomicType | AtomicTypes AtomicType STAR TupleType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data OptionalBar = NoBar | ABar
@@ -941,10 +941,11 @@ data DelimitedTypeSupportingLocalOpen
     | LocalOpen6 OptionalBar [RowField]
     | LocalOpen7
     | LocalOpen8 OptionalBar [RowField]
-    | LocalOpen9 OptionalBar [RowField] [NameTag]
+    | LocalOpen9 OptionalBar [RowField] GREATER [NameTag]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data ObjectType = MethList MethList | Empty
+data ObjectType
+    = MethList LESS MethList GREATER | Empty LESS GREATER
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data DelimitedType
@@ -973,11 +974,16 @@ data RowField = TagField TagField | CoreType CoreType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data TagField
-    = Of NameTag OptAmpersand [AliasType] [Attribute]
+    = Of NameTag OptAmpersand AmperTypeList [Attribute]
     | Tag NameTag [Attribute]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data OptAmpersand = Ampersand | NoAmpersand
+data OptAmpersand = Ampersand AMPERSAND | NoAmpersand
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+data AmperTypeList
+    = AmperTypeListNil AliasType
+    | AmperTypeListCons AliasType AMPERSAND AmperTypeList
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data MethList
@@ -998,10 +1004,10 @@ data Constant = Int INT | Char CHAR | String STRING | Float FLOAT
 
 data SignedConstant
     = UnsignedConstant Constant
-    | NegInt INT
-    | NegFloat FLOAT
-    | PosInt INT
-    | PosFloat FLOAT
+    | NegInt MINUS INT
+    | NegFloat MINUS FLOAT
+    | PosInt PLUS INT
+    | PosFloat PLUS FLOAT
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data OCamlIdent = Uppercase UIDENT | Lowercase LIDENT
@@ -1023,48 +1029,44 @@ data Operator
     | BraceAccessDotop DOTOP IndexMod
     | BraceUpdateDotop DOTOP IndexMod
     | HashSymbolOp HASHOP
-    | BangOp
+    | BangOp BANG
     | RelOp RELOP
-    | InfixEqual
-    | InfixLess
-    | InfixGreater
-    | InfixBarBar
-    | InfixAmpersand
-    | InfixAmpersandAmpersand
+    | InfixEqual EQUAL
+    | InfixLess LESS
+    | InfixGreater GREATER
+    | InfixBarBar BARBAR
+    | InfixAmpersand AMPERSAND
+    | InfixAmperAmper AMPERAMPER
     | ConcatOp CONCATOP
     | PlusMinusOp PLUSMINUSOP
-    | InfixPlus
-    | InfixMinus
+    | InfixPlus PLUS
+    | InfixMinus MINUS
     | MultDivOp MULTDIVOP
-    | InfixStar
-    | InfixSlash
-    | InfixPercent
+    | InfixStar STAR
+    | InfixPercent PERCENT
     | PowOp POWOP
-    | InfixOr
-    | InfixColonEqual
+    | InfixOr OR
+    | InfixColonEqual COLONEQUAL
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data IndexMod = NoIndexMod | SemiDotDot
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data ConstrExtraIdent = ConstrIdent
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
 data ConstrExtraNonprefixIdent
-    = Brackets | Parens | FalseLiteral | TrueLiteral
+    = EmptyListConstr | UnitConstr | FalseConstr | TrueConstr
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ConstrIdent
-    = ConstrUppercaseIdent UIDENT
-    | ConstrExtraIdent ConstrExtraIdent
-    | ConstrExpraNonprefixIdent ConstrExtraNonprefixIdent
+    = ConstrIdent UIDENT
+    | ListConstr
+    | PrimitiveConstr ConstrExtraNonprefixIdent
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ConstrLongident
-    = ModLongidentTodo ModLongident
-    | QualifiedConstrExtraLongident ModLongident ConstrExtraIdent
-    | ConstrExtraLongdent ConstrExtraIdent
-    | ConstrExtraNonprefixLonident ConstrExtraNonprefixIdent
+    = QualifiedConstrIdent ModLongident
+    | QualifiedListConstr ModLongident
+    | UnqualifiedListConstr
+    | UnqualifiedPrimitiveConstr ConstrExtraNonprefixIdent
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data ValLongident
@@ -1170,13 +1172,13 @@ data VirtualWithPrivateFlag
 data NoOverrideFlag = NoFlag
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data OverrideFlag = Fresh | Override
+data OverrideFlag = Fresh | Override BANG
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data Subtractive = Minus | MinusDot
+data Subtractive = Minus MINUS | MinusDot
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data Additive = Plus | PlusDot
+data Additive = Plus PLUS | PlusDot
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AttrId
@@ -1216,7 +1218,7 @@ data AttrId
     | ObjectAttr
     | OfAttr
     | OpenAttr
-    | OrAttr
+    | OrAttr OR
     | PrivateAttr
     | RecAttr
     | SigAttr
@@ -1242,7 +1244,7 @@ data PostItemAttribute = PostItemAttribute [AttrId] AttrPayload
 data FloatingAttribute = FloatingAttribute [AttrId] AttrPayload
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data Ext = NoExt | Ext [AttrId]
+data Ext = NoExt | Ext PERCENT [AttrId]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Extension
@@ -1266,35 +1268,74 @@ data Payload
 data AttrPayload = AttrPayload Payload
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype CHAR = CHAR String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype AMPERAMPER = AMPERAMPER ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype FLOAT = FLOAT String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype AMPERSAND = AMPERSAND ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype RELOP = RELOP String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype BANG = BANG ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype CONCATOP = CONCATOP String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype BARBAR = BARBAR ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype PLUSMINUSOP = PLUSMINUSOP String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype COLONEQUAL = COLONEQUAL ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype MULTDIVOP = MULTDIVOP String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype EQUAL = EQUAL ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype POWOP = POWOP String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype GREATER = GREATER ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype DOTOP = DOTOP String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype LESS = LESS ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype LETOP = LETOP String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype MINUS = MINUS ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-newtype ANDOP = ANDOP String
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+newtype OR = OR ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype PERCENT = PERCENT ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype PLUS = PLUS ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype STAR = STAR ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype RELOP = RELOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype CONCATOP = CONCATOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype PLUSMINUSOP = PLUSMINUSOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype MULTDIVOP = MULTDIVOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype POWOP = POWOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype DOTOP = DOTOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype LETOP = LETOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype ANDOP = ANDOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype HASHOP = HASHOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype PREFIXOP = PREFIXOP ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 newtype DecimalLiteral = DecimalLiteral String
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
@@ -1320,19 +1361,10 @@ newtype BinLiteral = BinLiteral String
 newtype BinLiteralModifier = BinLiteralModifier String
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
 
-newtype LABEL = LABEL ((C.Int, C.Int), String)
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-newtype LIDENT = LIDENT ((C.Int, C.Int), String)
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-newtype OPTLABEL = OPTLABEL ((C.Int, C.Int), String)
-  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
-
-newtype PREFIXOP = PREFIXOP String
+newtype FLOAT = FLOAT String
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
 
-newtype HASHOP = HASHOP String
+newtype CHAR = CHAR String
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
 
 newtype STRING = STRING String
@@ -1344,8 +1376,17 @@ newtype QUOTED_STRING_EXPR = QUOTED_STRING_EXPR String
 newtype QUOTED_STRING_ITEM = QUOTED_STRING_ITEM String
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
 
+newtype LIDENT = LIDENT ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
 newtype UIDENT = UIDENT String
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic, Data.String.IsString)
+
+newtype LABEL = LABEL ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype OPTLABEL = OPTLABEL ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 -- | Start position (line, column) of something.
 
@@ -1362,11 +1403,80 @@ pattern BNFC'Position line col = C.Just (line, col)
 class HasPosition a where
   hasPosition :: a -> BNFC'Position
 
-instance HasPosition LABEL where
-  hasPosition (LABEL (p, _)) = C.Just p
+instance HasPosition AMPERAMPER where
+  hasPosition (AMPERAMPER (p, _)) = C.Just p
+
+instance HasPosition AMPERSAND where
+  hasPosition (AMPERSAND (p, _)) = C.Just p
+
+instance HasPosition BANG where
+  hasPosition (BANG (p, _)) = C.Just p
+
+instance HasPosition BARBAR where
+  hasPosition (BARBAR (p, _)) = C.Just p
+
+instance HasPosition COLONEQUAL where
+  hasPosition (COLONEQUAL (p, _)) = C.Just p
+
+instance HasPosition EQUAL where
+  hasPosition (EQUAL (p, _)) = C.Just p
+
+instance HasPosition GREATER where
+  hasPosition (GREATER (p, _)) = C.Just p
+
+instance HasPosition LESS where
+  hasPosition (LESS (p, _)) = C.Just p
+
+instance HasPosition MINUS where
+  hasPosition (MINUS (p, _)) = C.Just p
+
+instance HasPosition OR where
+  hasPosition (OR (p, _)) = C.Just p
+
+instance HasPosition PERCENT where
+  hasPosition (PERCENT (p, _)) = C.Just p
+
+instance HasPosition PLUS where
+  hasPosition (PLUS (p, _)) = C.Just p
+
+instance HasPosition STAR where
+  hasPosition (STAR (p, _)) = C.Just p
+
+instance HasPosition RELOP where
+  hasPosition (RELOP (p, _)) = C.Just p
+
+instance HasPosition CONCATOP where
+  hasPosition (CONCATOP (p, _)) = C.Just p
+
+instance HasPosition PLUSMINUSOP where
+  hasPosition (PLUSMINUSOP (p, _)) = C.Just p
+
+instance HasPosition MULTDIVOP where
+  hasPosition (MULTDIVOP (p, _)) = C.Just p
+
+instance HasPosition POWOP where
+  hasPosition (POWOP (p, _)) = C.Just p
+
+instance HasPosition DOTOP where
+  hasPosition (DOTOP (p, _)) = C.Just p
+
+instance HasPosition LETOP where
+  hasPosition (LETOP (p, _)) = C.Just p
+
+instance HasPosition ANDOP where
+  hasPosition (ANDOP (p, _)) = C.Just p
+
+instance HasPosition HASHOP where
+  hasPosition (HASHOP (p, _)) = C.Just p
+
+instance HasPosition PREFIXOP where
+  hasPosition (PREFIXOP (p, _)) = C.Just p
 
 instance HasPosition LIDENT where
   hasPosition (LIDENT (p, _)) = C.Just p
+
+instance HasPosition LABEL where
+  hasPosition (LABEL (p, _)) = C.Just p
 
 instance HasPosition OPTLABEL where
   hasPosition (OPTLABEL (p, _)) = C.Just p
