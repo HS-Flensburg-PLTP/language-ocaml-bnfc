@@ -62,7 +62,6 @@
 %token LBRACKETATATAT         "[@@@"
 %token MATCH                  "match"
 %token METHOD                 "method"
-%token MINUSDOT               "-."
 %token MINUSGREATER           "->"
 %token MODULE                 "module"
 %token MUTABLE                "mutable"
@@ -72,8 +71,6 @@
 %token OF                     "of"
 %token OPEN                   "open"
 /* %token PARSER              "parser" */
-%token PLUSDOT                "+."
-%token PLUSEQ                 "+="
 %token PRIVATE                "private"
 %token QUESTION               "?"
 %token QUOTE                  "'"
@@ -104,15 +101,6 @@
 %token EOL                    "\\n"      (* not great, but EOL is unused *)
 -}
 {-
-let lowercase = ['a'-'z' '_']
-let symbolchar =
-  ['!' '$' '%' '&' '*' '+' '-' '.' '/' ':' '<' '=' '>' '?' '@' '^' '|' '~']
-let dotsymbolchar =
-  ['!' '$' '%' '&' '*' '+' '-' '/' ':' '=' '>' '?' '@' '^' '|']
-let kwdopchar =
-  ['$' '&' '*' '+' '-' '/' '<' '=' '>' '@' '^' '|']
--}
-{-
 %token AMPERAMPER             "&&"
 %token AMPERSAND              "&"
 %token BANG                   "!"
@@ -122,9 +110,12 @@ let kwdopchar =
 %token GREATER                ">"
 %token LESS                   "<"
 %token MINUS                  "-"
+%token MINUSDOT               "-."
 %token OR                     "or"
 %token PERCENT                "%"
 %token PLUS                   "+"
+%token PLUSDOT                "+."
+%token PLUSEQ                 "+="
 %token STAR                   "*"
 -}
 
@@ -146,14 +137,29 @@ position token LESS '<' ;
 
 position token MINUS '-' ;
 
+position token MINUSDOT {"-."} ;
+
 position token OR {"or"} ;
 
 position token PERCENT '%' ;
 
 position token PLUS '+' ;
 
+position token PLUSDOT {"+."} ;
+
+position token PLUSEQ {"+="} ;
+
 position token STAR '*' ;
 
+{-
+let lowercase = ['a'-'z' '_']
+let symbolchar =
+  ['!' '$' '%' '&' '*' '+' '-' '.' '/' ':' '<' '=' '>' '?' '@' '^' '|' '~']
+let dotsymbolchar =
+  ['!' '$' '%' '&' '*' '+' '-' '/' ':' '=' '>' '?' '@' '^' '|']
+let kwdopchar =
+  ['$' '&' '*' '+' '-' '/' '<' '=' '>' '@' '^' '|']
+-}
 {-
 %token <string> INFIXOP0      "!="   (* just an example *)
 
@@ -233,7 +239,7 @@ position token LETOP {"let"} ["$&*+-/<=>@^|"] ["!$%&*+-/:=>?@^|"]* ;
             { ANDOP op }
 -}
 
-position token ANDOP {"and"} ["$&*+-/<=>@^|"] ["$&*+-/<=>@^|"]*  ;
+position token ANDOP {"and"} ["$&*+-/<=>@^|"] ["!$%&*+-/:=>?@^|"]*  ;
 
 {-
 %token <string> HASHOP        "##" (* just an example *)
@@ -242,7 +248,7 @@ position token ANDOP {"and"} ["$&*+-/<=>@^|"] ["$&*+-/<=>@^|"]*  ;
             { HASHOP op }
 -}
 
-position token HASHOP '#' ["~!?%<:.$&*+-/=>@^|"]+ ;
+position token HASHOP '#' ["!$%&*+-./:<=>?@^|~#"]+ ;
 
 {-
 
@@ -254,7 +260,8 @@ position token HASHOP '#' ["~!?%<:.$&*+-/=>@^|"]+ ;
             { PREFIXOP op }
 -}
 
-position token PREFIXOP '!' ["~!?%<:.$&*+-/=>@^|"] | ('?' | '~') ["~!?%<:.$&*+-/=>@^|"]+ ;
+position token PREFIXOP '!' ["!$%&*+-./:<=>?@^|~#"] | ('?' | '~') ["!$%&*+-./:<=>?@^|~#"]+ ;
+
 
 -- Primitive Data Types
 
@@ -1150,7 +1157,7 @@ StrFloatingAttribute.     StructureItem ::= FloatingAttribute ;
 StrPrimitiveDeclaration.  StructureItem ::= PrimitiveDeclaration ;
 StrValueDescription.      StructureItem ::= ValueDescription ;
 StrTypeDeclarations.      StructureItem ::= TypeDeclaration [AndTypeDeclaration] ;
-StrTypeExtension.         StructureItem ::= "type" Ext [Attribute] TypeParameters TypeLongident "+=" PrivateFlag BarLlistExtensionConstructor [PostItemAttribute] ;
+StrTypeExtension.         StructureItem ::= "type" Ext [Attribute] TypeParameters TypeLongident PLUSEQ PrivateFlag BarLlistExtensionConstructor [PostItemAttribute] ;
 StrExceptionDeclaration.  StructureItem ::= StrExceptionDeclaration ;
 StrModuleBinding.         StructureItem ::= "module" Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute] ;
 StrRecModuleBindings.     StructureItem ::= "module" Ext [Attribute] "rec" ModuleName ModuleBindingBody [PostItemAttribute] [AndModuleBinding] ;
@@ -1352,7 +1359,7 @@ SigValueDescription.        SignatureItem ::= ValueDescription ;
 SigPrimitiveDeclaration.    SignatureItem ::= PrimitiveDeclaration ;
 SigTypeDeclarations.        SignatureItem ::= TypeDeclaration [AndTypeDeclaration] ;
 SigTypeSubstDeclarations.   SignatureItem ::= TypeSubstDeclarations ;
-SigTypeExtension.           SignatureItem ::= "type" Ext [Attribute] TypeParameters TypeLongident "+=" PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute] ;
+SigTypeExtension.           SignatureItem ::= "type" Ext [Attribute] TypeParameters TypeLongident PLUSEQ PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute] ;
 SigSigExceptionDeclaration. SignatureItem ::= SigExceptionDeclaration ;
 SigModuleDeclaration.       SignatureItem ::= "module" Ext [Attribute] ModuleName ModuleDeclarationBody [PostItemAttribute] ;
 SigModuleAlias.             SignatureItem ::= "module" Ext [Attribute] ModuleName EQUAL ModLongident [PostItemAttribute] ;
@@ -1973,9 +1980,10 @@ ModInfix.               FunExpr12 ::= FunExpr12 PERCENT Expr13 ;
 -- +... -... precedence 11, associativity left
 PlusMinusInfix.         FunExpr11 ::= FunExpr11 PLUSMINUSOP Expr12 ;
 PlusInfix.              FunExpr11 ::= FunExpr11 PLUS Expr12 ;
-PlusDotInfix.           FunExpr11 ::= FunExpr11 "+." Expr12 ;
+PlusDotInfix.           FunExpr11 ::= FunExpr11 PLUSDOT Expr12 ;
+PlusEqInfix.            FunExpr11 ::= FunExpr11 PLUSEQ Expr12 ;
 MinusInfix.             FunExpr11 ::= FunExpr11 MINUS Expr12 ;
-MinusDotInfix.          FunExpr11 ::= FunExpr11 "-." Expr12 ;
+MinusDotInfix.          FunExpr11 ::= FunExpr11 MINUSDOT Expr12 ;
 
 -- :: precedence 10, associativity right
 Cons.                   FunExpr10 ::= FunExpr11 "::" Expr10 ;
@@ -3726,22 +3734,25 @@ BraceUpdateDotop. Operator ::= DOTOP "{" IndexMod "}" "<-" ;
 HashSymbolOp.     Operator ::= HASHOP ;
 BangOp.           Operator ::= BANG ;
 RelOp.            Operator ::= RELOP ;
-InfixEqual.       Operator ::= EQUAL ;
-InfixLess.        Operator ::= LESS ;
-InfixGreater.     Operator ::= GREATER ;
-InfixBarBar.      Operator ::= BARBAR ;
-InfixAmpersand.   Operator ::= AMPERSAND ;
-InfixAmperAmper.  Operator ::= AMPERAMPER ;
 ConcatOp.         Operator ::= CONCATOP ;
 PlusMinusOp.      Operator ::= PLUSMINUSOP ;
-InfixPlus.        Operator ::= PLUS ;
-InfixMinus.       Operator ::= MINUS ;
 MultDivOp.        Operator ::= MULTDIVOP ;
-InfixStar.        Operator ::= STAR ;
-InfixPercent.     Operator ::= PERCENT ;
 PowOp.            Operator ::= POWOP ;
-InfixOr.          Operator ::= OR ;
-InfixColonEqual.  Operator ::= COLONEQUAL ;
+PlusOp.           Operator ::= PLUS ;
+PlusDotOp.        Operator ::= PLUSDOT ;
+PlusEqOp.         Operator ::= PLUSEQ ;
+MinusOp.          Operator ::= MINUS ;
+MinusDotOp.       Operator ::= MINUSDOT ;
+StarOp.           Operator ::= STAR ;
+PercentOp.        Operator ::= PERCENT ;
+EqualOp.          Operator ::= EQUAL ;
+LessOp.           Operator ::= LESS ;
+GreaterOp.        Operator ::= GREATER ;
+OrOp.             Operator ::= OR ;
+BarBarOp.         Operator ::= BARBAR ;
+AmpersandOp.      Operator ::= AMPERSAND ;
+AmperAmperOp.     Operator ::= AMPERAMPER ;
+ColonEqualOp.     Operator ::= COLONEQUAL ;
 
 {-
 %inline infix_operator:
@@ -4139,7 +4150,7 @@ subtractive:
 -}
 
 Minus.    Subtractive ::= MINUS ;
-MinusDot. Subtractive ::= "-." ;
+MinusDot. Subtractive ::= MINUSDOT ;
 
 {-
 additive:
@@ -4149,7 +4160,7 @@ additive:
 -}
 
 Plus.    Additive ::= PLUS ;
-PlusDot. Additive ::= "+." ;
+PlusDot. Additive ::= PLUSDOT ;
 
 {-
 optlabel:

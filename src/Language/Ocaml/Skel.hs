@@ -51,6 +51,10 @@ transMINUS :: Language.Ocaml.Abs.MINUS -> Result
 transMINUS x = case x of
   Language.Ocaml.Abs.MINUS string -> failure x
 
+transMINUSDOT :: Language.Ocaml.Abs.MINUSDOT -> Result
+transMINUSDOT x = case x of
+  Language.Ocaml.Abs.MINUSDOT string -> failure x
+
 transOR :: Language.Ocaml.Abs.OR -> Result
 transOR x = case x of
   Language.Ocaml.Abs.OR string -> failure x
@@ -62,6 +66,14 @@ transPERCENT x = case x of
 transPLUS :: Language.Ocaml.Abs.PLUS -> Result
 transPLUS x = case x of
   Language.Ocaml.Abs.PLUS string -> failure x
+
+transPLUSDOT :: Language.Ocaml.Abs.PLUSDOT -> Result
+transPLUSDOT x = case x of
+  Language.Ocaml.Abs.PLUSDOT string -> failure x
+
+transPLUSEQ :: Language.Ocaml.Abs.PLUSEQ -> Result
+transPLUSEQ x = case x of
+  Language.Ocaml.Abs.PLUSEQ string -> failure x
 
 transSTAR :: Language.Ocaml.Abs.STAR -> Result
 transSTAR x = case x of
@@ -267,7 +279,7 @@ transStructureItem x = case x of
   Language.Ocaml.Abs.StrPrimitiveDeclaration primitivedeclaration -> failure x
   Language.Ocaml.Abs.StrValueDescription valuedescription -> failure x
   Language.Ocaml.Abs.StrTypeDeclarations typedeclaration andtypedeclarations -> failure x
-  Language.Ocaml.Abs.StrTypeExtension ext attributes typeparameters typelongident privateflag barllistextensionconstructor postitemattributes -> failure x
+  Language.Ocaml.Abs.StrTypeExtension ext attributes typeparameters typelongident pluseq privateflag barllistextensionconstructor postitemattributes -> failure x
   Language.Ocaml.Abs.StrExceptionDeclaration strexceptiondeclaration -> failure x
   Language.Ocaml.Abs.StrModuleBinding ext attributes modulename modulebindingbody postitemattributes -> failure x
   Language.Ocaml.Abs.StrRecModuleBindings ext attributes modulename modulebindingbody postitemattributes andmodulebindings -> failure x
@@ -334,7 +346,7 @@ transSignatureItem x = case x of
   Language.Ocaml.Abs.SigPrimitiveDeclaration primitivedeclaration -> failure x
   Language.Ocaml.Abs.SigTypeDeclarations typedeclaration andtypedeclarations -> failure x
   Language.Ocaml.Abs.SigTypeSubstDeclarations typesubstdeclarations -> failure x
-  Language.Ocaml.Abs.SigTypeExtension ext attributes typeparameters typelongident privateflag barllistextensionconstructordeclaration postitemattributes -> failure x
+  Language.Ocaml.Abs.SigTypeExtension ext attributes typeparameters typelongident pluseq privateflag barllistextensionconstructordeclaration postitemattributes -> failure x
   Language.Ocaml.Abs.SigSigExceptionDeclaration sigexceptiondeclaration -> failure x
   Language.Ocaml.Abs.SigModuleDeclaration ext attributes modulename moduledeclarationbody postitemattributes -> failure x
   Language.Ocaml.Abs.SigModuleAlias ext attributes modulename equal modlongident postitemattributes -> failure x
@@ -545,9 +557,10 @@ transFunExpr x = case x of
   Language.Ocaml.Abs.ModInfix funexpr percent expr -> failure x
   Language.Ocaml.Abs.PlusMinusInfix funexpr plusminusop expr -> failure x
   Language.Ocaml.Abs.PlusInfix funexpr plus expr -> failure x
-  Language.Ocaml.Abs.PlusDotInfix funexpr expr -> failure x
+  Language.Ocaml.Abs.PlusDotInfix funexpr plusdot expr -> failure x
+  Language.Ocaml.Abs.PlusEqInfix funexpr pluseq expr -> failure x
   Language.Ocaml.Abs.MinusInfix funexpr minus expr -> failure x
-  Language.Ocaml.Abs.MinusDotInfix funexpr expr -> failure x
+  Language.Ocaml.Abs.MinusDotInfix funexpr minusdot expr -> failure x
   Language.Ocaml.Abs.Cons funexpr expr -> failure x
   Language.Ocaml.Abs.ConcatInfix funexpr concatop expr -> failure x
   Language.Ocaml.Abs.RelInfix funexpr relop expr -> failure x
@@ -1253,22 +1266,25 @@ transOperator x = case x of
   Language.Ocaml.Abs.HashSymbolOp hashop -> failure x
   Language.Ocaml.Abs.BangOp bang -> failure x
   Language.Ocaml.Abs.RelOp relop -> failure x
-  Language.Ocaml.Abs.InfixEqual equal -> failure x
-  Language.Ocaml.Abs.InfixLess less -> failure x
-  Language.Ocaml.Abs.InfixGreater greater -> failure x
-  Language.Ocaml.Abs.InfixBarBar barbar -> failure x
-  Language.Ocaml.Abs.InfixAmpersand ampersand -> failure x
-  Language.Ocaml.Abs.InfixAmperAmper amperamper -> failure x
   Language.Ocaml.Abs.ConcatOp concatop -> failure x
   Language.Ocaml.Abs.PlusMinusOp plusminusop -> failure x
-  Language.Ocaml.Abs.InfixPlus plus -> failure x
-  Language.Ocaml.Abs.InfixMinus minus -> failure x
   Language.Ocaml.Abs.MultDivOp multdivop -> failure x
-  Language.Ocaml.Abs.InfixStar star -> failure x
-  Language.Ocaml.Abs.InfixPercent percent -> failure x
   Language.Ocaml.Abs.PowOp powop -> failure x
-  Language.Ocaml.Abs.InfixOr or -> failure x
-  Language.Ocaml.Abs.InfixColonEqual colonequal -> failure x
+  Language.Ocaml.Abs.PlusOp plus -> failure x
+  Language.Ocaml.Abs.PlusDotOp plusdot -> failure x
+  Language.Ocaml.Abs.PlusEqOp pluseq -> failure x
+  Language.Ocaml.Abs.MinusOp minus -> failure x
+  Language.Ocaml.Abs.MinusDotOp minusdot -> failure x
+  Language.Ocaml.Abs.StarOp star -> failure x
+  Language.Ocaml.Abs.PercentOp percent -> failure x
+  Language.Ocaml.Abs.EqualOp equal -> failure x
+  Language.Ocaml.Abs.LessOp less -> failure x
+  Language.Ocaml.Abs.GreaterOp greater -> failure x
+  Language.Ocaml.Abs.OrOp or -> failure x
+  Language.Ocaml.Abs.BarBarOp barbar -> failure x
+  Language.Ocaml.Abs.AmpersandOp ampersand -> failure x
+  Language.Ocaml.Abs.AmperAmperOp amperamper -> failure x
+  Language.Ocaml.Abs.ColonEqualOp colonequal -> failure x
 
 transIndexMod :: Language.Ocaml.Abs.IndexMod -> Result
 transIndexMod x = case x of
@@ -1423,12 +1439,12 @@ transOverrideFlag x = case x of
 transSubtractive :: Language.Ocaml.Abs.Subtractive -> Result
 transSubtractive x = case x of
   Language.Ocaml.Abs.Minus minus -> failure x
-  Language.Ocaml.Abs.MinusDot -> failure x
+  Language.Ocaml.Abs.MinusDot minusdot -> failure x
 
 transAdditive :: Language.Ocaml.Abs.Additive -> Result
 transAdditive x = case x of
   Language.Ocaml.Abs.Plus plus -> failure x
-  Language.Ocaml.Abs.PlusDot -> failure x
+  Language.Ocaml.Abs.PlusDot plusdot -> failure x
 
 transAttrId :: Language.Ocaml.Abs.AttrId -> Result
 transAttrId x = case x of

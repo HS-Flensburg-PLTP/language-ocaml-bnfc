@@ -50,6 +50,7 @@ showTok (T_QUOTED_STRING_EXPR _) = "L_QUOTED_STRING_EXPR"
 showTok (T_QUOTED_STRING_ITEM _) = "L_QUOTED_STRING_ITEM"
 showTok (T_UIDENT _) = "L_UIDENT"
 showTok (T_EQUAL _) = "L_EQUAL"
+showTok (T_PLUSEQ _) = "L_PLUSEQ"
 showTok tok = error ("showTok: " ++ show tok)
 
 run :: String -> IO ()

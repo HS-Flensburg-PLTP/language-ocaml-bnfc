@@ -104,7 +104,7 @@ data StructureItem
     | StrPrimitiveDeclaration PrimitiveDeclaration
     | StrValueDescription ValueDescription
     | StrTypeDeclarations TypeDeclaration [AndTypeDeclaration]
-    | StrTypeExtension Ext [Attribute] TypeParameters TypeLongident PrivateFlag BarLlistExtensionConstructor [PostItemAttribute]
+    | StrTypeExtension Ext [Attribute] TypeParameters TypeLongident PLUSEQ PrivateFlag BarLlistExtensionConstructor [PostItemAttribute]
     | StrExceptionDeclaration StrExceptionDeclaration
     | StrModuleBinding Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute]
     | StrRecModuleBindings Ext [Attribute] ModuleName ModuleBindingBody [PostItemAttribute] [AndModuleBinding]
@@ -167,7 +167,7 @@ data SignatureItem
     | SigPrimitiveDeclaration PrimitiveDeclaration
     | SigTypeDeclarations TypeDeclaration [AndTypeDeclaration]
     | SigTypeSubstDeclarations TypeSubstDeclarations
-    | SigTypeExtension Ext [Attribute] TypeParameters TypeLongident PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute]
+    | SigTypeExtension Ext [Attribute] TypeParameters TypeLongident PLUSEQ PrivateFlag BarLlistExtensionConstructorDeclaration [PostItemAttribute]
     | SigSigExceptionDeclaration SigExceptionDeclaration
     | SigModuleDeclaration Ext [Attribute] ModuleName ModuleDeclarationBody [PostItemAttribute]
     | SigModuleAlias Ext [Attribute] ModuleName EQUAL ModLongident [PostItemAttribute]
@@ -366,9 +366,10 @@ data FunExpr
     | ModInfix FunExpr PERCENT Expr
     | PlusMinusInfix FunExpr PLUSMINUSOP Expr
     | PlusInfix FunExpr PLUS Expr
-    | PlusDotInfix FunExpr Expr
+    | PlusDotInfix FunExpr PLUSDOT Expr
+    | PlusEqInfix FunExpr PLUSEQ Expr
     | MinusInfix FunExpr MINUS Expr
-    | MinusDotInfix FunExpr Expr
+    | MinusDotInfix FunExpr MINUSDOT Expr
     | Cons FunExpr Expr
     | ConcatInfix FunExpr CONCATOP Expr
     | RelInfix FunExpr RELOP Expr
@@ -1031,22 +1032,25 @@ data Operator
     | HashSymbolOp HASHOP
     | BangOp BANG
     | RelOp RELOP
-    | InfixEqual EQUAL
-    | InfixLess LESS
-    | InfixGreater GREATER
-    | InfixBarBar BARBAR
-    | InfixAmpersand AMPERSAND
-    | InfixAmperAmper AMPERAMPER
     | ConcatOp CONCATOP
     | PlusMinusOp PLUSMINUSOP
-    | InfixPlus PLUS
-    | InfixMinus MINUS
     | MultDivOp MULTDIVOP
-    | InfixStar STAR
-    | InfixPercent PERCENT
     | PowOp POWOP
-    | InfixOr OR
-    | InfixColonEqual COLONEQUAL
+    | PlusOp PLUS
+    | PlusDotOp PLUSDOT
+    | PlusEqOp PLUSEQ
+    | MinusOp MINUS
+    | MinusDotOp MINUSDOT
+    | StarOp STAR
+    | PercentOp PERCENT
+    | EqualOp EQUAL
+    | LessOp LESS
+    | GreaterOp GREATER
+    | OrOp OR
+    | BarBarOp BARBAR
+    | AmpersandOp AMPERSAND
+    | AmperAmperOp AMPERAMPER
+    | ColonEqualOp COLONEQUAL
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data IndexMod = NoIndexMod | SemiDotDot
@@ -1175,10 +1179,10 @@ data NoOverrideFlag = NoFlag
 data OverrideFlag = Fresh | Override BANG
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data Subtractive = Minus MINUS | MinusDot
+data Subtractive = Minus MINUS | MinusDot MINUSDOT
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data Additive = Plus PLUS | PlusDot
+data Additive = Plus PLUS | PlusDot PLUSDOT
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AttrId
@@ -1295,6 +1299,9 @@ newtype LESS = LESS ((C.Int, C.Int), String)
 newtype MINUS = MINUS ((C.Int, C.Int), String)
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
+newtype MINUSDOT = MINUSDOT ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
 newtype OR = OR ((C.Int, C.Int), String)
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -1302,6 +1309,12 @@ newtype PERCENT = PERCENT ((C.Int, C.Int), String)
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 newtype PLUS = PLUS ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype PLUSDOT = PLUSDOT ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+newtype PLUSEQ = PLUSEQ ((C.Int, C.Int), String)
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 newtype STAR = STAR ((C.Int, C.Int), String)
@@ -1430,6 +1443,9 @@ instance HasPosition LESS where
 instance HasPosition MINUS where
   hasPosition (MINUS (p, _)) = C.Just p
 
+instance HasPosition MINUSDOT where
+  hasPosition (MINUSDOT (p, _)) = C.Just p
+
 instance HasPosition OR where
   hasPosition (OR (p, _)) = C.Just p
 
@@ -1438,6 +1454,12 @@ instance HasPosition PERCENT where
 
 instance HasPosition PLUS where
   hasPosition (PLUS (p, _)) = C.Just p
+
+instance HasPosition PLUSDOT where
+  hasPosition (PLUSDOT (p, _)) = C.Just p
+
+instance HasPosition PLUSEQ where
+  hasPosition (PLUSEQ (p, _)) = C.Just p
 
 instance HasPosition STAR where
   hasPosition (STAR (p, _)) = C.Just p

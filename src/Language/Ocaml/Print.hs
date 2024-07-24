@@ -155,12 +155,18 @@ instance Print Language.Ocaml.Abs.LESS where
   prt _ (Language.Ocaml.Abs.LESS (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.MINUS where
   prt _ (Language.Ocaml.Abs.MINUS (_,i)) = doc $ showString i
+instance Print Language.Ocaml.Abs.MINUSDOT where
+  prt _ (Language.Ocaml.Abs.MINUSDOT (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.OR where
   prt _ (Language.Ocaml.Abs.OR (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.PERCENT where
   prt _ (Language.Ocaml.Abs.PERCENT (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.PLUS where
   prt _ (Language.Ocaml.Abs.PLUS (_,i)) = doc $ showString i
+instance Print Language.Ocaml.Abs.PLUSDOT where
+  prt _ (Language.Ocaml.Abs.PLUSDOT (_,i)) = doc $ showString i
+instance Print Language.Ocaml.Abs.PLUSEQ where
+  prt _ (Language.Ocaml.Abs.PLUSEQ (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.STAR where
   prt _ (Language.Ocaml.Abs.STAR (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.RELOP where
@@ -327,7 +333,7 @@ instance Print Language.Ocaml.Abs.StructureItem where
     Language.Ocaml.Abs.StrPrimitiveDeclaration primitivedeclaration -> prPrec i 0 (concatD [prt 0 primitivedeclaration])
     Language.Ocaml.Abs.StrValueDescription valuedescription -> prPrec i 0 (concatD [prt 0 valuedescription])
     Language.Ocaml.Abs.StrTypeDeclarations typedeclaration andtypedeclarations -> prPrec i 0 (concatD [prt 0 typedeclaration, prt 0 andtypedeclarations])
-    Language.Ocaml.Abs.StrTypeExtension ext attributes typeparameters typelongident privateflag barllistextensionconstructor postitemattributes -> prPrec i 0 (concatD [doc (showString "type"), prt 0 ext, prt 0 attributes, prt 0 typeparameters, prt 0 typelongident, doc (showString "+="), prt 0 privateflag, prt 0 barllistextensionconstructor, prt 0 postitemattributes])
+    Language.Ocaml.Abs.StrTypeExtension ext attributes typeparameters typelongident pluseq privateflag barllistextensionconstructor postitemattributes -> prPrec i 0 (concatD [doc (showString "type"), prt 0 ext, prt 0 attributes, prt 0 typeparameters, prt 0 typelongident, prt 0 pluseq, prt 0 privateflag, prt 0 barllistextensionconstructor, prt 0 postitemattributes])
     Language.Ocaml.Abs.StrExceptionDeclaration strexceptiondeclaration -> prPrec i 0 (concatD [prt 0 strexceptiondeclaration])
     Language.Ocaml.Abs.StrModuleBinding ext attributes modulename modulebindingbody postitemattributes -> prPrec i 0 (concatD [doc (showString "module"), prt 0 ext, prt 0 attributes, prt 0 modulename, prt 0 modulebindingbody, prt 0 postitemattributes])
     Language.Ocaml.Abs.StrRecModuleBindings ext attributes modulename modulebindingbody postitemattributes andmodulebindings -> prPrec i 0 (concatD [doc (showString "module"), prt 0 ext, prt 0 attributes, doc (showString "rec"), prt 0 modulename, prt 0 modulebindingbody, prt 0 postitemattributes, prt 0 andmodulebindings])
@@ -407,7 +413,7 @@ instance Print Language.Ocaml.Abs.SignatureItem where
     Language.Ocaml.Abs.SigPrimitiveDeclaration primitivedeclaration -> prPrec i 0 (concatD [prt 0 primitivedeclaration])
     Language.Ocaml.Abs.SigTypeDeclarations typedeclaration andtypedeclarations -> prPrec i 0 (concatD [prt 0 typedeclaration, prt 0 andtypedeclarations])
     Language.Ocaml.Abs.SigTypeSubstDeclarations typesubstdeclarations -> prPrec i 0 (concatD [prt 0 typesubstdeclarations])
-    Language.Ocaml.Abs.SigTypeExtension ext attributes typeparameters typelongident privateflag barllistextensionconstructordeclaration postitemattributes -> prPrec i 0 (concatD [doc (showString "type"), prt 0 ext, prt 0 attributes, prt 0 typeparameters, prt 0 typelongident, doc (showString "+="), prt 0 privateflag, prt 0 barllistextensionconstructordeclaration, prt 0 postitemattributes])
+    Language.Ocaml.Abs.SigTypeExtension ext attributes typeparameters typelongident pluseq privateflag barllistextensionconstructordeclaration postitemattributes -> prPrec i 0 (concatD [doc (showString "type"), prt 0 ext, prt 0 attributes, prt 0 typeparameters, prt 0 typelongident, prt 0 pluseq, prt 0 privateflag, prt 0 barllistextensionconstructordeclaration, prt 0 postitemattributes])
     Language.Ocaml.Abs.SigSigExceptionDeclaration sigexceptiondeclaration -> prPrec i 0 (concatD [prt 0 sigexceptiondeclaration])
     Language.Ocaml.Abs.SigModuleDeclaration ext attributes modulename moduledeclarationbody postitemattributes -> prPrec i 0 (concatD [doc (showString "module"), prt 0 ext, prt 0 attributes, prt 0 modulename, prt 0 moduledeclarationbody, prt 0 postitemattributes])
     Language.Ocaml.Abs.SigModuleAlias ext attributes modulename equal modlongident postitemattributes -> prPrec i 0 (concatD [doc (showString "module"), prt 0 ext, prt 0 attributes, prt 0 modulename, prt 0 equal, prt 0 modlongident, prt 0 postitemattributes])
@@ -644,9 +650,10 @@ instance Print Language.Ocaml.Abs.FunExpr where
     Language.Ocaml.Abs.ModInfix funexpr percent expr -> prPrec i 12 (concatD [prt 12 funexpr, prt 0 percent, prt 13 expr])
     Language.Ocaml.Abs.PlusMinusInfix funexpr plusminusop expr -> prPrec i 11 (concatD [prt 11 funexpr, prt 0 plusminusop, prt 12 expr])
     Language.Ocaml.Abs.PlusInfix funexpr plus expr -> prPrec i 11 (concatD [prt 11 funexpr, prt 0 plus, prt 12 expr])
-    Language.Ocaml.Abs.PlusDotInfix funexpr expr -> prPrec i 11 (concatD [prt 11 funexpr, doc (showString "+."), prt 12 expr])
+    Language.Ocaml.Abs.PlusDotInfix funexpr plusdot expr -> prPrec i 11 (concatD [prt 11 funexpr, prt 0 plusdot, prt 12 expr])
+    Language.Ocaml.Abs.PlusEqInfix funexpr pluseq expr -> prPrec i 11 (concatD [prt 11 funexpr, prt 0 pluseq, prt 12 expr])
     Language.Ocaml.Abs.MinusInfix funexpr minus expr -> prPrec i 11 (concatD [prt 11 funexpr, prt 0 minus, prt 12 expr])
-    Language.Ocaml.Abs.MinusDotInfix funexpr expr -> prPrec i 11 (concatD [prt 11 funexpr, doc (showString "-."), prt 12 expr])
+    Language.Ocaml.Abs.MinusDotInfix funexpr minusdot expr -> prPrec i 11 (concatD [prt 11 funexpr, prt 0 minusdot, prt 12 expr])
     Language.Ocaml.Abs.Cons funexpr expr -> prPrec i 10 (concatD [prt 11 funexpr, doc (showString "::"), prt 10 expr])
     Language.Ocaml.Abs.ConcatInfix funexpr concatop expr -> prPrec i 9 (concatD [prt 10 funexpr, prt 0 concatop, prt 9 expr])
     Language.Ocaml.Abs.RelInfix funexpr relop expr -> prPrec i 8 (concatD [prt 8 funexpr, prt 0 relop, prt 9 expr])
@@ -1453,22 +1460,25 @@ instance Print Language.Ocaml.Abs.Operator where
     Language.Ocaml.Abs.HashSymbolOp hashop -> prPrec i 0 (concatD [prt 0 hashop])
     Language.Ocaml.Abs.BangOp bang -> prPrec i 0 (concatD [prt 0 bang])
     Language.Ocaml.Abs.RelOp relop -> prPrec i 0 (concatD [prt 0 relop])
-    Language.Ocaml.Abs.InfixEqual equal -> prPrec i 0 (concatD [prt 0 equal])
-    Language.Ocaml.Abs.InfixLess less -> prPrec i 0 (concatD [prt 0 less])
-    Language.Ocaml.Abs.InfixGreater greater -> prPrec i 0 (concatD [prt 0 greater])
-    Language.Ocaml.Abs.InfixBarBar barbar -> prPrec i 0 (concatD [prt 0 barbar])
-    Language.Ocaml.Abs.InfixAmpersand ampersand -> prPrec i 0 (concatD [prt 0 ampersand])
-    Language.Ocaml.Abs.InfixAmperAmper amperamper -> prPrec i 0 (concatD [prt 0 amperamper])
     Language.Ocaml.Abs.ConcatOp concatop -> prPrec i 0 (concatD [prt 0 concatop])
     Language.Ocaml.Abs.PlusMinusOp plusminusop -> prPrec i 0 (concatD [prt 0 plusminusop])
-    Language.Ocaml.Abs.InfixPlus plus -> prPrec i 0 (concatD [prt 0 plus])
-    Language.Ocaml.Abs.InfixMinus minus -> prPrec i 0 (concatD [prt 0 minus])
     Language.Ocaml.Abs.MultDivOp multdivop -> prPrec i 0 (concatD [prt 0 multdivop])
-    Language.Ocaml.Abs.InfixStar star -> prPrec i 0 (concatD [prt 0 star])
-    Language.Ocaml.Abs.InfixPercent percent -> prPrec i 0 (concatD [prt 0 percent])
     Language.Ocaml.Abs.PowOp powop -> prPrec i 0 (concatD [prt 0 powop])
-    Language.Ocaml.Abs.InfixOr or -> prPrec i 0 (concatD [prt 0 or])
-    Language.Ocaml.Abs.InfixColonEqual colonequal -> prPrec i 0 (concatD [prt 0 colonequal])
+    Language.Ocaml.Abs.PlusOp plus -> prPrec i 0 (concatD [prt 0 plus])
+    Language.Ocaml.Abs.PlusDotOp plusdot -> prPrec i 0 (concatD [prt 0 plusdot])
+    Language.Ocaml.Abs.PlusEqOp pluseq -> prPrec i 0 (concatD [prt 0 pluseq])
+    Language.Ocaml.Abs.MinusOp minus -> prPrec i 0 (concatD [prt 0 minus])
+    Language.Ocaml.Abs.MinusDotOp minusdot -> prPrec i 0 (concatD [prt 0 minusdot])
+    Language.Ocaml.Abs.StarOp star -> prPrec i 0 (concatD [prt 0 star])
+    Language.Ocaml.Abs.PercentOp percent -> prPrec i 0 (concatD [prt 0 percent])
+    Language.Ocaml.Abs.EqualOp equal -> prPrec i 0 (concatD [prt 0 equal])
+    Language.Ocaml.Abs.LessOp less -> prPrec i 0 (concatD [prt 0 less])
+    Language.Ocaml.Abs.GreaterOp greater -> prPrec i 0 (concatD [prt 0 greater])
+    Language.Ocaml.Abs.OrOp or -> prPrec i 0 (concatD [prt 0 or])
+    Language.Ocaml.Abs.BarBarOp barbar -> prPrec i 0 (concatD [prt 0 barbar])
+    Language.Ocaml.Abs.AmpersandOp ampersand -> prPrec i 0 (concatD [prt 0 ampersand])
+    Language.Ocaml.Abs.AmperAmperOp amperamper -> prPrec i 0 (concatD [prt 0 amperamper])
+    Language.Ocaml.Abs.ColonEqualOp colonequal -> prPrec i 0 (concatD [prt 0 colonequal])
 
 instance Print Language.Ocaml.Abs.IndexMod where
   prt i = \case
@@ -1623,12 +1633,12 @@ instance Print Language.Ocaml.Abs.OverrideFlag where
 instance Print Language.Ocaml.Abs.Subtractive where
   prt i = \case
     Language.Ocaml.Abs.Minus minus -> prPrec i 0 (concatD [prt 0 minus])
-    Language.Ocaml.Abs.MinusDot -> prPrec i 0 (concatD [doc (showString "-.")])
+    Language.Ocaml.Abs.MinusDot minusdot -> prPrec i 0 (concatD [prt 0 minusdot])
 
 instance Print Language.Ocaml.Abs.Additive where
   prt i = \case
     Language.Ocaml.Abs.Plus plus -> prPrec i 0 (concatD [prt 0 plus])
-    Language.Ocaml.Abs.PlusDot -> prPrec i 0 (concatD [doc (showString "+.")])
+    Language.Ocaml.Abs.PlusDot plusdot -> prPrec i 0 (concatD [prt 0 plusdot])
 
 instance Print Language.Ocaml.Abs.AttrId where
   prt i = \case
