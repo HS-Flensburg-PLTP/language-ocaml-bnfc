@@ -307,22 +307,18 @@ instance Print Language.Ocaml.Abs.ExprColonPackageType where
     Language.Ocaml.Abs.ExprWithCoercionFromTo expr moduletype1 moduletype2 -> prPrec i 0 (concatD [prt 0 expr, doc (showString ":"), prt 0 moduletype1, doc (showString ":>"), prt 0 moduletype2])
     Language.Ocaml.Abs.ExprWithCoercionTo expr moduletype -> prPrec i 0 (concatD [prt 0 expr, doc (showString ":>"), prt 0 moduletype])
 
-instance Print [Language.Ocaml.Abs.StructureElement] where
-  prt _ [] = concatD []
-  prt _ [x] = concatD [prt 0 x]
-  prt _ (x:xs) = concatD [prt 0 x, prt 0 xs]
-
 instance Print Language.Ocaml.Abs.Structure where
   prt i = \case
-    Language.Ocaml.Abs.NoStructure -> prPrec i 0 (concatD [])
-    Language.Ocaml.Abs.StandaloneExpression seqexpr postitemattributes -> prPrec i 0 (concatD [prt 0 seqexpr, prt 0 postitemattributes])
-    Language.Ocaml.Abs.StandaloneExpressionAndStructureElements seqexpr postitemattributes structureelements -> prPrec i 0 (concatD [prt 0 seqexpr, prt 0 postitemattributes, prt 0 structureelements])
-    Language.Ocaml.Abs.StructureElements structureelements -> prPrec i 0 (concatD [prt 0 structureelements])
+    Language.Ocaml.Abs.WithStandaloneExpression seqexpr postitemattributes structureelements -> prPrec i 0 (concatD [prt 0 seqexpr, prt 0 postitemattributes, prt 0 structureelements])
+    Language.Ocaml.Abs.WithoutStandaloneExpression structureelements -> prPrec i 0 (concatD [prt 0 structureelements])
+
+instance Print [Language.Ocaml.Abs.StructureElement] where
+  prt _ [] = concatD []
+  prt _ (x:xs) = concatD [prt 0 x, prt 0 xs]
 
 instance Print Language.Ocaml.Abs.StructureElement where
   prt i = \case
-    Language.Ocaml.Abs.StructureSemiSemi -> prPrec i 0 (concatD [doc (showString ";;")])
-    Language.Ocaml.Abs.StructureStrExpr seqexpr postitemattributes -> prPrec i 0 (concatD [doc (showString ";;"), prt 0 seqexpr, prt 0 postitemattributes])
+    Language.Ocaml.Abs.StandaloneExpression seqexpr postitemattributes -> prPrec i 0 (concatD [doc (showString ";;"), prt 0 seqexpr, prt 0 postitemattributes])
     Language.Ocaml.Abs.StructureItem structureitem -> prPrec i 0 (concatD [prt 0 structureitem])
 
 instance Print Language.Ocaml.Abs.StructureItem where

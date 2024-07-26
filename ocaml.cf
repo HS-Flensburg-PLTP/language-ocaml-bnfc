@@ -1089,12 +1089,12 @@ structure:
 ;
 -}
 
-separator nonempty StructureElement "" ;
+WithStandaloneExpression.    Structure ::= SeqExpr [PostItemAttribute] [StructureElement] ;
+WithoutStandaloneExpression. Structure ::= [StructureElement] ;
 
-NoStructure.                              Structure ::= ;
-StandaloneExpression.                     Structure ::= SeqExpr [PostItemAttribute] ;
-StandaloneExpressionAndStructureElements. Structure ::= SeqExpr [PostItemAttribute] [StructureElement] ;
-StructureElements.                        Structure ::= [StructureElement] ;
+separator StructureElement "" ;
+-- this rule models the inlining of structure_element
+_. [StructureElement] ::= ";;" [StructureElement] ;
 
 {-
 (* An optional standalone expression is just an expression with attributes
@@ -1121,14 +1121,16 @@ StructureElements.                        Structure ::= [StructureElement] ;
    - a double semicolon followed with an optional standalone expression;
    - a structure item. *)
 %inline structure_element:
-    SEMISEMI optional_structure_standalone_expression)
+    SEMISEMI optional_structure_standalone_expression
   | structure_item
 ;
 -}
 
-StructureSemiSemi. StructureElement ::= ";;" ;
-StructureStrExpr.  StructureElement ::= ";;" SeqExpr [PostItemAttribute] ;
-StructureItem.     StructureElement ::= StructureItem ;
+-- the optional part is encoded in [StructureElement]
+StandaloneExpression. StructureElement ::= ";;" SeqExpr [PostItemAttribute] ;
+StructureItem.        StructureElement ::= StructureItem ;
+
+-- inlined
 
 {-
 (* A structure item. *)

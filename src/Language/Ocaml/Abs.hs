@@ -85,15 +85,12 @@ data ExprColonPackageType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Structure
-    = NoStructure
-    | StandaloneExpression SeqExpr [PostItemAttribute]
-    | StandaloneExpressionAndStructureElements SeqExpr [PostItemAttribute] [StructureElement]
-    | StructureElements [StructureElement]
+    = WithStandaloneExpression SeqExpr [PostItemAttribute] [StructureElement]
+    | WithoutStandaloneExpression [StructureElement]
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data StructureElement
-    = StructureSemiSemi
-    | StructureStrExpr SeqExpr [PostItemAttribute]
+    = StandaloneExpression SeqExpr [PostItemAttribute]
     | StructureItem StructureItem
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 

@@ -260,15 +260,12 @@ transExprColonPackageType x = case x of
 
 transStructure :: Language.Ocaml.Abs.Structure -> Result
 transStructure x = case x of
-  Language.Ocaml.Abs.NoStructure -> failure x
-  Language.Ocaml.Abs.StandaloneExpression seqexpr postitemattributes -> failure x
-  Language.Ocaml.Abs.StandaloneExpressionAndStructureElements seqexpr postitemattributes structureelements -> failure x
-  Language.Ocaml.Abs.StructureElements structureelements -> failure x
+  Language.Ocaml.Abs.WithStandaloneExpression seqexpr postitemattributes structureelements -> failure x
+  Language.Ocaml.Abs.WithoutStandaloneExpression structureelements -> failure x
 
 transStructureElement :: Language.Ocaml.Abs.StructureElement -> Result
 transStructureElement x = case x of
-  Language.Ocaml.Abs.StructureSemiSemi -> failure x
-  Language.Ocaml.Abs.StructureStrExpr seqexpr postitemattributes -> failure x
+  Language.Ocaml.Abs.StandaloneExpression seqexpr postitemattributes -> failure x
   Language.Ocaml.Abs.StructureItem structureitem -> failure x
 
 transStructureItem :: Language.Ocaml.Abs.StructureItem -> Result
