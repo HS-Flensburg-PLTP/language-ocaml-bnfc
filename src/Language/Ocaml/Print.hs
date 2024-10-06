@@ -596,7 +596,7 @@ instance Print Language.Ocaml.Abs.LabeledSimplePattern where
   prt i = \case
     Language.Ocaml.Abs.OptPattern labelletpattern -> prPrec i 0 (concatD [doc (showString "?"), doc (showString "("), prt 0 labelletpattern, doc (showString ")")])
     Language.Ocaml.Abs.OptPatternWithDefault labelletpattern equal seqexpr -> prPrec i 0 (concatD [doc (showString "?"), doc (showString "("), prt 0 labelletpattern, prt 0 equal, prt 0 seqexpr, doc (showString ")")])
-    Language.Ocaml.Abs.OptLabel lident -> prPrec i 0 (concatD [doc (showString "?"), prt 0 lident])
+    Language.Ocaml.Abs.OptLabelPattern lident -> prPrec i 0 (concatD [doc (showString "?"), prt 0 lident])
     Language.Ocaml.Abs.OptLabeledPattern optlabel letpattern -> prPrec i 0 (concatD [prt 0 optlabel, doc (showString "("), prt 0 letpattern, doc (showString ")")])
     Language.Ocaml.Abs.OptLabeledPatternWithDefault optlabel letpattern equal seqexpr -> prPrec i 0 (concatD [prt 0 optlabel, doc (showString "("), prt 0 letpattern, prt 0 equal, prt 0 seqexpr, doc (showString ")")])
     Language.Ocaml.Abs.OptLabeledVar optlabel patternvar -> prPrec i 0 (concatD [prt 0 optlabel, prt 0 patternvar])
@@ -1635,6 +1635,11 @@ instance Print Language.Ocaml.Abs.Additive where
   prt i = \case
     Language.Ocaml.Abs.Plus plus -> prPrec i 0 (concatD [prt 0 plus])
     Language.Ocaml.Abs.PlusDot plusdot -> prPrec i 0 (concatD [prt 0 plusdot])
+
+instance Print Language.Ocaml.Abs.OptLabel where
+  prt i = \case
+    Language.Ocaml.Abs.OptLabel optlabel -> prPrec i 0 (concatD [prt 0 optlabel])
+    Language.Ocaml.Abs.OtherLabel lident -> prPrec i 0 (concatD [doc (showString "?"), prt 0 lident, doc (showString ":")])
 
 instance Print Language.Ocaml.Abs.AttrId where
   prt i = \case

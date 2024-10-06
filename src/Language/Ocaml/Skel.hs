@@ -504,7 +504,7 @@ transLabeledSimplePattern :: Language.Ocaml.Abs.LabeledSimplePattern -> Result
 transLabeledSimplePattern x = case x of
   Language.Ocaml.Abs.OptPattern labelletpattern -> failure x
   Language.Ocaml.Abs.OptPatternWithDefault labelletpattern equal seqexpr -> failure x
-  Language.Ocaml.Abs.OptLabel lident -> failure x
+  Language.Ocaml.Abs.OptLabelPattern lident -> failure x
   Language.Ocaml.Abs.OptLabeledPattern optlabel letpattern -> failure x
   Language.Ocaml.Abs.OptLabeledPatternWithDefault optlabel letpattern equal seqexpr -> failure x
   Language.Ocaml.Abs.OptLabeledVar optlabel patternvar -> failure x
@@ -1442,6 +1442,11 @@ transAdditive :: Language.Ocaml.Abs.Additive -> Result
 transAdditive x = case x of
   Language.Ocaml.Abs.Plus plus -> failure x
   Language.Ocaml.Abs.PlusDot plusdot -> failure x
+
+transOptLabel :: Language.Ocaml.Abs.OptLabel -> Result
+transOptLabel x = case x of
+  Language.Ocaml.Abs.OptLabel optlabel -> failure x
+  Language.Ocaml.Abs.OtherLabel lident -> failure x
 
 transAttrId :: Language.Ocaml.Abs.AttrId -> Result
 transAttrId x = case x of

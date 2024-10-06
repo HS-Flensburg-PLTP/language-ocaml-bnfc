@@ -1664,7 +1664,7 @@ class_type:
 -}
 
 ClassSignature.             ClassType ::= ClassSignature ;
-ClassTypeWithOptLabel.      ClassType ::= OPTLABEL TupleType "->" ClassType ;
+ClassTypeWithOptLabel.      ClassType ::= OptLabel TupleType "->" ClassType ;
 ClassTypeWithOptionalLabel. ClassType ::= "?" LIDENT ":" TupleType "->" ClassType ;
 ClassTypeWithtLabel.        ClassType ::= LIDENT ":" TupleType "->" ClassType ;
 ClassTypeWithoutLabel.      ClassType ::= TupleType "->" ClassType ;
@@ -1880,7 +1880,7 @@ labeled_simple_pattern:
 
 OptPattern.                   LabeledSimplePattern ::= "?" "(" LabelLetPattern ")" ;
 OptPatternWithDefault.        LabeledSimplePattern ::= "?" "(" LabelLetPattern EQUAL SeqExpr ")" ;
-OptLabel.                     LabeledSimplePattern ::= "?" LIDENT ;
+OptLabelPattern.              LabeledSimplePattern ::= "?" LIDENT ;
 OptLabeledPattern.            LabeledSimplePattern ::= OPTLABEL "(" LetPattern ")" ;
 OptLabeledPatternWithDefault. LabeledSimplePattern ::= OPTLABEL "(" LetPattern EQUAL SeqExpr ")" ;
 OptLabeledVar.                LabeledSimplePattern ::= OPTLABEL PatternVar ;
@@ -3368,7 +3368,7 @@ function_type:
 -}
 
 TupleType.           FunctionType ::= TupleType ;
-ArgTypeWithOptLabel. FunctionType ::= OPTLABEL TupleType "->" FunctionType ;
+ArgTypeWithOptLabel. FunctionType ::= OptLabel TupleType "->" FunctionType ;
 ArgTypeWithLabel.    FunctionType ::= LIDENT ":" TupleType "->" FunctionType ;
 ArgTypeWithoutLabel. FunctionType ::= TupleType "->" FunctionType ;
 
@@ -3489,8 +3489,7 @@ DelimitedTypeSupportingLocalOpen. DelimitedType ::= DelimitedTypeSupportingLocal
 {-
 atomic_type:
   | delimited_type
-  | ( /* begin mktyp group */
-    actual_type_parameters type_longident
+  | actual_type_parameters type_longident
   | actual_type_parameters HASH clty_longident
   | mod_ext_longident DOT delimited_type_supporting_local_open
   | QUOTE ident
@@ -4172,7 +4171,8 @@ optlabel:
 ;
 -}
 
--- inlined
+OptLabel.   OptLabel ::= OPTLABEL ;
+OtherLabel. OptLabel ::= "?" LIDENT ":" ;
 
 {-
 /* Attributes and extensions */

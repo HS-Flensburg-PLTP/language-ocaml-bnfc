@@ -266,7 +266,7 @@ data Method_
 
 data ClassType
     = ClassSignature ClassSignature
-    | ClassTypeWithOptLabel OPTLABEL TupleType ClassType
+    | ClassTypeWithOptLabel OptLabel TupleType ClassType
     | ClassTypeWithOptionalLabel LIDENT TupleType ClassType
     | ClassTypeWithtLabel LIDENT TupleType ClassType
     | ClassTypeWithoutLabel TupleType ClassType
@@ -319,7 +319,7 @@ data SeqExpr
 data LabeledSimplePattern
     = OptPattern LabelLetPattern
     | OptPatternWithDefault LabelLetPattern EQUAL SeqExpr
-    | OptLabel LIDENT
+    | OptLabelPattern LIDENT
     | OptLabeledPattern OPTLABEL LetPattern
     | OptLabeledPatternWithDefault OPTLABEL LetPattern EQUAL SeqExpr
     | OptLabeledVar OPTLABEL PatternVar
@@ -918,7 +918,7 @@ data AliasType
 
 data FunctionType
     = TupleType TupleType
-    | ArgTypeWithOptLabel OPTLABEL TupleType FunctionType
+    | ArgTypeWithOptLabel OptLabel TupleType FunctionType
     | ArgTypeWithLabel LIDENT TupleType FunctionType
     | ArgTypeWithoutLabel TupleType FunctionType
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
@@ -1180,6 +1180,9 @@ data Subtractive = Minus MINUS | MinusDot MINUSDOT
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Additive = Plus PLUS | PlusDot PLUSDOT
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
+data OptLabel = OptLabel OPTLABEL | OtherLabel LIDENT
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data AttrId
