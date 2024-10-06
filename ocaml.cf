@@ -353,6 +353,7 @@ token STRING '"' ((char - ["\"\\"])
                          | digit digit digit
                          | 'x' (letter | digit) (letter | digit)
                          | 'o' ["0123"] ["01234567"] ["01234567"]
+                         | 'u' '{' (letter | digit)+ '}'
                    ))
                  | '\n'
                  | '\\' '\n' (' ' | '\t')* )* '"' ;
