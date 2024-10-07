@@ -897,7 +897,8 @@ implementation:
 ;
 -}
 
-Implementation. Implementation ::= Structure ;
+ImplementationWithLineNumber. Implementation ::= "#" DecimalLiteral STRING Structure ;
+Implementation.               Implementation ::= Structure ;
 
 {-
 /* BEGIN AVOID */

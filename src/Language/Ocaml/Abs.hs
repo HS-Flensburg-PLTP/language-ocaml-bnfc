@@ -30,7 +30,9 @@ data INT
     | Bin BinLiteral
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
-data Implementation = Implementation Structure
+data Implementation
+    = ImplementationWithLineNumber DecimalLiteral STRING Structure
+    | Implementation Structure
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Interface = Interface Signature

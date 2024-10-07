@@ -205,12 +205,12 @@ The reserved words used in ocaml are the following:
   | ``virtual`` | ``when`` | ``while`` | ``with``
 
 The symbols used in ocaml are the following:
-  | ;; | ( | ) | :
-  | _ | -> | :> | [
-  | ] | . | ? | ;
-  | ~ | :: | , | <-
-  | { | } | [| | |]
-  | {< | >} | # | |
+  | # | ;; | ( | )
+  | : | _ | -> | :>
+  | [ | ] | . | ?
+  | ; | ~ | :: | ,
+  | <- | { | } | [|
+  | |] | {< | >} | |
   | .. | ' | +! | !+
   | -! | !- | [> | [<
   | ` | [@ | [@@ | [@@@
@@ -233,7 +233,8 @@ All other symbols are terminals.
   |  |  **|**  | //OctLiteral//
   |  |  **|**  | //BinLiteralModifier//
   |  |  **|**  | //BinLiteral//
-  | //Implementation// | -> | //Structure//
+  | //Implementation// | -> | ``#`` //DecimalLiteral// //STRING// //Structure//
+  |  |  **|**  | //Structure//
   | //Interface// | -> | //Signature//
   | //[StructureItem]// | -> | **eps**
   |  |  **|**  | //StructureItem// //[StructureItem]//

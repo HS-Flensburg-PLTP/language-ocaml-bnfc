@@ -236,6 +236,7 @@ instance Print Language.Ocaml.Abs.INT where
 
 instance Print Language.Ocaml.Abs.Implementation where
   prt i = \case
+    Language.Ocaml.Abs.ImplementationWithLineNumber decimalliteral string structure -> prPrec i 0 (concatD [doc (showString "#"), prt 0 decimalliteral, prt 0 string, prt 0 structure])
     Language.Ocaml.Abs.Implementation structure -> prPrec i 0 (concatD [prt 0 structure])
 
 instance Print Language.Ocaml.Abs.Interface where

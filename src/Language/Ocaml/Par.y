@@ -300,7 +300,9 @@ INT
   | BinLiteral { Language.Ocaml.Abs.Bin $1 }
 
 Implementation :: { Language.Ocaml.Abs.Implementation }
-Implementation : Structure { Language.Ocaml.Abs.Implementation $1 }
+Implementation
+  : '#' DecimalLiteral STRING Structure { Language.Ocaml.Abs.ImplementationWithLineNumber $2 $3 $4 }
+  | Structure { Language.Ocaml.Abs.Implementation $1 }
 
 Interface :: { Language.Ocaml.Abs.Interface }
 Interface : Signature { Language.Ocaml.Abs.Interface $1 }

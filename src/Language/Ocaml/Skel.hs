@@ -200,6 +200,7 @@ transINT x = case x of
 
 transImplementation :: Language.Ocaml.Abs.Implementation -> Result
 transImplementation x = case x of
+  Language.Ocaml.Abs.ImplementationWithLineNumber decimalliteral string structure -> failure x
   Language.Ocaml.Abs.Implementation structure -> failure x
 
 transInterface :: Language.Ocaml.Abs.Interface -> Result
