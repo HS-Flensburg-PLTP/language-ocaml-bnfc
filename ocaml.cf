@@ -262,7 +262,7 @@ position token HASHOP '#' ["!$%&*+-./:<=>?@^|~#"]+ ;
             { PREFIXOP op }
 -}
 
-position token PREFIXOP '!' ["!$%&*+-./:<=>?@^|~#"] | ('?' | '~') ["!$%&*+-./:<=>?@^|~#"]+ ;
+position token PREFIXOP '!' ["!$%&*+-./:<=>?@^|~#"]+ | ('?' | '~') ["!$%&*+-./:<=>?@^|~#"]+ ;
 
 
 -- Primitive Data Types
