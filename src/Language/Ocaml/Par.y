@@ -119,6 +119,7 @@ import Language.Ocaml.Lex
   L_BARBAR                 { PT _ (T_BARBAR _)                  }
   L_COLONEQUAL             { PT _ (T_COLONEQUAL _)              }
   L_EQUAL                  { PT _ (T_EQUAL _)                   }
+  L_BANGEQUAL              { PT _ (T_BANGEQUAL _)               }
   L_GREATER                { PT _ (T_GREATER _)                 }
   L_LESS                   { PT _ (T_LESS _)                    }
   L_MINUS                  { PT _ (T_MINUS _)                   }
@@ -176,6 +177,9 @@ COLONEQUAL  : L_COLONEQUAL { Language.Ocaml.Abs.COLONEQUAL (mkPosToken $1) }
 
 EQUAL :: { Language.Ocaml.Abs.EQUAL }
 EQUAL  : L_EQUAL { Language.Ocaml.Abs.EQUAL (mkPosToken $1) }
+
+BANGEQUAL :: { Language.Ocaml.Abs.BANGEQUAL }
+BANGEQUAL  : L_BANGEQUAL { Language.Ocaml.Abs.BANGEQUAL (mkPosToken $1) }
 
 GREATER :: { Language.Ocaml.Abs.GREATER }
 GREATER  : L_GREATER { Language.Ocaml.Abs.GREATER (mkPosToken $1) }
@@ -758,6 +762,7 @@ FunExpr8
   | FunExpr8 EQUAL Expr9 { Language.Ocaml.Abs.EqualInfix $1 $2 $3 }
   | FunExpr8 LESS Expr9 { Language.Ocaml.Abs.LessInfix $1 $2 $3 }
   | FunExpr8 GREATER Expr9 { Language.Ocaml.Abs.GreaterInfix $1 $2 $3 }
+  | FunExpr8 BANGEQUAL Expr9 { Language.Ocaml.Abs.NotEqualInfix $1 $2 $3 }
   | FunExpr9 { $1 }
 
 FunExpr7 :: { Language.Ocaml.Abs.FunExpr }
@@ -808,7 +813,6 @@ FunExpr1
   | 'try' Ext ListAttribute SeqExpr 'with' ListMatchCase { Language.Ocaml.Abs.Try $2 $3 $4 $6 }
   | 'while' Ext ListAttribute SeqExpr 'do' SeqExpr 'done' { Language.Ocaml.Abs.While $2 $3 $4 $6 }
   | 'for' Ext ListAttribute Pattern EQUAL SeqExpr DirectionFlag SeqExpr 'do' SeqExpr 'done' { Language.Ocaml.Abs.For $2 $3 $4 $5 $6 $7 $8 $10 }
-  | FunExpr2 Attribute { Language.Ocaml.Abs.FunExprWithAttribute $1 $2 }
   | FunExpr2 { $1 }
 
 FunExpr2 :: { Language.Ocaml.Abs.FunExpr }
@@ -974,6 +978,7 @@ SimpleExpr18 :: { Language.Ocaml.Abs.SimpleExpr }
 SimpleExpr18
   : PREFIXOP SimpleExpr19 { Language.Ocaml.Abs.PrefixApp $1 $2 }
   | BANG SimpleExpr19 { Language.Ocaml.Abs.BangApp $1 $2 }
+  | SimpleExpr19 Attribute { Language.Ocaml.Abs.ExprWithAttribute $1 $2 }
   | SimpleExpr19 { $1 }
 
 SimpleExpr17 :: { Language.Ocaml.Abs.SimpleExpr }
@@ -1632,6 +1637,7 @@ Operator
   | STAR { Language.Ocaml.Abs.StarOp $1 }
   | PERCENT { Language.Ocaml.Abs.PercentOp $1 }
   | EQUAL { Language.Ocaml.Abs.EqualOp $1 }
+  | BANGEQUAL { Language.Ocaml.Abs.NotEqualOp $1 }
   | LESS { Language.Ocaml.Abs.LessOp $1 }
   | GREATER { Language.Ocaml.Abs.GreaterOp $1 }
   | OR { Language.Ocaml.Abs.OrOp $1 }

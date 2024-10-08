@@ -375,6 +375,7 @@ data FunExpr
     | EqualInfix FunExpr EQUAL Expr
     | LessInfix FunExpr LESS Expr
     | GreaterInfix FunExpr GREATER Expr
+    | NotEqualInfix FunExpr BANGEQUAL Expr
     | AmpersandInfix FunExpr AMPERSAND Expr
     | AmperAmperInfix FunExpr AMPERAMPER Expr
     | OrInfix FunExpr OR Expr
@@ -401,7 +402,6 @@ data FunExpr
     | Try Ext [Attribute] SeqExpr [MatchCase]
     | While Ext [Attribute] SeqExpr SeqExpr
     | For Ext [Attribute] Pattern EQUAL SeqExpr DirectionFlag SeqExpr SeqExpr
-    | FunExprWithAttribute FunExpr Attribute
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
 data Expr
@@ -536,6 +536,7 @@ data SimpleExpr
     | Extension Extension
     | PrefixApp PREFIXOP SimpleExpr
     | BangApp BANG SimpleExpr
+    | ExprWithAttribute SimpleExpr Attribute
     | RecordAccessExpr SimpleExpr LabelLongident
     | ArrayAccessExpr SimpleExpr SeqExpr
     | StringAccessExpr SimpleExpr SeqExpr
@@ -1043,6 +1044,7 @@ data Operator
     | StarOp STAR
     | PercentOp PERCENT
     | EqualOp EQUAL
+    | NotEqualOp BANGEQUAL
     | LessOp LESS
     | GreaterOp GREATER
     | OrOp OR
@@ -1292,6 +1294,9 @@ newtype COLONEQUAL = COLONEQUAL ((C.Int, C.Int), String)
 newtype EQUAL = EQUAL ((C.Int, C.Int), String)
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
+newtype BANGEQUAL = BANGEQUAL ((C.Int, C.Int), String)
+  deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
+
 newtype GREATER = GREATER ((C.Int, C.Int), String)
   deriving (C.Eq, C.Ord, C.Show, C.Read, C.Data, C.Typeable, C.Generic)
 
@@ -1435,6 +1440,9 @@ instance HasPosition COLONEQUAL where
 
 instance HasPosition EQUAL where
   hasPosition (EQUAL (p, _)) = C.Just p
+
+instance HasPosition BANGEQUAL where
+  hasPosition (BANGEQUAL (p, _)) = C.Just p
 
 instance HasPosition GREATER where
   hasPosition (GREATER (p, _)) = C.Just p

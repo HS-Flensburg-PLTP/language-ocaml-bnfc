@@ -131,6 +131,8 @@ position token COLONEQUAL {":="} ;
 
 position token EQUAL '=' ;
 
+position token BANGEQUAL {"!="} ;
+
 position token GREATER '>' ;
 
 position token LESS '<' ;
@@ -2000,6 +2002,7 @@ RelInfix.               FunExpr8  ::= FunExpr8 RELOP Expr9 ;
 EqualInfix.             FunExpr8  ::= FunExpr8 EQUAL Expr9 ;
 LessInfix.              FunExpr8  ::= FunExpr8 LESS Expr9 ;
 GreaterInfix.           FunExpr8  ::= FunExpr8 GREATER Expr9 ;
+NotEqualInfix.          FunExpr8  ::= FunExpr8 BANGEQUAL Expr9 ;
 
 -- & && precedence 7, associativity right
 AmpersandInfix.         FunExpr7  ::= FunExpr8 AMPERSAND Expr7 ;
@@ -2041,9 +2044,6 @@ Match.                  FunExpr1 ::= "match" Ext [Attribute] SeqExpr "with" [Mat
 Try.                    FunExpr1 ::= "try" Ext [Attribute] SeqExpr "with" [MatchCase] ;
 While.                  FunExpr1 ::= "while" Ext [Attribute] SeqExpr "do" SeqExpr "done" ;
 For.                    FunExpr1 ::= "for" Ext [Attribute] Pattern EQUAL SeqExpr DirectionFlag SeqExpr "do" SeqExpr "done" ;
-
--- TODO: What is the precedence of this rule?
-FunExprWithAttribute.   FunExpr1   ::= FunExpr2 Attribute ;
 
 _.                      FunExpr14 ::= FunExpr15 ;
 _.                      FunExpr13 ::= FunExpr14 ;
@@ -2271,17 +2271,18 @@ LocalOpenEmptyArrayExpr.   SimpleExpr19 ::= ModLongident "." "[|" "|]" ;
 LocalOpenArrayExpr.        SimpleExpr19 ::= ModLongident "." "[|" [Expr] "|]" ;
 LocalOpenObjectExpr.       SimpleExpr19 ::= ModLongident "." "{<" [ObjectExprField] ">}" ;
 LocalOpenModule.           SimpleExpr19 ::= ModLongident "." "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
-BeginEnd.                  SimpleExpr19  ::= "begin" Ext [Attribute] SeqExpr "end" ;
-EmptyBeginEnd.             SimpleExpr19  ::= "begin" Ext [Attribute] "end" ;
-New.                       SimpleExpr19  ::= "new" Ext [Attribute] ClassLongident ;
-Module.                    SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ")" ;
-ModuleWithType.            SimpleExpr19  ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
-Object.                    SimpleExpr19  ::= "object" Ext [Attribute] ClassSelfPattern [ClassField] "end" ;
+BeginEnd.                  SimpleExpr19 ::= "begin" Ext [Attribute] SeqExpr "end" ;
+EmptyBeginEnd.             SimpleExpr19 ::= "begin" Ext [Attribute] "end" ;
+New.                       SimpleExpr19 ::= "new" Ext [Attribute] ClassLongident ;
+Module.                    SimpleExpr19 ::= "(" "module" Ext [Attribute] ModuleExpr ")" ;
+ModuleWithType.            SimpleExpr19 ::= "(" "module" Ext [Attribute] ModuleExpr ":" ModuleType ")" ;
+Object.                    SimpleExpr19 ::= "object" Ext [Attribute] ClassSelfPattern [ClassField] "end" ;
 Extension.                 SimpleExpr19 ::= Extension ;
 
 -- prefix-symbol precedence 18
 PrefixApp.                 SimpleExpr18 ::= PREFIXOP SimpleExpr19 ;
 BangApp.                   SimpleExpr18 ::= BANG SimpleExpr19 ;
+ExprWithAttribute.         SimpleExpr18 ::= SimpleExpr19 Attribute ;
 
 -- . .( .[ .{ precedence 17
 RecordAccessExpr.          SimpleExpr17 ::= SimpleExpr17 "." LabelLongident ;
@@ -3749,6 +3750,7 @@ MinusDotOp.       Operator ::= MINUSDOT ;
 StarOp.           Operator ::= STAR ;
 PercentOp.        Operator ::= PERCENT ;
 EqualOp.          Operator ::= EQUAL ;
+NotEqualOp.       Operator ::= BANGEQUAL ;
 LessOp.           Operator ::= LESS ;
 GreaterOp.        Operator ::= GREATER ;
 OrOp.             Operator ::= OR ;

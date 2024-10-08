@@ -39,6 +39,10 @@ transEQUAL :: Language.Ocaml.Abs.EQUAL -> Result
 transEQUAL x = case x of
   Language.Ocaml.Abs.EQUAL string -> failure x
 
+transBANGEQUAL :: Language.Ocaml.Abs.BANGEQUAL -> Result
+transBANGEQUAL x = case x of
+  Language.Ocaml.Abs.BANGEQUAL string -> failure x
+
 transGREATER :: Language.Ocaml.Abs.GREATER -> Result
 transGREATER x = case x of
   Language.Ocaml.Abs.GREATER string -> failure x
@@ -565,6 +569,7 @@ transFunExpr x = case x of
   Language.Ocaml.Abs.EqualInfix funexpr equal expr -> failure x
   Language.Ocaml.Abs.LessInfix funexpr less expr -> failure x
   Language.Ocaml.Abs.GreaterInfix funexpr greater expr -> failure x
+  Language.Ocaml.Abs.NotEqualInfix funexpr bangequal expr -> failure x
   Language.Ocaml.Abs.AmpersandInfix funexpr ampersand expr -> failure x
   Language.Ocaml.Abs.AmperAmperInfix funexpr amperamper expr -> failure x
   Language.Ocaml.Abs.OrInfix funexpr or expr -> failure x
@@ -591,7 +596,6 @@ transFunExpr x = case x of
   Language.Ocaml.Abs.Try ext attributes seqexpr matchcases -> failure x
   Language.Ocaml.Abs.While ext attributes seqexpr1 seqexpr2 -> failure x
   Language.Ocaml.Abs.For ext attributes pattern_ equal seqexpr1 directionflag seqexpr2 seqexpr3 -> failure x
-  Language.Ocaml.Abs.FunExprWithAttribute funexpr attribute -> failure x
 
 transExpr :: Language.Ocaml.Abs.Expr -> Result
 transExpr x = case x of
@@ -726,6 +730,7 @@ transSimpleExpr x = case x of
   Language.Ocaml.Abs.Extension extension -> failure x
   Language.Ocaml.Abs.PrefixApp prefixop simpleexpr -> failure x
   Language.Ocaml.Abs.BangApp bang simpleexpr -> failure x
+  Language.Ocaml.Abs.ExprWithAttribute simpleexpr attribute -> failure x
   Language.Ocaml.Abs.RecordAccessExpr simpleexpr labellongident -> failure x
   Language.Ocaml.Abs.ArrayAccessExpr simpleexpr seqexpr -> failure x
   Language.Ocaml.Abs.StringAccessExpr simpleexpr seqexpr -> failure x
@@ -1276,6 +1281,7 @@ transOperator x = case x of
   Language.Ocaml.Abs.StarOp star -> failure x
   Language.Ocaml.Abs.PercentOp percent -> failure x
   Language.Ocaml.Abs.EqualOp equal -> failure x
+  Language.Ocaml.Abs.NotEqualOp bangequal -> failure x
   Language.Ocaml.Abs.LessOp less -> failure x
   Language.Ocaml.Abs.GreaterOp greater -> failure x
   Language.Ocaml.Abs.OrOp or -> failure x

@@ -149,6 +149,8 @@ instance Print Language.Ocaml.Abs.COLONEQUAL where
   prt _ (Language.Ocaml.Abs.COLONEQUAL (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.EQUAL where
   prt _ (Language.Ocaml.Abs.EQUAL (_,i)) = doc $ showString i
+instance Print Language.Ocaml.Abs.BANGEQUAL where
+  prt _ (Language.Ocaml.Abs.BANGEQUAL (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.GREATER where
   prt _ (Language.Ocaml.Abs.GREATER (_,i)) = doc $ showString i
 instance Print Language.Ocaml.Abs.LESS where
@@ -657,6 +659,7 @@ instance Print Language.Ocaml.Abs.FunExpr where
     Language.Ocaml.Abs.EqualInfix funexpr equal expr -> prPrec i 8 (concatD [prt 8 funexpr, prt 0 equal, prt 9 expr])
     Language.Ocaml.Abs.LessInfix funexpr less expr -> prPrec i 8 (concatD [prt 8 funexpr, prt 0 less, prt 9 expr])
     Language.Ocaml.Abs.GreaterInfix funexpr greater expr -> prPrec i 8 (concatD [prt 8 funexpr, prt 0 greater, prt 9 expr])
+    Language.Ocaml.Abs.NotEqualInfix funexpr bangequal expr -> prPrec i 8 (concatD [prt 8 funexpr, prt 0 bangequal, prt 9 expr])
     Language.Ocaml.Abs.AmpersandInfix funexpr ampersand expr -> prPrec i 7 (concatD [prt 8 funexpr, prt 0 ampersand, prt 7 expr])
     Language.Ocaml.Abs.AmperAmperInfix funexpr amperamper expr -> prPrec i 7 (concatD [prt 8 funexpr, prt 0 amperamper, prt 7 expr])
     Language.Ocaml.Abs.OrInfix funexpr or expr -> prPrec i 6 (concatD [prt 7 funexpr, prt 0 or, prt 6 expr])
@@ -683,7 +686,6 @@ instance Print Language.Ocaml.Abs.FunExpr where
     Language.Ocaml.Abs.Try ext attributes seqexpr matchcases -> prPrec i 1 (concatD [doc (showString "try"), prt 0 ext, prt 0 attributes, prt 0 seqexpr, doc (showString "with"), prt 0 matchcases])
     Language.Ocaml.Abs.While ext attributes seqexpr1 seqexpr2 -> prPrec i 1 (concatD [doc (showString "while"), prt 0 ext, prt 0 attributes, prt 0 seqexpr1, doc (showString "do"), prt 0 seqexpr2, doc (showString "done")])
     Language.Ocaml.Abs.For ext attributes pattern_ equal seqexpr1 directionflag seqexpr2 seqexpr3 -> prPrec i 1 (concatD [doc (showString "for"), prt 0 ext, prt 0 attributes, prt 0 pattern_, prt 0 equal, prt 0 seqexpr1, prt 0 directionflag, prt 0 seqexpr2, doc (showString "do"), prt 0 seqexpr3, doc (showString "done")])
-    Language.Ocaml.Abs.FunExprWithAttribute funexpr attribute -> prPrec i 1 (concatD [prt 2 funexpr, prt 0 attribute])
 
 instance Print Language.Ocaml.Abs.Expr where
   prt i = \case
@@ -818,6 +820,7 @@ instance Print Language.Ocaml.Abs.SimpleExpr where
     Language.Ocaml.Abs.Extension extension -> prPrec i 19 (concatD [prt 0 extension])
     Language.Ocaml.Abs.PrefixApp prefixop simpleexpr -> prPrec i 18 (concatD [prt 0 prefixop, prt 19 simpleexpr])
     Language.Ocaml.Abs.BangApp bang simpleexpr -> prPrec i 18 (concatD [prt 0 bang, prt 19 simpleexpr])
+    Language.Ocaml.Abs.ExprWithAttribute simpleexpr attribute -> prPrec i 18 (concatD [prt 19 simpleexpr, prt 0 attribute])
     Language.Ocaml.Abs.RecordAccessExpr simpleexpr labellongident -> prPrec i 17 (concatD [prt 17 simpleexpr, doc (showString "."), prt 0 labellongident])
     Language.Ocaml.Abs.ArrayAccessExpr simpleexpr seqexpr -> prPrec i 17 (concatD [prt 17 simpleexpr, doc (showString "."), doc (showString "("), prt 0 seqexpr, doc (showString ")")])
     Language.Ocaml.Abs.StringAccessExpr simpleexpr seqexpr -> prPrec i 17 (concatD [prt 17 simpleexpr, doc (showString "."), doc (showString "["), prt 0 seqexpr, doc (showString "]")])
@@ -1469,6 +1472,7 @@ instance Print Language.Ocaml.Abs.Operator where
     Language.Ocaml.Abs.StarOp star -> prPrec i 0 (concatD [prt 0 star])
     Language.Ocaml.Abs.PercentOp percent -> prPrec i 0 (concatD [prt 0 percent])
     Language.Ocaml.Abs.EqualOp equal -> prPrec i 0 (concatD [prt 0 equal])
+    Language.Ocaml.Abs.NotEqualOp bangequal -> prPrec i 0 (concatD [prt 0 bangequal])
     Language.Ocaml.Abs.LessOp less -> prPrec i 0 (concatD [prt 0 less])
     Language.Ocaml.Abs.GreaterOp greater -> prPrec i 0 (concatD [prt 0 greater])
     Language.Ocaml.Abs.OrOp or -> prPrec i 0 (concatD [prt 0 or])

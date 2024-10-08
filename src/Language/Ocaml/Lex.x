@@ -65,6 +65,10 @@ $u = [. \n]          -- universal: any character
 <0> \=
     { tok (eitherResIdent T_EQUAL) }
 
+-- token BANGEQUAL
+<0> \! \=
+    { tok (eitherResIdent T_BANGEQUAL) }
+
 -- token GREATER
 <0> \>
     { tok (eitherResIdent T_GREATER) }
@@ -142,7 +146,7 @@ $u = [. \n]          -- universal: any character
     { tok (eitherResIdent T_HASHOP) }
 
 -- token PREFIXOP
-<0> \! [\! \# \$ \% \& \* \+ \- \. \/ \: \< \= \> \? \@ \^ \| \~]| [\? \~][\! \# \$ \% \& \* \+ \- \. \/ \: \< \= \> \? \@ \^ \| \~]+
+<0> \! [\! \# \$ \% \& \* \+ \- \. \/ \: \< \= \> \? \@ \^ \| \~]+ | [\? \~][\! \# \$ \% \& \* \+ \- \. \/ \: \< \= \> \? \@ \^ \| \~]+
     { tok (eitherResIdent T_PREFIXOP) }
 
 -- token DecimalLiteral
@@ -244,6 +248,7 @@ data Tok
   | T_BARBAR !String
   | T_COLONEQUAL !String
   | T_EQUAL !String
+  | T_BANGEQUAL !String
   | T_GREATER !String
   | T_LESS !String
   | T_MINUS !String
@@ -352,6 +357,7 @@ tokenText t = case t of
   PT _ (T_BARBAR s) -> s
   PT _ (T_COLONEQUAL s) -> s
   PT _ (T_EQUAL s) -> s
+  PT _ (T_BANGEQUAL s) -> s
   PT _ (T_GREATER s) -> s
   PT _ (T_LESS s) -> s
   PT _ (T_MINUS s) -> s
