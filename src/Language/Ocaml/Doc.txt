@@ -169,8 +169,8 @@ CHAR literals are recognized by the regular expression
 
 STRING literals are recognized by the regular expression
 `````'"' (char - [""\"] | '\' ([" "'\bnrt"] | digit digit digit | 'x' (digit | letter) (digit | letter) | 'o' ["0123"] ["01234567"] ["01234567"] | {"u{"} (digit | letter)+ '}') | '
-' | {"\
-"} ["	 "]*)* '"'`````
+' | '\' ["
+"] ["	 "]*)* '"'`````
 
 QUOTED_STRING_EXPR literals are recognized by the regular expression
 `````{"{%"} letter ('_' | digit | letter)* ('.' letter ('_' | digit | letter)*)* '|'`````

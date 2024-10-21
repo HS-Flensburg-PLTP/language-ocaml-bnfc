@@ -188,7 +188,7 @@ $u = [. \n]          -- universal: any character
     { tok (eitherResIdent T_CHAR) }
 
 -- token STRING
-<0> \" ([$u # [\" \\]] | \\ ([\  \" \' \\ b n r t]| $d $d $d | x ($d | $l)($d | $l)| o [0 1 2 3][0 1 2 3 4 5 6 7][0 1 2 3 4 5 6 7]| u \{ ($d | $l)+ \})| \n | \\ \n [\t \ ]*)* \"
+<0> \" ([$u # [\" \\]] | \\ ([\  \" \' \\ b n r t]| $d $d $d | x ($d | $l)($d | $l)| o [0 1 2 3][0 1 2 3 4 5 6 7][0 1 2 3 4 5 6 7]| u \{ ($d | $l)+ \})| \n | \\ [\n \r][\t \ ]*)* \"
     { tok (eitherResIdent T_STRING) }
 
 -- token QUOTED_STRING_EXPR

@@ -358,7 +358,7 @@ token STRING '"' ((char - ["\"\\"])
                          | 'u' '{' (letter | digit)+ '}'
                    ))
                  | '\n'
-                 | '\\' '\n' (' ' | '\t')* )* '"' ;
+                 | '\\' ('\n' | ["\r\n"]) (' ' | '\t')* )* '"' ;
 
 {-
 %token <string * Location.t * string * Location.t * string option>
